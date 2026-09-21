@@ -34,6 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func openHelp(_ sender: Any?) {
-        NSWorkspace.shared.open(URL(string: "https://github.com/philipbel/pdfinfo#readme")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/philipbel/pdfinfo#pdf-info")!)
     }
 }
