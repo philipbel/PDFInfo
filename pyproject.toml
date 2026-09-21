@@ -1,0 +1,14 @@
+[project]
+name = "gen-fonts"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "pymupdf>=1.28.2",
+]
+
+[project.scripts]
+gen-fonts = "gen_fonts:main"
+
+[build-system]
+requires = ["uv_build>=0.12.16,<0.13.0"]
+build-backend = "uv_build"

@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gen-test-pdf",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/etc/gen-test-pdf.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/etc"
+        }
+    ]
+}

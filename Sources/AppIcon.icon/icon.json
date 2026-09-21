@@ -1,0 +1,79 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "srgb:1.00000,1.00000,1.00000,1.00000",
+      "extended-gray:0.88556,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 1
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0
+      }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "fill" : {
+            "solid" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+          },
+          "image-name" : "clarity--info-circle-solid.png",
+          "name" : "clarity--info-circle-solid",
+          "position" : {
+            "scale" : 0.57,
+            "translation-in-points" : [
+              249.07500000000005,
+              -163.8
+            ]
+          }
+        },
+        {
+          "fill" : {
+            "linear-gradient" : [
+              "srgb:1.00000,0.18574,0.57340,1.00000",
+              "srgb:1.00000,0.12034,0.53913,1.00000"
+            ],
+            "orientation" : {
+              "start" : {
+                "x" : 0.4999999999999999,
+                "y" : 0
+              },
+              "stop" : {
+                "x" : 0.5,
+                "y" : 1
+              }
+            }
+          },
+          "glass" : true,
+          "image-name" : "catppuccin--pdf.png",
+          "name" : "catppuccin--pdf",
+          "position" : {
+            "scale" : 0.99,
+            "translation-in-points" : [
+              -0.49500000000000455,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : [
+      "macOS"
+    ]
+  }
+}
