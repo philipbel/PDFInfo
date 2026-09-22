@@ -23,6 +23,9 @@ struct FontPreviewView: View {
                 if let previewFont {
                     Text(previewText)
                         .font(previewFont)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: 400, maxHeight: 400, alignment: .leading)
+                        .padding()
                 } else {
                     ContentUnavailableView("\(font.name) is not installed", systemImage: "textformat")
                 }
@@ -30,9 +33,6 @@ struct FontPreviewView: View {
                 ContentUnavailableView("Select a font to preview", systemImage: "textformat")
             }
         }
-        .padding()
-        .frame(minWidth: 200, minHeight: 100)
-    }
     }
 
     init(viewModel: FontPreviewViewModel) {

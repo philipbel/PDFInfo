@@ -89,7 +89,6 @@ final class FontTableViewController: NSViewController {
 
         let popover = NSPopover()
         popover.behavior = .transient // dismiss on click-away / Escape
-        // TODO: sizing?
         let popoverHostingViewController = NSHostingController(
             rootView: FontPreviewView(viewModel: FontPreviewViewModel(font: font))
         )
