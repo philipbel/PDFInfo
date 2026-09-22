@@ -13,13 +13,15 @@ fileprivate struct Column {
     static let nameColumn = Column(title: "Name", key: "name")
     static let subtypeColumn = Column(title: "Subtype", key: "subtype")
     static let subsetColumn = Column(title: "Subset", key: "subset")
-    static let embeddedColumn = Column(title: "Embedded?", key: "embedded")
+    static let embeddedColumn = Column(title: "Embedded", key: "embedded")
+    static let installedColumn = Column(title: "Installed", key: "installed")
 
     static let allColumns: [Column] = [
         .nameColumn,
         .subtypeColumn,
         .subsetColumn,
-        .embeddedColumn
+        .embeddedColumn,
+        .installedColumn
     ]
 }
 
@@ -34,6 +36,7 @@ final class FontTableViewController: NSViewController {
     private static let nameColumnMinWidth: CGFloat = 50
 
     private var fonts: [PDFFont]
+    private var systemAvailableFonts: Set<PDFFont.ID> = Set()
     private let tableView = FontTableView()
     private var previewPopover: NSPopover?
     private let fontPreviewViewController = FontPreviewViewController()
@@ -90,6 +93,10 @@ final class FontTableViewController: NSViewController {
             return
         }
         let font = fonts[row]
+        guard systemAvailableFonts.contains(font.id) else {
+            return
+        }
+
         let nameColumnIndex = tableView.column(withIdentifier: Column.nameColumn.identifier)
         let anchorRect = tableView.frameOfCell(atColumn: nameColumnIndex, row: row)
 
@@ -121,7 +128,8 @@ final class FontTableViewController: NSViewController {
                 column.minWidth = Self.nameColumnMinWidth + padding
                 column.maxWidth = .infinity
             case Column.subsetColumn.identifier,
-                Column.embeddedColumn.identifier:
+                Column.embeddedColumn.identifier,
+                Column.installedColumn.identifier:
                 column.minWidth = headerWidth(for: column) + padding
                 column.width = column.minWidth
                 column.maxWidth = column.minWidth
@@ -138,7 +146,7 @@ final class FontTableViewController: NSViewController {
     private func columnValues(for column: NSTableColumn) -> [String] {
         switch column.identifier.rawValue {
         case Column.subtypeColumn.key: return fonts.map(\.subtype)
-        // subset/embedded are checkboxes
+        // the other columns are checkboxes
         default: return []
         }
     }
@@ -159,6 +167,7 @@ final class FontTableViewController: NSViewController {
 
         tableView.reloadData()
         sizeColumnsToFit()
+        updateSystemAvailableFonts()
     }
 
     @objc
@@ -166,7 +175,14 @@ final class FontTableViewController: NSViewController {
         let row = tableView.clickedRow
         guard row >= 0, row < fonts.count else { return }
         let font = fonts[row]
+        guard systemAvailableFonts.contains(font.id) else { return }
         onDoubleClick?(font)
+    }
+
+    private func updateSystemAvailableFonts() {
+        systemAvailableFonts = Set(fonts.compactMap {
+            FontUtil.getSystemFont(named: $0.name, size: 10) != nil ? $0.id : nil
+        })
     }
 }
 
@@ -191,6 +207,8 @@ extension FontTableViewController: NSTableViewDataSource {
                 result = (a.embedded ? 1 : 0) < (b.embedded ? 1 : 0)
             case Column.subsetColumn.key:
                 result = (a.subset ? 1 : 0) < (b.subset ? 1 : 0)
+            case Column.installedColumn.key:
+                result = (systemAvailableFonts.contains(a.id) ? 1 : 0) < (systemAvailableFonts.contains(b.id) ? 1 : 0)
             default: return false
             }
             return sort.ascending ? result : !result
@@ -212,24 +230,25 @@ extension FontTableViewController: NSTableViewDelegate {
 
         switch column.identifier.rawValue {
         case Column.nameColumn.key:
-            return textCell( in: tableView,
-                             id: column.identifier,
-                             text: font.name)
+            return textCell(in: tableView,
+                            id: column.identifier,
+                            text: font.name)
         case Column.subtypeColumn.key:
             return textCell(in: tableView,
                             id: column.identifier,
                             text: font.subtype)
-
         case Column.subsetColumn.key:
             return checkCell(in: tableView,
                              id: column.identifier,
                              on: font.subset)
-
         case Column.embeddedColumn.key:
             return checkCell(in: tableView,
                              id: column.identifier,
                              on: font.embedded)
-
+        case Column.installedColumn.key:
+            return checkCell(in: tableView,
+                             id: column.identifier,
+                             on: systemAvailableFonts.contains(font.id))
         default:
             return nil
         }
@@ -243,12 +262,10 @@ extension FontTableViewController: NSTableViewDelegate {
 
     private func textCell(in tableView: NSTableView,
                           id: NSUserInterfaceItemIdentifier,
-                          text: String,
-                          font: NSFont? = nil) -> NSTableCellView {
+                          text: String) -> NSTableCellView {
         let cell = tableView.makeView(withIdentifier: id, owner: self) as? NSTableCellView
             ?? makeTextCell(id: id)
         cell.textField?.stringValue = text
-        cell.textField?.font = font ?? NSFont.systemFont(ofSize: NSFont.systemFontSize)
         return cell
     }
 
