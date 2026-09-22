@@ -46,6 +46,8 @@ final class PDFDocumentWindowController: NSWindowController {
         let window = NSWindow(contentViewController: splitViewController)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
+        window.contentMinSize = Self.minimumWindowSize
+        window.setContentSize(Self.defaultWindowSize)
 
         self.init(window: window)
 
