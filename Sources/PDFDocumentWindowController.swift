@@ -10,7 +10,10 @@ private extension NSToolbarItem.Identifier {
 
 
 final class PDFDocumentWindowController: NSWindowController {
+    private static let windowFrameSaveKey: NSWindow.FrameAutosaveName = "PDFDocumentWindow"
     private static let inspectorVisibleKey = "inspectorVisible"
+    private static let minimumWindowSize = NSSize(width: 600, height: 400)
+    private static let defaultWindowSize = NSSize(width: 800, height: 600)
 
     private var model: PDFDocumentModel!
     private var fontPreviewWindowController: FontPreviewWindowController!
@@ -41,10 +44,7 @@ final class PDFDocumentWindowController: NSWindowController {
         splitViewController.addSplitViewItem(inspectorSplitViewItem)
 
         let window = NSWindow(contentViewController: splitViewController)
-        window.contentMinSize = NSSize(width: 600, height: 400)
-        window.setContentSize(window.contentMinSize)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
-        window.setFrameAutosaveName("PDFDocumentWindow")
         window.titlebarAppearsTransparent = true
 
         self.init(window: window)
@@ -89,18 +89,16 @@ final class PDFDocumentWindowController: NSWindowController {
         }
         restoreInspectorVisibleState()
         updateInspectorState()
-    }
 
-    private func setupToolbar() {
-        let toolbar = NSToolbar(identifier: "PDFDocumentToolbar")
-        toolbar.delegate = self
-        toolbar.displayMode = .iconOnly
-        toolbar.allowsUserCustomization = true
-        toolbar.autosavesConfiguration = true
-        window?.toolbar = toolbar
-        window?.toolbarStyle = .unified
+        // Do this last
+        window.setFrameAutosaveName(Self.windowFrameSaveKey)
     }
+}
 
+
+// MARK: Inspector
+
+extension PDFDocumentWindowController {
     @objc
     private func toggleInspector(_ sender: Any?) {
         inspectorSplitViewItem.animator().isCollapsed.toggle()
@@ -121,7 +119,20 @@ final class PDFDocumentWindowController: NSWindowController {
     }
 }
 
+
 // MARK: Toolbar
+
+extension PDFDocumentWindowController {
+    private func setupToolbar() {
+        let toolbar = NSToolbar(identifier: "PDFDocumentToolbar")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconOnly
+        toolbar.allowsUserCustomization = true
+        toolbar.autosavesConfiguration = true
+        window?.toolbar = toolbar
+        window?.toolbarStyle = .unified
+    }
+}
 
 extension PDFDocumentWindowController: NSToolbarDelegate {
     func toolbar(_ toolbar: NSToolbar,
@@ -165,8 +176,8 @@ extension PDFDocumentWindowController: NSToolbarItemValidation {
 }
 
 
-
 // MARK: Drag and Drop
+
 extension PDFDocumentWindowController: NSDraggingDestination {
     func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         pdfURLs(from: sender).isEmpty ? [] : .copy
