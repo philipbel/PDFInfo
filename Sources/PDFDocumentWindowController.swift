@@ -92,8 +92,19 @@ final class PDFDocumentWindowController: NSWindowController {
         restoreInspectorVisibleState()
         updateInspectorState()
 
+        window.delegate = self
+
         // Do this last
         window.setFrameAutosaveName(Self.windowFrameSaveKey)
+    }
+}
+
+
+// MARK: Delegate
+
+extension PDFDocumentWindowController: NSWindowDelegate {
+    func windowWillClose(_ notification: Notification) {
+        fontPreviewWindowController.close()
     }
 }
 
