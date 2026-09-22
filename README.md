@@ -35,6 +35,7 @@ menu and in the Finder context menu:
 2. To install via Homebrew, first add the [philipbel/tap](https://github.com/philipbel/homebrew-tap) tap
    ```bash
    brew tap philipbel/tap
+   brew trust philipbel/tap
    ```
 
    Then install the cask:
