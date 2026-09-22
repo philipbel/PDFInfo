@@ -14,6 +14,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ note: Notification) {
         NSApp.servicesProvider = provider
         NSUpdateDynamicServices()
+
+        UserDefaults.standard.register(defaults: [
+            Settings.previewText.key: Settings.previewText.default,
+            Settings.previewFontSize.key: Settings.previewFontSize.default
+        ])
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
@@ -35,5 +40,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc
     func openHelp(_ sender: Any?) {
         NSWorkspace.shared.open(URL(string: "https://github.com/philipbel/pdfinfo#pdf-info")!)
+    }
+
+    @objc
+    func showSettings(_ sender: Any?) {
+        SettingsWindowController.shared.show()
     }
 }

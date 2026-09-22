@@ -2,12 +2,15 @@ import SwiftUI
 import AppKit
 
 struct FontPreviewView: View {
-    private static let previewFontSize: CGFloat = NSFont.preferredFont(forTextStyle: .title1).pointSize
+    @AppStorage(Settings.previewText.key)
+    private var previewText = Settings.previewText.default
+    @AppStorage(Settings.previewFontSize.key)
+    private var previewFontSize = Settings.previewFontSize.default
 
     let viewModel: FontPreviewViewModel
     private var previewFont: Font? {
         if let font = viewModel.font,
-           let systemFont = FontUtil.getSystemFont(named: font.name, size: Self.previewFontSize) {
+           let systemFont = FontUtil.getSystemFont(named: font.name, size: previewFontSize) {
             return Font(systemFont)
         } else {
             return nil
@@ -30,9 +33,6 @@ struct FontPreviewView: View {
         .padding()
         .frame(minWidth: 200, minHeight: 100)
     }
-
-    private var previewText: String {
-        "The quick brown fox jumps over the lazy dog"
     }
 
     init(viewModel: FontPreviewViewModel) {
