@@ -18,7 +18,12 @@ struct SettingsView: View {
                     HStack(spacing: 4) {
                         TextField("", value: $previewFontSize, format: .number)
                             .frame(width: 50)
-                        Stepper("", value: $previewFontSize, in: 8...96, step: 1)
+                        Stepper(
+                            "",
+                            value: $previewFontSize,
+                            in: Double(Settings.previewFontSizeRange.lowerBound)...Double( Settings.previewFontSizeRange.upperBound),
+                            step: 1
+                        )
                             .labelsHidden()
                     }
                 }

@@ -97,7 +97,7 @@ final class DropOverlayView: NSView {
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
-        nil // transparent to mouse events;,still receives drags
+        nil // transparent to mouse events; still receives drags
     }
 
     private func toggleOverlay(visible: Bool, animated: Bool = true) {

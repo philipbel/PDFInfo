@@ -4,14 +4,11 @@ import SwiftUI
 
 @MainActor
 final class FontPreviewWindowController: NSWindowController {
-    private var viewModel: FontPreviewViewModel!
+    private var previewViewController: FontPreviewViewController!
 
     convenience init() {
-        let viewModel = FontPreviewViewModel()
-
-        let hostingViewController = NSHostingController(rootView: FontPreviewView(viewModel: viewModel))
-        hostingViewController.sizingOptions = [.preferredContentSize]
-        let panel = NSPanel(contentViewController: hostingViewController)
+        let previewViewController = FontPreviewViewController()
+        let panel = NSPanel(contentViewController: previewViewController)
         panel.styleMask = [.titled, .closable, .utilityWindow]
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = true
@@ -19,7 +16,8 @@ final class FontPreviewWindowController: NSWindowController {
         panel.title = "Font Preview"
 
         self.init(window: panel)
-        self.viewModel = viewModel
+
+        self.previewViewController = previewViewController
     }
 
     override init(window: NSWindow?) {
@@ -29,7 +27,7 @@ final class FontPreviewWindowController: NSWindowController {
     required init?(coder: NSCoder) { fatalError("init(coder:) not used") }
 
     func show(font: PDFFont) {
-        viewModel.font = font
+        previewViewController.font = font
         showWindow(nil)
     }
 }

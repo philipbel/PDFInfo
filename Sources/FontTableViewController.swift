@@ -36,7 +36,7 @@ final class FontTableViewController: NSViewController {
     private var fonts: [PDFFont]
     private let tableView = FontTableView()
     private var previewPopover: NSPopover?
-
+    private let fontPreviewViewController = FontPreviewViewController()
 
     var onDoubleClick: ((PDFFont) -> Void)?
 
@@ -74,7 +74,13 @@ final class FontTableViewController: NSViewController {
     }
 
     override func quickLook(with event: NSEvent) {
-        togglePreviewPopover()
+        if let existingPopover = previewPopover, existingPopover.isShown {
+            existingPopover.close()
+            previewPopover = nil
+        } else {
+            let row = tableView.selectedRow
+            showPreviewPopover(for: row)
+        }
     }
 
     private func showPreviewPopover(for row: Int) {
@@ -89,23 +95,10 @@ final class FontTableViewController: NSViewController {
 
         let popover = NSPopover()
         popover.behavior = .transient // dismiss on click-away / Escape
-        let popoverHostingViewController = NSHostingController(
-            rootView: FontPreviewView(viewModel: FontPreviewViewModel(font: font))
-        )
-        popoverHostingViewController.sizingOptions = [.preferredContentSize]
-        popover.contentViewController = popoverHostingViewController
+        fontPreviewViewController.font = font
+        popover.contentViewController = fontPreviewViewController
         popover.show(relativeTo: anchorRect, of: tableView, preferredEdge: .maxY)
         previewPopover = popover
-    }
-
-    private func togglePreviewPopover() {
-        if let existingPopover = previewPopover, existingPopover.isShown {
-            existingPopover.close()
-            previewPopover = nil
-        } else {
-            let row = tableView.selectedRow
-            showPreviewPopover(for: row)
-        }
     }
 
     private func configureColumns() {
