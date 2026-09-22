@@ -27,3 +27,17 @@ menu and in the Finder context menu:
   src="etc/screenshots/Finder-Action.png"
   alt="Finder context menu for PDF files"
   style="width: 200px; height=auto">
+
+## Installation
+
+1. From GitHub: you can download a disk image (`.dmg` file) with the latest
+   version from [GitHub](https://github.com/philipbel/PDFInfo/releases).
+2. To install via Homebrew, first add the [philipbel/tap](https://github.com/philipbel/homebrew-tap) tap
+   ```bash
+   brew tap philipbel/tap
+   ```
+
+   Then install the cask:
+   ```bash
+   brew install --cask pdfinfo
+   ```
