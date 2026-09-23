@@ -2,11 +2,8 @@
 
 PDF Info is a small, native macOS app for inspecting PDF fonts and metadata.
 
-It allows you to preview the fonts (if they're installed) by pressing Space or
-double clicking.
-
 <img
-  src="etc/screenshots/quick-look.png"
+  src="Help/images/app.png"
   alt="Quick look preview of a font"
   style="width: 600px; height=auto">
 

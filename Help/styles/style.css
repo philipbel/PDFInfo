@@ -1,0 +1,113 @@
+:root {
+    --spacing: 0.2em;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #252525;
+        color: #f9f1f3;
+    }
+
+    a {
+        color: #ff82b3;
+        text-decoration: none;
+    }
+}
+
+
+.intro {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.outro {
+    text-align: center;
+    font-size: 12px;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-align-center {
+    align-items: center;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.flex-gap-1 {
+    gap: var(--spacing);
+}
+
+.flex-gap-2 {
+    gap: calc(var(--spacing) * 2);
+}
+
+.flex-gap-3 {
+    gap: calc(var(--spacing) * 3);
+}
+
+.center {
+    flex: 0 0 auto;
+    border-left: 3px solid #ddd;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+}
+
+.h4 {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.topic-list {
+    padding-left: 0px;
+    margin-top: 0px;
+}
+
+.list {
+    padding-left: 1em;
+    margin-top: 0px;
+}
+
+.topic-list li {
+    list-style-type: none;
+    padding-top: 0.2em;
+}

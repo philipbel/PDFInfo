@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleHelpBookFolder</key>
+	<string>Help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>PDF Info Help</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
@@ -15,24 +19,6 @@
 			</array>
 			<key>NSDocumentClass</key>
 			<string>$(PRODUCT_MODULE_NAME).PDFDocument</string>
-		</dict>
-	</array>
-	<key>NSServices</key>
-	<array>
-		<dict>
-			<key>NSMenuItem</key>
-			<dict>
-				<key>default</key>
-				<string>PDF Info</string>
-			</dict>
-			<key>NSMessage</key>
-			<string>pdfInfo</string>
-			<key>NSPortName</key>
-			<string>PDFInfo</string>
-			<key>NSSendFileTypes</key>
-			<array>
-				<string>com.adobe.pdf</string>
-			</array>
 		</dict>
 	</array>
 </dict>

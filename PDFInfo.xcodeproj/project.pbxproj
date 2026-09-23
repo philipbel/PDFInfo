@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4A2F1215306434D5006A8160 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F1214306434D0006A8160 /* Help */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		4A42CA852FD33A3300CAE2F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4A2F1214306434D0006A8160 /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
 		4A42CA742FD33A3200CAE2F8 /* PDF Info.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Info.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A42CA842FD33A3300CAE2F8 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A42CA8E2FD33A3300CAE2F8 /* UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -93,6 +98,7 @@
 		4A42CA6B2FD33A3200CAE2F8 = {
 			isa = PBXGroup;
 			children = (
+				4A2F1214306434D0006A8160 /* Help */,
 				4A92468B3061D37D00AC490A /* README.md */,
 				4A9246883061BE5D00AC490A /* LICENSE */,
 				4A42CA762FD33A3200CAE2F8 /* Sources */,
@@ -122,6 +128,7 @@
 				4A42CA702FD33A3200CAE2F8 /* Sources */,
 				4A42CA712FD33A3200CAE2F8 /* Frameworks */,
 				4A42CA722FD33A3200CAE2F8 /* Resources */,
+				4A2F11D9306412D9006A8160 /* Build Help Index */,
 			);
 			buildRules = (
 			);
@@ -232,6 +239,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A2F1215306434D5006A8160 /* Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +258,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4A2F11D9306412D9006A8160 /* Build Help Index */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Help",
+			);
+			name = "Build Help Index";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/Help/Help.helpindex",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "HELP_DIR=\"${SRCROOT}/Help\"\nHELP_DEST=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Help/Help.helpindex\"\n\nif [ ! -d \"${HELP_DIR}\" ]; then\n    echo \"error: Help directory not found at ${HELP_DIR}\"\n    exit 1\nfi\n\necho \"Building help index from ${HELP_DIR} to ${HELP_DEST}\"\n\nhiutil -C -a -g -vvv -f \"${HELP_DEST}\" -l en \"${HELP_DIR}\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4A42CA702FD33A3200CAE2F8 /* Sources */ = {
@@ -299,7 +330,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
@@ -321,8 +352,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -351,7 +382,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
@@ -373,8 +404,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14;
+				MARKETING_VERSION = 1.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
