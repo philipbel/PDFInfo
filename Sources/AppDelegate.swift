@@ -33,8 +33,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc
-    func openHelp(_ sender: Any?) {
-        NSWorkspace.shared.open(URL(string: "https://github.com/philipbel/pdfinfo#pdf-info")!)
+    func openWebsite(_ sender: Any?) {
+        NSWorkspace.shared.open(URL(string: "https://philipbel.github.io/PDFInfo")!)
+    }
+
+    @objc
+    func openIssueReport(_ sender: Any?) {
+        NSWorkspace.shared.open(URL(string: "https://github.com/philipbel/PDFInfo/issues/new")!)
     }
 
     @objc

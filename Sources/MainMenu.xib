@@ -360,7 +360,20 @@
                         <items>
                             <menuItem title="PDF Info Help" image="book.pages" catalog="system" keyEquivalent="?" id="FKE-Sm-Kum">
                                 <connections>
-                                    <action selector="openHelp:" target="-1" id="7XU-Wf-vGH"/>
+                                    <action selector="showHelp:" target="-1" id="Ypl-CX-oJO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="AT1-46-pcP"/>
+                            <menuItem title="Website" id="a59-2E-WrU">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openWebsite:" target="-1" id="Cto-oX-ClE"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Report an Issue" id="P5z-bg-NMa">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openIssueReport:" target="-1" id="Hqt-Z8-s4s"/>
                                 </connections>
                             </menuItem>
                         </items>
