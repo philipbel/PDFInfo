@@ -11,8 +11,7 @@ class PDFDocument: NSDocument {
     }
 
     override nonisolated func read(from url: URL, ofType typeName: String) throws {
-        let data = try Data(contentsOf: url)
-        model = try PDFDocumentModel(url: url, data: data)
+        model = try PDFDocumentModel(url: url)
     }
 
     override var isDocumentEdited: Bool { false }

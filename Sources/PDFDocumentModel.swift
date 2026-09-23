@@ -1,21 +1,53 @@
 import SwiftUI
 import UniformTypeIdentifiers
+import PDFKit
 
 
 nonisolated struct PDFDocumentModel: Sendable {
+    struct Metadata {
+        let title: String?
+        let subject: String?
+        let author: String?
+        let keywords: [String]
+        let creator: String?
+        let producer: String?
+        let creationDate: Date?
+        let modificationDate: Date?
+
+        init(
+            title: String? = nil,
+            subject: String? = nil,
+            author: String? = nil,
+            keywords: [String] = [],
+            creator: String? = nil,
+            producer: String? = nil,
+            creationDate: Date? = nil,
+            modificationDate: Date? = nil,
+        ) {
+            self.title = title
+            self.subject = subject
+            self.author = author
+            self.keywords = keywords
+            self.creator = creator
+            self.producer = producer
+            self.creationDate = creationDate
+            self.modificationDate = modificationDate
+        }
+    }
+
     let url: URL
     let fonts: [PDFFont]
     let version: String
     let pageCount: Int
     let pageSize: PDFPageSize?
-    let metadata: [String: String]
+    let metadata: Metadata
 
     init(url: URL,
          fonts: [PDFFont] = [],
          version: String = "1.0",
          pageCount: Int = 0,
          pageSize: PDFPageSize? = nil,
-         metadata: [String: String] = [:]) {
+         metadata: Metadata = Metadata()) {
         self.url = url
         self.fonts = fonts
         self.version = version
@@ -24,20 +56,23 @@ nonisolated struct PDFDocumentModel: Sendable {
         self.metadata = metadata
     }
 
-    init(url: URL, data: Data) throws {
-        guard let provider = CGDataProvider(data: data as CFData),
-              let pdf = CGPDFDocument(provider) else {
+    init(url: URL) throws {
+        guard let pdfDocument = PDFKit.PDFDocument(url: url) else {
             throw CocoaError(.fileReadCorruptFile)
         }
         self.url = url
-        self.fonts = Self.fonts(from: pdf)
-        self.version = Self.version(of: pdf)
-        self.pageCount = Self.pageCount(of: pdf)
-        self.pageSize = Self.pageSize(of: pdf)
-        self.metadata = Self.metadata(of: pdf)
+        self.fonts = Self.fonts(from: pdfDocument)
+        self.version = Self.version(of: pdfDocument)
+        self.pageCount = Self.pageCount(of: pdfDocument)
+        self.pageSize = Self.pageSize(of: pdfDocument)
+        self.metadata = Self.metadata(from: pdfDocument)
     }
 
-    private static func fonts(from pdf: CGPDFDocument) -> [PDFFont] {
+    private static func fonts(from pdfDocument: PDFKit.PDFDocument) -> [PDFFont] {
+        guard let pdf = pdfDocument.documentRef else {
+            return []
+        }
+
         var found = Set<PDFFont>()
         
         for i in 1...max(pdf.numberOfPages, 1) {
@@ -140,39 +175,43 @@ nonisolated struct PDFDocumentModel: Sendable {
         return (name, false)
     }
 
-    private static func version(of pdf: CGPDFDocument) -> String {
-        var major: Int32 = 0, minor: Int32 = 0
-        pdf.getVersion(majorVersion: &major, minorVersion: &minor)
-        return "\(major).\(minor)"
+    private static func version(of pdfDocument: PDFKit.PDFDocument) -> String {
+        return "\(pdfDocument.majorVersion).\(pdfDocument.minorVersion)"
     }
 
-    private static func pageCount(of pdf: CGPDFDocument) -> Int {
-        return pdf.numberOfPages
+    private static func pageCount(of pdfDocument: PDFKit.PDFDocument) -> Int {
+        return pdfDocument.pageCount
     }
 
-    private static func pageSize(of pdf: CGPDFDocument) -> PDFPageSize? {
-        guard let page = pdf.page(at: 1) else { return nil }
-
-        let box = page.getBoxRect(.mediaBox) // points (1/72")
+    private static func pageSize(of pdfDocument: PDFKit.PDFDocument) -> PDFPageSize? {
+        guard let pdf = pdfDocument.documentRef,
+              let page = pdf.page(at: 1) else {
+            return nil
+        }
+        let box = page.getBoxRect(.mediaBox) // in points (1/72")
         return PDFPageSize(
             width: Measurement(value: Double(box.width) / 72, unit: .inches),
             height: Measurement(value: Double(box.height) / 72, unit: .inches)
         )
     }
 
-    private static func infoString(_ dict: CGPDFDictionaryRef, _ key: String) -> String? {
-        var ref: CGPDFStringRef?
-        guard CGPDFDictionaryGetString(dict, key, &ref), let s = ref,
-              let cf = CGPDFStringCopyTextString(s) else { return nil }
-        return cf as String
-    }
+    private static func metadata(from pdfDocument: PDFKit.PDFDocument) -> Metadata {
+        let title = pdfDocument.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String
+        let author = pdfDocument.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String
+        let subject = pdfDocument.documentAttributes?[PDFDocumentAttribute.subjectAttribute] as? String
+        let producer = pdfDocument.documentAttributes?[PDFDocumentAttribute.producerAttribute] as? String
+        let creator = pdfDocument.documentAttributes?[PDFDocumentAttribute.creatorAttribute] as? String
+        let keywords = pdfDocument.documentAttributes?[PDFDocumentAttribute.keywordsAttribute] as? [String] ?? []
+        let creationDate = pdfDocument.documentAttributes?[PDFDocumentAttribute.creationDateAttribute] as? Date
+        let modDate = pdfDocument.documentAttributes?[PDFDocumentAttribute.modificationDateAttribute] as? Date
 
-    private static func metadata(of pdf: CGPDFDocument) -> [String: String] {
-        guard let info = pdf.info else { return [:] }
-        var out: [String: String] = [:]
-        for key in ["Title", "Author", "Subject", "Producer", "Creator", "Keywords"] {
-            if let v = infoString(info, key) { out[key] = v }
-        }
-        return out
+        return Metadata(title: title,
+                        subject: subject,
+                        author: author,
+                        keywords: keywords,
+                        creator: creator,
+                        producer: producer,
+                        creationDate: creationDate,
+                        modificationDate: modDate)
     }
 }

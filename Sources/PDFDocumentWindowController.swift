@@ -34,11 +34,11 @@ final class PDFDocumentWindowController: NSWindowController {
         let splitViewController = NSSplitViewController()
 
         let tableViewController = FontTableViewController(fonts: model.fonts)
-        let inspectorViewController = NSHostingController(rootView: PDFDocumentInfoView(document: model))
+        let inspectorViewController = NSHostingController(rootView: DocumentInspectorView(document: model))
         let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: inspectorViewController)
         inspectorSplitViewItem.canCollapse = true
-        inspectorSplitViewItem.minimumThickness = 200
-        inspectorSplitViewItem.maximumThickness = 400
+        inspectorSplitViewItem.minimumThickness = 250
+        inspectorSplitViewItem.maximumThickness = 500
 
         splitViewController.addSplitViewItem(NSSplitViewItem(viewController: tableViewController))
         splitViewController.addSplitViewItem(inspectorSplitViewItem)
