@@ -1,8 +1,6 @@
 import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let provider = ServiceProvider()
-
     func applicationWillFinishLaunching(_ notification: Notification) {
         /*
          * Load the menu here. See https://developer.apple.com/forums/thread/776832
@@ -12,9 +10,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ note: Notification) {
-        NSApp.servicesProvider = provider
-        NSUpdateDynamicServices()
-
         UserDefaults.standard.register(defaults: [
             Settings.previewText.key: Settings.previewText.default,
             Settings.previewFontSize.key: Settings.previewFontSize.default
