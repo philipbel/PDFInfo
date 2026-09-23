@@ -2,6 +2,11 @@ import AppKit
 import SwiftUI
 
 
+fileprivate enum Const {
+    static let cellInset: CGFloat = 2
+}
+
+
 fileprivate struct Column {
     let title: String
     let key: String
@@ -26,13 +31,138 @@ fileprivate struct Column {
 }
 
 
-final class CheckCellView: NSTableCellView {
+fileprivate final class CheckCellView: NSTableCellView {
     var checkbox: NSButton!
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setup()
+    }
+
+    convenience init(identifier: NSUserInterfaceItemIdentifier, checked: Bool) {
+        self.init(frame: .zero)
+        configure(identifier: identifier, checked: checked)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(identifier: NSUserInterfaceItemIdentifier, checked: Bool) {
+        self.identifier = identifier
+        checkbox.state = checked ? .on : .off
+    }
+
+    private func setup() {
+        checkbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
+        checkbox.isEnabled = false
+
+        addSubview(checkbox)
+        checkbox.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            checkbox.centerXAnchor.constraint(equalTo: centerXAnchor),
+            checkbox.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+    }
+
+}
+
+
+fileprivate final class TextFieldCellView: NSTableCellView {
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setup()
+    }
+
+    convenience init(identifier: NSUserInterfaceItemIdentifier, text: String) {
+        self.init(frame: .zero)
+        configure(identifier: identifier, text: text)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(identifier: NSUserInterfaceItemIdentifier, text: String) {
+        self.identifier = identifier
+        textField?.stringValue = text
+    }
+
+    private func setup() {
+        let textField = NSTextField(labelWithString: "")
+        textField.lineBreakMode = .byTruncatingTail
+        textField.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        self.textField = textField
+        addSubview(textField)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.cellInset),
+            textField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.cellInset),
+            textField.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
+
+    }
+}
+
+
+fileprivate final class FontNameTableCellView: NSTableCellView {
+    private var quickLook: (() -> Void)?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setup()
+    }
+
+    convenience init(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: @escaping () -> Void) {
+        self.init(frame: .zero)
+        configure(identifier: identifier, text: text, quickLook: quickLook)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: @escaping () -> Void) {
+        self.identifier = identifier
+        self.textField?.stringValue = text
+        self.quickLook = quickLook
+    }
+
+    private func setup() {
+        let textField = NSTextField(labelWithString: "")
+        textField.lineBreakMode = .byTruncatingTail
+        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        self.textField = textField
+        addSubview(textField)
+
+        let quickLookButton = NSButton()
+        quickLookButton.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "Preview font")
+        quickLookButton.isBordered = false
+        quickLookButton.setAccessibilityLabel("Preview font")
+        quickLookButton.target = self
+        quickLookButton.action = #selector(onQuickLook(sender:))
+        quickLookButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(quickLookButton)
+
+        NSLayoutConstraint.activate([
+            textField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Const.cellInset),
+            textField.centerYAnchor.constraint(equalTo: centerYAnchor),
+            quickLookButton.leadingAnchor
+                .constraint(greaterThanOrEqualTo: textField.trailingAnchor, constant: Const.cellInset * 2),
+            quickLookButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.cellInset),
+            quickLookButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+        ])
+    }
+
+    @objc
+    private func onQuickLook(sender: Any?) {
+        quickLook?()
+    }
 }
 
 
 final class FontTableViewController: NSViewController {
-    private static let cellInset: CGFloat = 2
     private static let nameColumnMinWidth: CGFloat = 50
 
     private var fonts: [PDFFont]
@@ -121,7 +251,7 @@ final class FontTableViewController: NSViewController {
         let cellFont = NSFont.systemFont(ofSize: NSFont.systemFontSize)
         let attrs = [NSAttributedString.Key.font: cellFont]
 
-        let padding = 2 * Self.cellInset
+        let padding = 2 * Const.cellInset
         for column in tableView.tableColumns {
             switch column.identifier {
             case Column.nameColumn.identifier:
@@ -186,6 +316,7 @@ final class FontTableViewController: NSViewController {
     }
 }
 
+
 //
 // MARK: Data Source
 //
@@ -230,25 +361,22 @@ extension FontTableViewController: NSTableViewDelegate {
 
         switch column.identifier.rawValue {
         case Column.nameColumn.key:
-            return textCell(in: tableView,
-                            id: column.identifier,
-                            text: font.name)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
+                ?? FontNameTableCellView(identifier: column.identifier,
+                                         text: font.name,
+                                         quickLook: { [weak self] in self?.onDoubleClick?(font)})
         case Column.subtypeColumn.key:
-            return textCell(in: tableView,
-                            id: column.identifier,
-                            text: font.subtype)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
+                ?? TextFieldCellView(identifier: column.identifier, text: font.subtype)
         case Column.subsetColumn.key:
-            return checkCell(in: tableView,
-                             id: column.identifier,
-                             on: font.subset)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
+                ?? CheckCellView(identifier: column.identifier, checked: font.subset)
         case Column.embeddedColumn.key:
-            return checkCell(in: tableView,
-                             id: column.identifier,
-                             on: font.embedded)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
+                ?? CheckCellView(identifier: column.identifier, checked: font.embedded)
         case Column.installedColumn.key:
-            return checkCell(in: tableView,
-                             id: column.identifier,
-                             on: systemAvailableFonts.contains(font.id))
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
+                ?? CheckCellView(identifier: column.identifier, checked: systemAvailableFonts.contains(font.id))
         default:
             return nil
         }
@@ -258,54 +386,5 @@ extension FontTableViewController: NSTableViewDelegate {
         // If the preview popover is open, follow the selection.
         guard let popover = previewPopover, popover.isShown else { return }
         showPreviewPopover(for: tableView.selectedRow)
-    }
-
-    private func textCell(in tableView: NSTableView,
-                          id: NSUserInterfaceItemIdentifier,
-                          text: String) -> NSTableCellView {
-        let cell = tableView.makeView(withIdentifier: id, owner: self) as? NSTableCellView
-            ?? makeTextCell(id: id)
-        cell.textField?.stringValue = text
-        return cell
-    }
-
-    private func makeTextCell(id: NSUserInterfaceItemIdentifier) -> NSTableCellView {
-        let cell = NSTableCellView()
-        cell.identifier = id
-        let tf = NSTextField(labelWithString: "")
-        tf.lineBreakMode = .byTruncatingTail
-        tf.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        cell.textField = tf
-        cell.addSubview(tf)
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            tf.leadingAnchor.constraint(equalTo: cell.leadingAnchor, constant: Self.cellInset),
-            tf.trailingAnchor.constraint(equalTo: cell.trailingAnchor, constant: -Self.cellInset),
-            tf.centerYAnchor.constraint(equalTo: cell.centerYAnchor)
-        ])
-        return cell
-    }
-
-    private func checkCell(in tableView: NSTableView, id: NSUserInterfaceItemIdentifier,
-                           on: Bool) -> NSView {
-        let cell = tableView.makeView(withIdentifier: id, owner: self) as? CheckCellView
-            ?? makeCheckCell(id: id)
-        cell.checkbox.state = on ? .on : .off
-        return cell
-    }
-
-    private func makeCheckCell(id: NSUserInterfaceItemIdentifier) -> CheckCellView {
-        let cell = CheckCellView()
-        cell.identifier = id
-        let check = NSButton(checkboxWithTitle: "", target: nil, action: nil)
-        check.isEnabled = false
-        cell.checkbox = check
-        cell.addSubview(check)
-        check.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            check.centerXAnchor.constraint(equalTo: cell.centerXAnchor),
-            check.centerYAnchor.constraint(equalTo: cell.centerYAnchor)
-        ])
-        return cell
     }
 }
