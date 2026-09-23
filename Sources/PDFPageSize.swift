@@ -1,7 +1,7 @@
 import Foundation
 
 nonisolated struct PDFPageSize: Codable, Equatable, Sendable {
-    private static let epsilon = 0.0001
+    private static let epsilon = 0.01
 
     let width: Measurement<UnitLength>
     let height: Measurement<UnitLength>
@@ -56,8 +56,10 @@ nonisolated struct PDFPageSize: Codable, Equatable, Sendable {
     }
 
     static func == (lhs: PDFPageSize, rhs: PDFPageSize) -> Bool {
-        let lhsWidth = lhs.width.converted(to: rhs.width.unit)
-        let lhsHeight = lhs.height.converted(to: rhs.height.unit)
-        return abs(lhsWidth.value - rhs.width.value) < Self.epsilon && abs(lhsHeight.value - rhs.height.value) < epsilon
+        let lhsWidth = lhs.width.converted(to: .centimeters).value
+        let lhsHeight = lhs.height.converted(to: .centimeters).value
+        let rhsWidth = rhs.width.converted(to: .centimeters).value
+        let rhsHeight = rhs.height.converted(to: .centimeters).value
+        return abs(lhsWidth - rhsWidth) < epsilon && abs(lhsHeight - rhsHeight) < epsilon
     }
 }

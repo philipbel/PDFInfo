@@ -6,4 +6,8 @@ extension XCUIElement {
     func waitForExistence() -> Bool {
         waitForExistence(timeout: Self.defeaultTimeout)
     }
+
+    func waitForNonExistence() -> Bool {
+        waitForNonExistence(timeout: Self.defeaultTimeout)
+    }
 }

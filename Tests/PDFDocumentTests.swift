@@ -13,7 +13,7 @@ private func data(_ name: String) throws -> Data {
 }
 
 private func parse(_ name: String) throws -> PDFDocumentModel {
-    try PDFDocumentModel(data: try data(name))
+    try PDFDocumentModel(url: URL(string: "file:/a/b/c/d.pdf")!, data: try data(name))
 }
 
 
@@ -23,6 +23,7 @@ struct FontParsingTests {
     func base14() throws {
         let doc = try parse("base14_helvetica_not_embedded")
         let helv = try #require(doc.fonts.first { $0.name == "Helvetica" })
+        #expect(doc.pageSize == .a4)
         #expect(helv.subtype == "Type1")
         #expect(helv.embedded == false)
         #expect(helv.subset == false)
@@ -32,6 +33,7 @@ struct FontParsingTests {
     func cidType2() throws {
         let doc = try parse("type0_cid_font_type2_embedded_subset")
         let f = try #require(doc.fonts.first { $0.name.contains("Plex") })
+        #expect(doc.pageSize == .a4)
         #expect(f.subtype == "CIDFontType2")
         #expect(f.embedded == true)
         #expect(f.subset == true)
@@ -41,6 +43,7 @@ struct FontParsingTests {
     func cidType0() throws {
         let doc = try parse("type0_cid_font_type0_embedded_subset")
         let f = try #require(doc.fonts.first { $0.name.contains("Plex") })
+        #expect(doc.pageSize == .a4)
         #expect(f.subtype == "CIDFontType0")
         #expect(f.embedded == true)
         #expect(f.subset == true)
@@ -49,6 +52,7 @@ struct FontParsingTests {
     @Test("Embedded simple TrueType: TrueType subtype, embedded, subset")
     func simpleTrueType() throws {
         let doc = try parse("simple_truetype")
+        #expect(doc.pageSize == .a4)
         let f = try #require(doc.fonts.first { $0.name.contains("CoalescoMono") })
         #expect(f.subtype == "TrueType")
         #expect(f.embedded == true)
@@ -59,6 +63,7 @@ struct FontParsingTests {
     func mixed() throws {
         let doc = try parse("multi_font_mixed")
         let names = Set(doc.fonts.map(\.name))
+        #expect(doc.pageSize == .letter)
         #expect(names.contains("Helvetica"))
         #expect(names.contains("Times-Roman"))
         #expect(doc.fonts.contains { $0.name.contains("Plex") && $0.embedded })
@@ -78,17 +83,17 @@ struct MetadataTests {
     @Test("Info dictionary fields")
     func info() throws {
         let doc = try parse("metadata_populated")
-        #expect(doc.metadata["Title"] == "Fixture Title")
-        #expect(doc.metadata["Author"] == "Phil")
-        #expect(doc.metadata["Creator"] == "gen-test-pdf.py")
-        #expect(doc.metadata["Subject"] == "Font inspector fixture")
-        #expect(doc.metadata["Producer"] == "PyMuPDF")
+        #expect(doc.metadata.title == "Fixture Title")
+        #expect(doc.metadata.author == "Phil")
+        #expect(doc.metadata.creator == "gen-test-pdf.py")
+        #expect(doc.metadata.subject == "Font inspector fixture")
+        #expect(doc.metadata.producer == "PyMuPDF")
     }
 
     @Test("Info dictionary omits keys absent from the source PDF")
     func infoOmitsUnsetKeys() throws {
         let doc = try parse("metadata_populated")
-        #expect(doc.metadata["Keywords"] == nil)
+        #expect(doc.metadata.keywords.isEmpty)
     }
 
     @Test("Page size parses to US Letter")
@@ -115,10 +120,18 @@ struct PDFDocumentTests {
         let version = "3.14"
         let pageCount = 42
         let pageSize = PDFPageSize(width: Measurement(value: 2, unit: .centimeters), height: Measurement(value: 3, unit: .feet))
-        let metadata = [
-            "key": "value"
-        ]
+        let metadata = PDFDocumentModel.Metadata(
+            title: "title",
+            subject: "subject",
+            author: "author",
+            keywords: ["foo", "bar", "baz"],
+            creator: "creator",
+            producer: "producer",
+            creationDate: Calendar.current.date(byAdding: DateComponents(day: -2), to: Date.now),
+            modificationDate: Calendar.current.date(byAdding: DateComponents(day: -1), to: Date.now),
+        )
         let doc = PDFDocumentModel(
+            url: URL(string: "/a/b/c/d.pdf")!,
             fonts: fonts,
             version: version,
             pageCount: pageCount,

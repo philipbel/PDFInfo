@@ -4,7 +4,7 @@ import PDFKit
 
 
 nonisolated struct PDFDocumentModel: Sendable {
-    struct Metadata {
+    struct Metadata: Sendable, Equatable {
         let title: String?
         let subject: String?
         let author: String?
@@ -60,6 +60,17 @@ nonisolated struct PDFDocumentModel: Sendable {
         guard let pdfDocument = PDFKit.PDFDocument(url: url) else {
             throw CocoaError(.fileReadCorruptFile)
         }
+        self.init(url: url, pdfDocument: pdfDocument)
+    }
+
+    init(url: URL, data: Data) throws {
+        guard let pdfDocument = PDFKit.PDFDocument(data: data) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        self.init(url: url, pdfDocument: pdfDocument)
+    }
+
+    private init(url: URL, pdfDocument: PDFKit.PDFDocument) {
         self.url = url
         self.fonts = Self.fonts(from: pdfDocument)
         self.version = Self.version(of: pdfDocument)

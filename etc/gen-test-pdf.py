@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import sys
 from pathlib import Path
+from typing import Literal
+from venv import create
 
 import pymupdf as mu  # PyMuPDF
 
@@ -15,8 +18,32 @@ PLEX_OTF = SELF_DIR / "IBMPlexSans-Regular.otf"  # CFF outlines      -> CIDFontT
 TEXT = "The quick brown fox jumps over the lazy dog 0123456789"
 
 
-def _page(doc: mu.Document) -> mu.Page:
-    p = doc.new_page(width=612, height=792)  # US Letter in points
+def _format_dt(dt: datetime.datetime) -> str:
+    offset = dt.utcoffset() or datetime.timedelta()
+    offset_total_minutes = int(offset.total_seconds() // 60)
+    offset_hours, offset_minutes = divmod(abs(offset_total_minutes), 60)
+    sign = "+" if offset_total_minutes >= 0 else "-"
+    return (
+        "D:"
+        + dt.strftime("%Y%m%d%H%M%S")
+        + f"{sign}{offset_hours:02d}'{offset_minutes:02d}"
+        # XXX: The old PDF Spec (1.7?) specifies a trailing apostrophe.
+        # The PDF ISO standard (ISO 32000-1) dropped the apostrophe.
+        # However, Apple (Quartz and Preview.app) still produce it/require it.
+        # See https://stackoverflow.com/questions/41661477/what-is-the-correct-format-of-a-date-string
+        + "'"
+    )
+
+
+def _page(doc: mu.Document, page_size: Literal["a4", "letter"] = "a4") -> mu.Page:
+    match page_size:
+        case "a4":
+            width = 595
+            height = 842
+        case "letter":
+            width = 612
+            height = 792
+    p = doc.new_page(width=width, height=height)
     return p
 
 
@@ -67,11 +94,28 @@ def multi_font(path: Path):
     """Multiple fonts in one doc, incl. a base-14 and an embedded one.
     Exercises dedup and mixed classification in a single file."""
     doc = mu.open()
-    p = _page(doc)
+    p = _page(doc, page_size="letter")
     p.insert_font(fontname="PlexTTF", fontfile=PLEX_TTF)
     p.insert_text((72, 72), "Helvetica base-14", fontname="helv", fontsize=14)
     p.insert_text((72, 96), "Times base-14", fontname="tiro", fontsize=14)
     p.insert_text((72, 120), "embedded Plex", fontname="PlexTTF", fontsize=14)
+    mod_dt = datetime.datetime.now(datetime.UTC).astimezone()
+    mod_dt_string = _format_dt(mod_dt)
+    creation_dt = mod_dt - datetime.timedelta(days=7)
+    creation_dt_string = _format_dt(creation_dt)
+
+    doc.set_metadata(
+        {
+            "author": "Philip B.",
+            "title": "Test Document",
+            "subject": "Multi-font",
+            "producer": "gen-test-pdf.py",
+            "creator": "PyMuPDF",
+            "creationDate": creation_dt_string,
+            "modDate": mod_dt_string,
+            "keywords": "document, test, page",
+        }
+    )
     doc.save(path, garbage=4, deflate=True)
     doc.close()
 
@@ -79,7 +123,7 @@ def multi_font(path: Path):
 def with_metadata(path: Path):
     """Populated Info dict. Exercises metadata parse + display order."""
     doc = mu.open()
-    p = _page(doc)
+    p = _page(doc, page_size="letter")
     p.insert_text((72, 72), "has metadata", fontname="helv", fontsize=14)
     doc.set_metadata(
         {

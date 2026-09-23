@@ -129,16 +129,45 @@ final class UITests: XCTestCase {
         let window = launchAndOpen("multi_font_mixed")
 
         let table = window.tables["fonts-table"].firstMatch
-        XCTAssertTrue(table.waitForExistence())
-        XCTAssertTrue(table.staticTexts["Helvetica"].exists)
-        let previewButton = window.buttons["preview-Helvetica"]
-        XCTAssert(previewButton.waitForExistence())
+        let previewButton = table.buttons.matching(identifier: "Preview font").element(boundBy: 0)
         previewButton.click()
+        let previewWindow1 = app.windows["Font Preview"]
+        XCTAssert(previewWindow1.waitForExistence(), "Quick Look button should show font preview window")
 
-        let previewWindow = app.windows["Font Preview: Helvetica"]
-        XCTAssertTrue(previewWindow.waitForExistence(),
-                      "Font preview window did not open")
-        XCTAssertTrue(previewWindow.staticTexts["Helvetica"].exists,
-                      "Preview should display the font name")
+        let previewWindowCloseButton1 = previewWindow1.buttons["_XCUI:CloseWindow"].firstMatch
+        previewWindowCloseButton1.click()
+        XCTAssert(previewWindow1.waitForNonExistence())
+
+        let cell = table.cells.containing(.staticText, identifier: "Times-Roman").firstMatch
+        cell.doubleClick()
+        let previewWindow2 = app.windows["Font Preview"]
+        XCTAssert(previewWindow2.waitForExistence(), "Double clicking on a table row should show font preview window")
+    }
+
+    @MainActor
+    func testSettings() throws {
+        let app = XCUIApplication()
+        app.activate()
+
+        app.typeKey(",", modifierFlags: .command)
+        let settingsWindow1 = app.windows["Settings"].firstMatch
+        XCTAssert(settingsWindow1.waitForExistence())
+        settingsWindow1.buttons["_XCUI:CloseWindow"].firstMatch.click()
+        XCTAssert(settingsWindow1.waitForNonExistence())
+
+        app.menuItems["Settings…"].firstMatch.click()
+        let settingsWindow2 = app.windows["Settings"].firstMatch
+        XCTAssert(settingsWindow2.waitForExistence())
+        let fontSizeTextField = app.textFields["font-size-text-field"].firstMatch
+        XCTAssert(fontSizeTextField.exists)
+        XCTAssert(fontSizeTextField.value as? String == "20")
+
+        let stepper = app.steppers["font-size-stepper"]
+        XCTAssert(stepper.exists)
+
+        stepper.incrementArrows.firstMatch.click()
+        XCTAssert(fontSizeTextField.value as? String == "21")
+        stepper.decrementArrows.firstMatch.click()
+        XCTAssert(fontSizeTextField.value as? String == "20")
     }
 }
