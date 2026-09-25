@@ -2,20 +2,23 @@
 
 import datetime
 import os
+from random import randint, random
 import sys
 from pathlib import Path
 from typing import Literal
-from venv import create
 
-import pymupdf as mu  # PyMuPDF
+import pymupdf as mu
 
 SELF_DIR = Path(__file__).parent.resolve()
-OUT_DIR = (SELF_DIR / "../Tests/test-pdfs/").resolve()
+OUT_DIR = (SELF_DIR / "../test-pdfs/").resolve()
 
-PLEX_TTF = SELF_DIR / "IBMPlexSans-Regular.ttf"  # TrueType outlines -> CIDFontType2
-PLEX_OTF = SELF_DIR / "IBMPlexSans-Regular.otf"  # CFF outlines      -> CIDFontType0
+PLEX_TTF = SELF_DIR / "IBMPlexSans-Regular.ttf"
+PLEX_OTF = SELF_DIR / "IBMPlexSans-Regular.otf"
 
 TEXT = "The quick brown fox jumps over the lazy dog 0123456789"
+
+
+PageSize = Literal["a4", "letter"]
 
 
 def _format_dt(dt: datetime.datetime) -> str:
@@ -35,7 +38,7 @@ def _format_dt(dt: datetime.datetime) -> str:
     )
 
 
-def _page(doc: mu.Document, page_size: Literal["a4", "letter"] = "a4") -> mu.Page:
+def _page(doc: mu.Document, page_size: PageSize = "a4") -> mu.Page:
     match page_size:
         case "a4":
             width = 595
@@ -94,11 +97,75 @@ def multi_font(path: Path):
     """Multiple fonts in one doc, incl. a base-14 and an embedded one.
     Exercises dedup and mixed classification in a single file."""
     doc = mu.open()
+
+    # 1. Base-14, not embedded
+    p = _page(doc, page_size="a4")
+    p.insert_text(
+        (72, 72), "Base-14 Helvetica (not embedded)", fontname="helv", fontsize=14
+    )
+    p.insert_text((72, 100), TEXT, fontname="helv", fontsize=14)
+
+    # 2. Simple TrueType, embedded, NOT subset
     p = _page(doc, page_size="letter")
-    p.insert_font(fontname="PlexTTF", fontfile=PLEX_TTF)
-    p.insert_text((72, 72), "Helvetica base-14", fontname="helv", fontsize=14)
-    p.insert_text((72, 96), "Times base-14", fontname="tiro", fontsize=14)
-    p.insert_text((72, 120), "embedded Plex", fontname="PlexTTF", fontsize=14)
+    p.insert_font(fontname="PlexTTF-full", fontfile=str(PLEX_TTF))
+    p.insert_text(
+        (72, 72),
+        "Simple TrueType, embedded, full",
+        fontname="PlexTTF-full",
+        fontsize=14,
+    )
+    p.insert_text((72, 100), TEXT, fontname="PlexTTF-full", fontsize=14)
+
+    # 3. Simple TrueType, embedded, subset (only Latin-1 used)
+    p = _page(doc, page_size="a4")
+    p.insert_font(fontname="PlexTTF-sub", fontfile=str(PLEX_TTF))
+    p.insert_text(
+        (72, 72),
+        "Simple TrueType, embedded, subset",
+        fontname="PlexTTF-sub",
+        fontsize=14,
+    )
+
+    # 4. Simple CFF-backed font, embedded (may land as FontFile3/Type1C
+    #    or as Type0/CIDFontType0C depending on PyMuPDF's encoding choice --
+    #    check with `pdffonts` after generating).
+    p = _page(doc, page_size="letter")
+    p.insert_font(fontname="PlexOTF", fontfile=str(PLEX_OTF))
+    p.insert_text(
+        (72, 72), "CFF-backed font (Plex OTF)", fontname="PlexOTF", fontsize=14
+    )
+    p.insert_text((72, 100), TEXT, fontname="PlexOTF", fontsize=14)
+
+    # 5. Type0 / CIDFontType2 (explicit via non-ASCII text forces composite)
+    p = _page(doc, page_size="a4")
+    p.insert_font(fontname="PlexTTF-cid", fontfile=str(PLEX_TTF))
+    p.insert_text(
+        (72, 72),
+        "Type0 / CIDFontType2 (TrueType outlines)",
+        fontname="PlexTTF-cid",
+        fontsize=14,
+    )
+    p.insert_text(
+        (72, 100), "café, naïve, 日本語 ok", fontname="PlexTTF-cid", fontsize=14
+    )
+
+    # 6. Type0 / CIDFontType0 (CFF outlines). Same trick, force composite
+    p = _page(doc, page_size="letter")
+    p.insert_font(fontname="PlexOTF-cid", fontfile=str(PLEX_OTF))
+    p.insert_text(
+        (72, 72),
+        "Type0 / CIDFontType0 (CFF outlines)",
+        fontname="PlexOTF-cid",
+        fontsize=14,
+    )
+    p.insert_text(
+        (72, 100), "café, naïve, 日本語 ok", fontname="PlexOTF-cid", fontsize=14
+    )
+
+    # Subset the whole document's embedded fonts to only the glyphs actually
+    # used (affects the ones above that are meant to be subset).
+    doc.subset_fonts()
+
     mod_dt = datetime.datetime.now(datetime.UTC).astimezone()
     mod_dt_string = _format_dt(mod_dt)
     creation_dt = mod_dt - datetime.timedelta(days=7)

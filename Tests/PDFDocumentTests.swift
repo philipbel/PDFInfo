@@ -12,8 +12,8 @@ private func data(_ name: String) throws -> Data {
     return try Data(contentsOf: url)
 }
 
-private func parse(_ name: String) throws -> PDFDocumentModel {
-    try PDFDocumentModel(url: URL(string: "file:/a/b/c/d.pdf")!, data: try data(name))
+private func parse(_ name: String) throws -> PDFDocumentInfo {
+    try PDFDocumentInfo(url: URL(string: "file:/a/b/c/d.pdf")!, data: try data(name))
 }
 
 
@@ -112,15 +112,15 @@ struct MetadataTests {
 }
 
 
-@Suite("PDFDocumentModel tests")
+@Suite("PDFDocumentInfo tests")
 struct PDFDocumentTests {
-    @Test("PDFDocumentModel initializer")
+    @Test("PDFDocumentInfo initializer")
     func initializer() {
-        let fonts = [PDFFont(id: "font", name: "font", subtype: "subtype", embedded: true, subset: false)]
+        let fonts = [PDFFontInfo(name: "font", subtype: "subtype", embedded: true, subset: false)]
         let version = "3.14"
         let pageCount = 42
         let pageSize = PDFPageSize(width: Measurement(value: 2, unit: .centimeters), height: Measurement(value: 3, unit: .feet))
-        let metadata = PDFDocumentModel.Metadata(
+        let metadata = PDFDocumentInfo.Metadata(
             title: "title",
             subject: "subject",
             author: "author",
@@ -130,7 +130,7 @@ struct PDFDocumentTests {
             creationDate: Calendar.current.date(byAdding: DateComponents(day: -2), to: Date.now),
             modificationDate: Calendar.current.date(byAdding: DateComponents(day: -1), to: Date.now),
         )
-        let doc = PDFDocumentModel(
+        let doc = PDFDocumentInfo(
             url: URL(string: "/a/b/c/d.pdf")!,
             fonts: fonts,
             version: version,

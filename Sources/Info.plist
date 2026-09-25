@@ -18,7 +18,7 @@
 				<string>com.adobe.pdf</string>
 			</array>
 			<key>NSDocumentClass</key>
-			<string>$(PRODUCT_MODULE_NAME).PDFDocument</string>
+			<string>$(PRODUCT_MODULE_NAME).Document</string>
 		</dict>
 	</array>
 </dict>

@@ -31,7 +31,7 @@ fileprivate struct Column {
 }
 
 
-fileprivate final class CheckCellView: NSTableCellView {
+fileprivate final class CheckTableCellView: NSTableCellView {
     var checkbox: NSButton!
 
     override init(frame frameRect: NSRect) {
@@ -68,7 +68,7 @@ fileprivate final class CheckCellView: NSTableCellView {
 }
 
 
-fileprivate final class TextFieldCellView: NSTableCellView {
+fileprivate final class TextFieldTableCellView: NSTableCellView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setup()
@@ -107,13 +107,14 @@ fileprivate final class TextFieldCellView: NSTableCellView {
 
 fileprivate final class FontNameTableCellView: NSTableCellView {
     private var quickLook: (() -> Void)?
+    private var quickLookButton: NSButton!
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         setup()
     }
 
-    convenience init(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: @escaping () -> Void) {
+    convenience init(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: (() -> Void)?) {
         self.init(frame: .zero)
         configure(identifier: identifier, text: text, quickLook: quickLook)
     }
@@ -122,21 +123,23 @@ fileprivate final class FontNameTableCellView: NSTableCellView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: @escaping () -> Void) {
+    func configure(identifier: NSUserInterfaceItemIdentifier, text: String, quickLook: (() -> Void)?) {
         self.identifier = identifier
         self.textField?.stringValue = text
         self.quickLook = quickLook
+        quickLookButton.isHidden = (quickLook == nil)
     }
 
     private func setup() {
         let textField = NSTextField(labelWithString: "")
         textField.lineBreakMode = .byTruncatingTail
         textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         textField.translatesAutoresizingMaskIntoConstraints = false
         self.textField = textField
         addSubview(textField)
 
-        let quickLookButton = NSButton()
+        quickLookButton = NSButton()
         quickLookButton.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "Preview font")
         quickLookButton.isBordered = false
         quickLookButton.setAccessibilityLabel("Preview font")
@@ -150,7 +153,8 @@ fileprivate final class FontNameTableCellView: NSTableCellView {
             textField.centerYAnchor.constraint(equalTo: centerYAnchor),
             quickLookButton.leadingAnchor
                 .constraint(greaterThanOrEqualTo: textField.trailingAnchor, constant: Const.cellInset * 2),
-            quickLookButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Const.cellInset),
+            quickLookButton.trailingAnchor
+                .constraint(equalTo: trailingAnchor, constant: -Const.cellInset),
             quickLookButton.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])
     }
@@ -165,15 +169,15 @@ fileprivate final class FontNameTableCellView: NSTableCellView {
 final class FontTableViewController: NSViewController {
     private static let nameColumnMinWidth: CGFloat = 50
 
-    private var fonts: [PDFFont]
-    private var systemAvailableFonts: Set<PDFFont.ID> = Set()
+    private var fonts: [PDFFontInfo]
+    private var systemAvailableFonts: Set<PDFFontInfo> = Set()
     private let tableView = FontTableView()
     private var previewPopover: NSPopover?
     private let fontPreviewViewController = FontPreviewViewController()
 
-    var onDoubleClick: ((PDFFont) -> Void)?
+    var onDoubleClick: ((PDFFontInfo) -> Void)?
 
-    init(fonts: [PDFFont]) {
+    init(fonts: [PDFFontInfo]) {
         self.fonts = fonts
         super.init(nibName: nil, bundle: nil)
     }
@@ -223,7 +227,7 @@ final class FontTableViewController: NSViewController {
             return
         }
         let font = fonts[row]
-        guard systemAvailableFonts.contains(font.id) else {
+        guard systemAvailableFonts.contains(font) else {
             return
         }
 
@@ -286,7 +290,7 @@ final class FontTableViewController: NSViewController {
         return (column.title as NSString).size(withAttributes: attrs).width
     }
 
-    func update(fonts: [PDFFont]) {
+    func update(fonts: [PDFFontInfo]) {
         self.fonts = fonts
         doUpdate()
     }
@@ -305,13 +309,13 @@ final class FontTableViewController: NSViewController {
         let row = tableView.clickedRow
         guard row >= 0, row < fonts.count else { return }
         let font = fonts[row]
-        guard systemAvailableFonts.contains(font.id) else { return }
+        guard systemAvailableFonts.contains(font) else { return }
         onDoubleClick?(font)
     }
 
     private func updateSystemAvailableFonts() {
         systemAvailableFonts = Set(fonts.compactMap {
-            FontUtil.getSystemFont(named: $0.name, size: 10) != nil ? $0.id : nil
+            FontUtil.getSystemFont(named: $0.name, size: 10) != nil ? $0 : nil
         })
     }
 }
@@ -339,7 +343,7 @@ extension FontTableViewController: NSTableViewDataSource {
             case Column.subsetColumn.key:
                 result = (a.subset ? 1 : 0) < (b.subset ? 1 : 0)
             case Column.installedColumn.key:
-                result = (systemAvailableFonts.contains(a.id) ? 1 : 0) < (systemAvailableFonts.contains(b.id) ? 1 : 0)
+                result = (systemAvailableFonts.contains(a) ? 1 : 0) < (systemAvailableFonts.contains(b) ? 1 : 0)
             default: return false
             }
             return sort.ascending ? result : !result
@@ -362,21 +366,24 @@ extension FontTableViewController: NSTableViewDelegate {
         switch column.identifier.rawValue {
         case Column.nameColumn.key:
             return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
-                ?? FontNameTableCellView(identifier: column.identifier,
-                                         text: font.name,
-                                         quickLook: { [weak self] in self?.onDoubleClick?(font)})
+                ?? FontNameTableCellView(
+                    identifier: column.identifier,
+                    text: font.name,
+                    quickLook: systemAvailableFonts.contains(font)
+                    ? { [weak self] in self?.onDoubleClick?(font)}
+                    : nil)
         case Column.subtypeColumn.key:
             return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
-                ?? TextFieldCellView(identifier: column.identifier, text: font.subtype)
+                ?? TextFieldTableCellView(identifier: column.identifier, text: font.subtype)
         case Column.subsetColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
-                ?? CheckCellView(identifier: column.identifier, checked: font.subset)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
+                ?? CheckTableCellView(identifier: column.identifier, checked: font.subset)
         case Column.embeddedColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
-                ?? CheckCellView(identifier: column.identifier, checked: font.embedded)
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
+                ?? CheckTableCellView(identifier: column.identifier, checked: font.embedded)
         case Column.installedColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckCellView
-                ?? CheckCellView(identifier: column.identifier, checked: systemAvailableFonts.contains(font.id))
+            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
+                ?? CheckTableCellView(identifier: column.identifier, checked: systemAvailableFonts.contains(font))
         default:
             return nil
         }

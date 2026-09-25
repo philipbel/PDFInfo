@@ -3,15 +3,15 @@ import SwiftUI
 
 
 @MainActor
-class PDFDocument: NSDocument {
-    nonisolated(unsafe) var model: PDFDocumentModel?
+class Document: NSDocument {
+    nonisolated(unsafe) var model: PDFDocumentInfo?
 
     override func data(ofType typeName: String) throws -> Data {
         throw CocoaError(.fileWriteNoPermission)
     }
 
     override nonisolated func read(from url: URL, ofType typeName: String) throws {
-        model = try PDFDocumentModel(url: url)
+        model = try PDFDocumentInfo(url: url)
     }
 
     override var isDocumentEdited: Bool { false }

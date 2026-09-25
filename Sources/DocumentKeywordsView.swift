@@ -12,14 +12,16 @@ struct DocumentKeywordsView: View {
     let keywords: [String]
 
     var body: some View {
-        Section("Keywords") {
-            ForEach(keywords, id: \.self) { keyword in
-                LabeledContent("") {
-                    TextField("", text: .constant(keyword))
-                        .font(DocumentInspectorView.formFont)
+        if !keywords.isEmpty {
+            Section("Keywords") {
+                ForEach(keywords, id: \.self) { keyword in
+                    LabeledContent("") {
+                        TextField("", text: .constant(keyword))
+                            .font(DocumentInspectorView.formFont)
+                    }
+                    .labelsHidden()
+                    .labeledContentStyle(KeywordLabeledContentStyle())
                 }
-                .labelsHidden()
-                .labeledContentStyle(KeywordLabeledContentStyle())
             }
         }
     }

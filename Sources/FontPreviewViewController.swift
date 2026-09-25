@@ -5,7 +5,7 @@ final class FontPreviewViewController: NSViewController {
     private let textField = NSTextField(labelWithString: "")
     private var settingObservations: [NSKeyValueObservation] = []
 
-    var font: PDFFont? {
+    var font: PDFFontInfo? {
         didSet {
             if let font,
                 let pointSize = textField.font?.pointSize {
@@ -20,7 +20,7 @@ final class FontPreviewViewController: NSViewController {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
-    convenience init(font: PDFFont? = nil) {
+    convenience init(font: PDFFontInfo? = nil) {
         self.init(nibName: nil, bundle: nil)
         self.font = font
     }
@@ -78,24 +78,21 @@ final class FontPreviewViewController: NSViewController {
 }
 
 #Preview("Font not installed") {
-    FontPreviewViewController(font: PDFFont(id: "unnknown-font",
-                                            name: "Unknown-Font",
+    FontPreviewViewController(font: PDFFontInfo(name: "Unknown-Font",
                                             subtype: "TrueType",
                                             embedded: true,
                                             subset: false))
 }
 
 #Preview("Helvetica") {
-    FontPreviewViewController(font: PDFFont(id: "helvetica",
-                                            name: "Helvetica",
+    FontPreviewViewController(font: PDFFontInfo(name: "Helvetica",
                                             subtype: "TrueType",
                                             embedded: true,
                                             subset: false))
 }
 
 #Preview("Zapfino") {
-    FontPreviewViewController(font: PDFFont(id: "zapfino",
-                                            name: "Zapfino",
+    FontPreviewViewController(font: PDFFontInfo(name: "Zapfino",
                                             subtype: "TrueType",
                                             embedded: true,
                                             subset: false))

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DocumentAttributesView: View {
-    let document: PDFDocumentModel
+    let document: PDFDocumentInfo
     let metadata: [(String, String?)]
 
     var body: some View {
@@ -54,7 +54,7 @@ struct DocumentAttributesView: View {
         }
     }
 
-    init(document: PDFDocumentModel) {
+    init(document: PDFDocumentInfo) {
         self.document = document
         metadata = [
             ("Author", document.metadata.author),
@@ -70,7 +70,7 @@ struct DocumentAttributesView: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     DocumentAttributesView(
-        document: PDFDocumentModel(
+        document: PDFDocumentInfo(
             url: URL(string: "file:///a/b/c/d.pdf")!,
             fonts: [],
             version: "2.1",

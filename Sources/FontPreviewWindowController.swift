@@ -26,7 +26,7 @@ final class FontPreviewWindowController: NSWindowController {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) not used") }
 
-    func show(font: PDFFont) {
+    func show(font: PDFFontInfo) {
         previewViewController.font = font
         showWindow(nil)
     }

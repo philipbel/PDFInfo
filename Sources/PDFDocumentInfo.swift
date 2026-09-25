@@ -3,7 +3,7 @@ import UniformTypeIdentifiers
 import PDFKit
 
 
-nonisolated struct PDFDocumentModel: Sendable {
+nonisolated struct PDFDocumentInfo: Sendable {
     struct Metadata: Sendable, Equatable {
         let title: String?
         let subject: String?
@@ -36,14 +36,14 @@ nonisolated struct PDFDocumentModel: Sendable {
     }
 
     let url: URL
-    let fonts: [PDFFont]
+    let fonts: [PDFFontInfo]
     let version: String
     let pageCount: Int
     let pageSize: PDFPageSize?
     let metadata: Metadata
 
     init(url: URL,
-         fonts: [PDFFont] = [],
+         fonts: [PDFFontInfo] = [],
          version: String = "1.0",
          pageCount: Int = 0,
          pageSize: PDFPageSize? = nil,
@@ -79,39 +79,40 @@ nonisolated struct PDFDocumentModel: Sendable {
         self.metadata = Self.metadata(from: pdfDocument)
     }
 
-    private static func fonts(from pdfDocument: PDFKit.PDFDocument) -> [PDFFont] {
+    private static func fonts(from pdfDocument: PDFKit.PDFDocument) -> [PDFFontInfo] {
         guard let pdf = pdfDocument.documentRef else {
             return []
         }
 
-        var found = Set<PDFFont>()
-        
+        var found = Set<PDFFontInfo>()
         for i in 1...max(pdf.numberOfPages, 1) {
             guard let page = pdf.page(at: i),
                   let dict = page.dictionary else { continue }
             var resources: CGPDFDictionaryRef?
             guard CGPDFDictionaryGetDictionary(dict, "Resources", &resources),
                   let res = resources else { continue }
-            collectFonts(from: res, into: &found)
+            found.formUnion(collectFonts(from: res))
         }
         return Array(found)
     }
     
-    private static func collectFonts(from resources: CGPDFDictionaryRef,
-                                     into found: inout Set<PDFFont>) {
-        var fontDict: CGPDFDictionaryRef?
-        guard CGPDFDictionaryGetDictionary(resources, "Font", &fontDict),
-              let fonts = fontDict else { return }
-
+    private static func collectFonts(from resources: CGPDFDictionaryRef) -> Set<PDFFontInfo> {
+        var fonts = Set<PDFFontInfo>()
+        var fontDictRef: CGPDFDictionaryRef?
+        guard CGPDFDictionaryGetDictionary(resources, "Font", &fontDictRef),
+              let fontDict = fontDictRef else {
+            return fonts
+        }
         // ApplyBlock iterates each entry; key is a C string, value is generic CGPDFObjectRef
-        CGPDFDictionaryApplyBlock(fonts, { _, value, _ in
+        CGPDFDictionaryApplyBlock(fontDict, { _, value, _ in
             var font: CGPDFDictionaryRef?
             guard CGPDFObjectGetValue(value, .dictionary, &font),
                   let f = font else { return true }
 
-            found.insert(parseFont(f))
+            fonts.insert(parseFontDictionary(f))
             return true   // return true to continue iteration
         }, nil)
+        return fonts
     }
 
     private static func isFontEmbedded(_ descriptor: CGPDFDictionaryRef) -> Bool {
@@ -121,19 +122,19 @@ nonisolated struct PDFDocumentModel: Sendable {
             || CGPDFDictionaryGetStream(descriptor, "FontFile3", &stream)
     }
 
-    private static func resolveFont(_ font: CGPDFDictionaryRef, subtype: String)
+    private static func resolveFont(_ fontDictionaryRef: CGPDFDictionaryRef, subtype: String)
         -> (descriptor: CGPDFDictionaryRef?, subtype: String) {
         guard subtype == "Type0" else {
             // Simple fonts: descriptor on the font dict, subtype as-is
             var descriptor: CGPDFDictionaryRef?
-            let desc = CGPDFDictionaryGetDictionary(font, "FontDescriptor", &descriptor)
+            let desc = CGPDFDictionaryGetDictionary(fontDictionaryRef, "FontDescriptor", &descriptor)
                 ? descriptor : nil
             return (desc, subtype)
         }
 
         // Type0: descend into the CIDFont for both descriptor and real subtype
         var descendants: CGPDFArrayRef?
-        guard CGPDFDictionaryGetArray(font, "DescendantFonts", &descendants),
+        guard CGPDFDictionaryGetArray(fontDictionaryRef, "DescendantFonts", &descendants),
               let arr = descendants,
               CGPDFArrayGetCount(arr) > 0 else {
             return (nil, subtype)
@@ -157,20 +158,19 @@ nonisolated struct PDFDocumentModel: Sendable {
         return (desc, cidSubtype)
     }
 
-    private static func parseFont(_ font: CGPDFDictionaryRef) -> PDFFont {
+    private static func parseFontDictionary(_ fontDictionaryRef: CGPDFDictionaryRef) -> PDFFontInfo {
         var baseName: UnsafePointer<CChar>?
-        CGPDFDictionaryGetName(font, "BaseFont", &baseName)
+        CGPDFDictionaryGetName(fontDictionaryRef, "BaseFont", &baseName)
         let base = baseName.map { String(cString: $0) } ?? "(unknown)"
 
         var subName: UnsafePointer<CChar>?
-        CGPDFDictionaryGetName(font, "Subtype", &subName)
+        CGPDFDictionaryGetName(fontDictionaryRef, "Subtype", &subName)
         let rawSubtype = subName.map { String(cString: $0) } ?? "(unknown)"
-        let (fontDescriptor, subtype) = Self.resolveFont(font, subtype: rawSubtype)
+        let (fontDescriptor, subtype) = Self.resolveFont(fontDictionaryRef, subtype: rawSubtype)
         let isEmbedded = fontDescriptor.map(Self.isFontEmbedded) ?? false
         let (name, subset) = stripSubsetPrefix(base)
 
-        return PDFFont(
-            id: "\(UInt(bitPattern: font.rawValue))",
+        return PDFFontInfo(
             name: name,
             subtype: subtype,
             embedded: isEmbedded,

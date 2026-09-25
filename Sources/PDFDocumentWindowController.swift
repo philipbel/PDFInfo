@@ -15,7 +15,7 @@ final class PDFDocumentWindowController: NSWindowController {
     private static let minimumWindowSize = NSSize(width: 600, height: 400)
     private static let defaultWindowSize = NSSize(width: 800, height: 600)
 
-    private var model: PDFDocumentModel!
+    private var model: PDFDocumentInfo!
     private var fontPreviewWindowController: FontPreviewWindowController!
     private var splitViewController: NSSplitViewController!
     private var tableViewController: FontTableViewController!
@@ -30,7 +30,7 @@ final class PDFDocumentWindowController: NSWindowController {
         super.init(window: window)
     }
 
-    convenience init(model: PDFDocumentModel) {
+    convenience init(model: PDFDocumentInfo) {
         let splitViewController = NSSplitViewController()
 
         let tableViewController = FontTableViewController(fonts: model.fonts)

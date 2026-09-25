@@ -4,7 +4,7 @@ import SwiftUI
 
 struct DocumentInspectorView: View {
     static let formFont = Font.subheadline
-    let document: PDFDocumentModel
+    let document: PDFDocumentInfo
 
     var body: some View {
         Form {
@@ -15,14 +15,14 @@ struct DocumentInspectorView: View {
 
     }
 
-    init(document: PDFDocumentModel) {
+    init(document: PDFDocumentInfo) {
         self.document = document
     }
 }
 
 #Preview(traits: .sizeThatFitsLayout) {
     DocumentInspectorView(
-        document: PDFDocumentModel(
+        document: PDFDocumentInfo(
             url: URL(string: "file:///a/b/c/d.pdf")!,
             fonts: [],
             version: "2.1",

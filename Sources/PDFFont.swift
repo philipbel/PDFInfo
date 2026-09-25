@@ -1,8 +1,4 @@
-import SwiftUI
-import UniformTypeIdentifiers
-
-nonisolated struct PDFFont: Identifiable, Hashable, Codable, Sendable {
-    let id: String
+nonisolated struct PDFFontInfo: Hashable {
     let name: String
     let subtype: String
     let embedded: Bool
