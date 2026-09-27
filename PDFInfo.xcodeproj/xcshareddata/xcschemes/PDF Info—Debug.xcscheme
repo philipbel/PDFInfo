@@ -94,19 +94,9 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "4A42CA732FD33A3200CAE2F8"
             BuildableName = "PDF Info.app"
-            BlueprintName = "PDF Info"
-            ReferencedContainer = "container:PDF Info.xcodeproj">
+            ReferencedContainer = "container:PDFInfo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4A42CA732FD33A3200CAE2F8"
-            BuildableName = "PDF Info.app"
-            BlueprintName = "PDF Info"
-            ReferencedContainer = "container:PDF Info.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

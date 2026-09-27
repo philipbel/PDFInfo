@@ -6,7 +6,6 @@ import PDFKitExt
 @MainActor
 class Document: NSDocument {
     nonisolated(unsafe) var pdfDocument: PDFDocument?
-    let documentWindowController = PDFDocumentWindowController()
 
     override func data(ofType typeName: String) throws -> Data {
         throw CocoaError(.fileWriteNoPermission)
@@ -26,6 +25,7 @@ class Document: NSDocument {
     }
 
     override func makeWindowControllers() {
+        let documentWindowController = PDFDocumentWindowController()
         addWindowController(documentWindowController)
     }
 }

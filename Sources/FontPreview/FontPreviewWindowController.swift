@@ -3,10 +3,25 @@ import SwiftUI
 import PDFKitExt
 
 
+fileprivate struct FontPreviewWrapperView: View {
+    let pdfFont: any PDFFont?
+
+    var body: some View {
+        if let pdfFont {
+            FontPreviewView(font: pdfFont, showDetails: true)
+                .id(pdfFont.id)
+        } else {
+            ContentUnavailableView("No font selected", systemImage: "textformat")
+        }
+    }
+}
+
 @MainActor
 final class FontPreviewWindowController: NSWindowController {
+    private static let autosaveName: NSWindow.FrameAutosaveName = "fontPreview"
+
     private lazy var previewViewController: NSHostingController = {
-        let previewViewController = NSHostingController(rootView: AnyView(EmptyView()))
+        let previewViewController = NSHostingController(rootView: FontPreviewWrapperView(pdfFont: nil))
         previewViewController.sizingOptions = .preferredContentSize
         return previewViewController
     }()
@@ -17,10 +32,11 @@ final class FontPreviewWindowController: NSWindowController {
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = true
         panel.isReleasedWhenClosed = false
-        panel.title = "Font Preview"
+        panel.title = String(localized: "Font Preview")
 
         self.init(window: panel)
         panel.contentViewController = previewViewController
+        panel.setFrameAutosaveName(Self.autosaveName)
     }
 
     override init(window: NSWindow?) {
@@ -29,11 +45,7 @@ final class FontPreviewWindowController: NSWindowController {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) not used") }
 
-    func update(font: any PDFFont) {
-        previewViewController.rootView = AnyView(FontPreviewView(font: font, showDetails: true))
-    }
-
-    override func windowTitle(forDocumentDisplayName displayName: String) -> String {
-        String(localized: "\(displayName)—Font Preview")
+    func update(font pdfFont: any PDFFont) {
+        previewViewController.rootView = FontPreviewWrapperView(pdfFont: pdfFont)
     }
 }

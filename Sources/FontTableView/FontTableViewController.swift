@@ -7,7 +7,7 @@ final class FontTableViewController: NSViewController {
     private static let nameColumnMinWidth: CGFloat = 50
 
     private var fonts: [any PDFFont] = []
-    private var systemAvailableFonts: [String: any PDFFont] = [:]
+    private var systemAvailableFonts: Set<String> = Set()
     private let tableView = FontTableView()
     private var previewPopover: NSPopover?
 
@@ -62,10 +62,6 @@ final class FontTableViewController: NSViewController {
             return
         }
         let font = fonts[row]
-        guard systemAvailableFonts[font.id] != nil else {
-            return
-        }
-
         let nameColumnIndex = tableView.column(withIdentifier: FontTableViewColumn.nameColumn.identifier)
         let anchorRect = tableView.frameOfCell(atColumn: nameColumnIndex, row: row)
 
@@ -136,7 +132,8 @@ final class FontTableViewController: NSViewController {
         fonts.sort { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
         updateSystemAvailableFonts()
         tableView.reloadData()
-        DispatchQueue.main.async { [weak self] in
+        // Resize the columns after the table has reloaded
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             self?.sizeColumnsToFit()
         }
     }
@@ -146,14 +143,13 @@ final class FontTableViewController: NSViewController {
         let row = tableView.clickedRow
         guard row >= 0, row < fonts.count else { return }
         let font = fonts[row]
-        guard systemAvailableFonts[font.id] != nil else { return }
         onDoubleClick?(font)
     }
 
     private func updateSystemAvailableFonts() {
-        systemAvailableFonts = Dictionary(uniqueKeysWithValues: fonts.compactMap {
+        systemAvailableFonts = Set(fonts.compactMap {
             if FontUtil.getSystemFont(named: $0.displayName, size: 10) != nil {
-                return ($0.id, $0)
+                return $0.id
             } else {
                 return nil
             }
@@ -190,7 +186,7 @@ extension FontTableViewController: NSTableViewDataSource {
             case FontTableViewColumn.subsetColumn.key:
                 result = (a.isSubset ? 1 : 0) < (b.isSubset ? 1 : 0)
             case FontTableViewColumn.installedColumn.key:
-                result = (systemAvailableFonts[a.id] != nil ? 1 : 0) < (systemAvailableFonts[b.id] != nil ? 1 : 0)
+                result = (systemAvailableFonts.contains(a.id) ? 1 : 0) < (systemAvailableFonts.contains(b.id) ? 1 : 0)
             default: return false
             }
             return sort.ascending ? result : !result
@@ -213,12 +209,7 @@ extension FontTableViewController: NSTableViewDelegate {
         switch column.identifier.rawValue {
         case FontTableViewColumn.nameColumn.key:
             return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
-                ?? FontNameTableCellView(
-                    identifier: column.identifier,
-                    text: font.displayName,
-                    quickLook: systemAvailableFonts[font.id] != nil
-                    ? { [weak self] in self?.onDoubleClick?(font)}
-                    : nil)
+            ?? TextFieldTableCellView(identifier: column.identifier, text: font.displayName)
         case FontTableViewColumn.typeColumn.key:
             return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
             ?? TextFieldTableCellView(identifier: column.identifier, text: FontUtil.typeString(for: font))
@@ -233,7 +224,7 @@ extension FontTableViewController: NSTableViewDelegate {
             )
         case FontTableViewColumn.installedColumn.key:
             return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
-            ?? CheckTableCellView(identifier: column.identifier, checked: systemAvailableFonts[font.id] != nil)
+            ?? CheckTableCellView(identifier: column.identifier, checked: systemAvailableFonts.contains(font.id))
         default:
             return nil
         }

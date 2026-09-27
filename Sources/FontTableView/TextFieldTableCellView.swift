@@ -33,6 +33,5 @@ final class TextFieldTableCellView: NSTableCellView {
             textField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -FontTableView.cellInset),
             textField.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
-
     }
 }

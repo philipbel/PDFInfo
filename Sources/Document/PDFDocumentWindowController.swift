@@ -5,7 +5,7 @@ import PDFKitExt
 
 
 private extension NSToolbarItem.Identifier {
-    static let inspector = NSToolbarItem.Identifier("inspector")
+    static let documentInspector = NSToolbarItem.Identifier("documentInspector")
     static let inspectorSeparator = NSToolbarItem.Identifier("inspectorSeparator")
 }
 
@@ -22,7 +22,7 @@ final class PDFDocumentWindowController: NSWindowController {
         splitViewController.addSplitViewItem(inspectorSplitViewItem)
         return splitViewController
     }()
-    private let inspectorViewController = NSHostingController(rootView: AnyView(EmptyView()))
+    private let documentInspectorViewController = NSHostingController(rootView: AnyView(EmptyView()))
     private lazy var tableViewController: FontTableViewController = {
         let tableViewController = FontTableViewController()
         tableViewController.onDoubleClick = { [weak self] font in
@@ -31,25 +31,26 @@ final class PDFDocumentWindowController: NSWindowController {
         return tableViewController
     }()
     private lazy var inspectorSplitViewItem: NSSplitViewItem = {
-        let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: inspectorViewController)
+        let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: documentInspectorViewController)
         inspectorSplitViewItem.canCollapse = true
         inspectorSplitViewItem.minimumThickness = 250
         inspectorSplitViewItem.maximumThickness = 500
         return inspectorSplitViewItem
     }()
-    private lazy var inspectorToolbarItem: NSToolbarItem = {
-        let inspectorToolbarItem = NSToolbarItem(itemIdentifier: .inspector)
-        inspectorToolbarItem.label = "Inspector"
-        inspectorToolbarItem.view = inspectorButton
-        return inspectorToolbarItem
+    private lazy var documentInspectorToolbarItem: NSToolbarItem = {
+        let i = NSToolbarItem(itemIdentifier: .documentInspector)
+        i.label = String(localized: "Document Inspector")
+        i.view = documentInspectorButton
+        return i
     }()
-    private lazy var inspectorButton: NSButton = {
-        let inspectorButton = NSButton(image: NSImage(systemSymbolName: "info", accessibilityDescription: "Inspector")!,
-                                   target: self,
-                                   action: #selector(toggleInspector(_:)))
-        inspectorButton.setButtonType(.pushOnPushOff)
-        inspectorButton.bezelStyle = .toolbar
-        return inspectorButton
+    private lazy var documentInspectorButton: NSButton = {
+        let b = NSButton(image: NSImage(systemSymbolName: "sidebar.trailing",
+                                        accessibilityDescription: "Document Inspector")!,
+                         target: self,
+                         action: #selector(toggleInspector(_:)))
+        b.setButtonType(.pushOnPushOff)
+        b.bezelStyle = .toolbar
+        return b
     }()
     private let fontPreviewWindowController = FontPreviewWindowController()
     private var inspectorCollapseObservation: NSKeyValueObservation?
@@ -117,10 +118,11 @@ final class PDFDocumentWindowController: NSWindowController {
             let url = document.fileURL,
             let pdfDocument else {
             window.contentViewController = nil
+
             return
         }
-        adjustInspectorTooltip()
-        inspectorViewController.rootView = AnyView(DocumentInspectorView(document: pdfDocument, url: url))
+        updateInspectorTooltips()
+        documentInspectorViewController.rootView = AnyView(DocumentInspectorView(document: pdfDocument, url: url))
         tableViewController.update(fonts: pdfDocument.fonts)
     }
 
@@ -158,8 +160,8 @@ extension PDFDocumentWindowController {
     }
 
     private func updateInspectorState() {
-        inspectorButton.state = inspectorSplitViewItem.isCollapsed ? .off : .on
-        adjustInspectorTooltip()
+        documentInspectorButton.state = inspectorSplitViewItem.isCollapsed ? .off : .on
+        updateInspectorTooltips()
         persistInspectorVisibleState()
     }
 }
@@ -183,8 +185,8 @@ extension PDFDocumentWindowController: NSToolbarDelegate {
                  itemForItemIdentifier identifier: NSToolbarItem.Identifier,
                  willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
         switch identifier {
-        case .inspector:
-            return inspectorToolbarItem
+        case .documentInspector:
+            return documentInspectorToolbarItem
         case .inspectorSeparator:
             return NSTrackingSeparatorToolbarItem(
                 identifier: .inspectorSeparator,
@@ -197,18 +199,18 @@ extension PDFDocumentWindowController: NSToolbarDelegate {
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.flexibleSpace, .inspectorSeparator, .flexibleSpace, .inspector]
+        [.flexibleSpace, .inspectorSeparator, .flexibleSpace, .documentInspector]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [.inspector,.inspectorSeparator, .flexibleSpace, .space]
+        [.documentInspector, .inspectorSeparator, .flexibleSpace, .space]
     }
 
-    private func adjustInspectorTooltip() {
-        inspectorToolbarItem.toolTip = if inspectorSplitViewItem.isCollapsed {
-            "Show the document inspector"
+    private func updateInspectorTooltips() {
+         if inspectorSplitViewItem.isCollapsed {
+             documentInspectorToolbarItem.toolTip = String(localized: "Show the document inspector")
         } else {
-            "Hide the document inspector"
+            documentInspectorToolbarItem.toolTip = String(localized: "Hide the document inspector")
         }
     }
 }
