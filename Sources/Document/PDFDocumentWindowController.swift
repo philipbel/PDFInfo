@@ -1,6 +1,7 @@
 import Cocoa
 import SwiftUI
 import UniformTypeIdentifiers
+import PDFKitExt
 
 
 private extension NSToolbarItem.Identifier {
@@ -15,14 +16,57 @@ final class PDFDocumentWindowController: NSWindowController {
     private static let minimumWindowSize = NSSize(width: 600, height: 400)
     private static let defaultWindowSize = NSSize(width: 800, height: 600)
 
-    private var model: PDFDocumentInfo!
-    private var fontPreviewWindowController: FontPreviewWindowController!
-    private var splitViewController: NSSplitViewController!
-    private var tableViewController: FontTableViewController!
-    private var inspectorSplitViewItem: NSSplitViewItem!
-    private var inspectorToolbarItem: NSToolbarItem!
-    private var inspectorButton: NSButton!
+    private lazy var splitViewController: NSSplitViewController = {
+        let splitViewController = NSSplitViewController()
+        splitViewController.addSplitViewItem(NSSplitViewItem(viewController: tableViewController))
+        splitViewController.addSplitViewItem(inspectorSplitViewItem)
+        return splitViewController
+    }()
+    private let inspectorViewController = NSHostingController(rootView: AnyView(EmptyView()))
+    private lazy var tableViewController: FontTableViewController = {
+        let tableViewController = FontTableViewController()
+        tableViewController.onDoubleClick = { [weak self] font in
+            self?.previewFont(font)
+        }
+        return tableViewController
+    }()
+    private lazy var inspectorSplitViewItem: NSSplitViewItem = {
+        let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: inspectorViewController)
+        inspectorSplitViewItem.canCollapse = true
+        inspectorSplitViewItem.minimumThickness = 250
+        inspectorSplitViewItem.maximumThickness = 500
+        return inspectorSplitViewItem
+    }()
+    private lazy var inspectorToolbarItem: NSToolbarItem = {
+        let inspectorToolbarItem = NSToolbarItem(itemIdentifier: .inspector)
+        inspectorToolbarItem.label = "Inspector"
+        inspectorToolbarItem.view = inspectorButton
+        return inspectorToolbarItem
+    }()
+    private lazy var inspectorButton: NSButton = {
+        let inspectorButton = NSButton(image: NSImage(systemSymbolName: "info", accessibilityDescription: "Inspector")!,
+                                   target: self,
+                                   action: #selector(toggleInspector(_:)))
+        inspectorButton.setButtonType(.pushOnPushOff)
+        inspectorButton.bezelStyle = .toolbar
+        return inspectorButton
+    }()
+    private let fontPreviewWindowController = FontPreviewWindowController()
     private var inspectorCollapseObservation: NSKeyValueObservation?
+
+    override var document: AnyObject? {
+        didSet {
+            update()
+        }
+    }
+
+    var windowDocument: Document? {
+        document as? Document
+    }
+
+    var pdfDocument: PDFDocument? {
+        windowDocument?.pdfDocument
+    }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) not implemented") }
 
@@ -30,49 +74,16 @@ final class PDFDocumentWindowController: NSWindowController {
         super.init(window: window)
     }
 
-    convenience init(model: PDFDocumentInfo) {
-        let splitViewController = NSSplitViewController()
-
-        let tableViewController = FontTableViewController(fonts: model.fonts)
-        let inspectorViewController = NSHostingController(rootView: DocumentInspectorView(document: model))
-        let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: inspectorViewController)
-        inspectorSplitViewItem.canCollapse = true
-        inspectorSplitViewItem.minimumThickness = 250
-        inspectorSplitViewItem.maximumThickness = 500
-
-        splitViewController.addSplitViewItem(NSSplitViewItem(viewController: tableViewController))
-        splitViewController.addSplitViewItem(inspectorSplitViewItem)
+    convenience init() {
+        self.init(window: nil)
 
         let window = NSWindow(contentViewController: splitViewController)
         window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
         window.titlebarAppearsTransparent = true
         window.contentMinSize = Self.minimumWindowSize
         window.setContentSize(Self.defaultWindowSize)
-
-        self.init(window: window)
-
-        self.model = model
-        self.fontPreviewWindowController = FontPreviewWindowController()
-        self.splitViewController = splitViewController
-        self.tableViewController = tableViewController
-        self.inspectorSplitViewItem = inspectorSplitViewItem
-
-        tableViewController.onDoubleClick = { [weak self] font in
-            self?.fontPreviewWindowController.show(font: font)
-        }
-
-        inspectorButton = NSButton(image: NSImage(systemSymbolName: "info", accessibilityDescription: "Inspector")!,
-                                   target: self,
-                                   action: #selector(toggleInspector(_:)))
-        inspectorButton.setButtonType(.pushOnPushOff)
-        inspectorButton.bezelStyle = .toolbar
-
-        inspectorToolbarItem = NSToolbarItem(itemIdentifier: .inspector)
-        inspectorToolbarItem.label = "Inspector"
-        inspectorToolbarItem.view = inspectorButton
-        adjustInspectorTooltip()
-
-        setupToolbar()
+        window.toolbarStyle = .unified
+        window.toolbar = makeToolbar()
 
         let dragForwardView = DropOverlayView(frame: window.contentView!.bounds,
                                               draggedTypes: [.fileURL],
@@ -93,9 +104,29 @@ final class PDFDocumentWindowController: NSWindowController {
         updateInspectorState()
 
         window.delegate = self
-
+        self.window = window
         // Do this last
         window.setFrameAutosaveName(Self.windowFrameSaveKey)
+    }
+
+    private func update() {
+        guard let window else {
+            return
+        }
+        guard let document = document as? Document,
+            let url = document.fileURL,
+            let pdfDocument else {
+            window.contentViewController = nil
+            return
+        }
+        adjustInspectorTooltip()
+        inspectorViewController.rootView = AnyView(DocumentInspectorView(document: pdfDocument, url: url))
+        tableViewController.update(fonts: pdfDocument.fonts)
+    }
+
+    private func previewFont(_ font: any PDFFont) {
+        fontPreviewWindowController.update(font: font)
+        fontPreviewWindowController.showWindow(self)
     }
 }
 
@@ -104,6 +135,7 @@ final class PDFDocumentWindowController: NSWindowController {
 
 extension PDFDocumentWindowController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
+        windowDocument?.close()
         fontPreviewWindowController.close()
     }
 }
@@ -136,14 +168,13 @@ extension PDFDocumentWindowController {
 // MARK: Toolbar
 
 extension PDFDocumentWindowController {
-    private func setupToolbar() {
+    private func makeToolbar() -> NSToolbar {
         let toolbar = NSToolbar(identifier: "PDFDocumentToolbar")
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
         toolbar.allowsUserCustomization = true
         toolbar.autosavesConfiguration = true
-        window?.toolbar = toolbar
-        window?.toolbarStyle = .unified
+        return toolbar
     }
 }
 

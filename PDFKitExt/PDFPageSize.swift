@@ -1,25 +1,25 @@
-import Foundation
+public import Foundation
 
-nonisolated struct PDFPageSize: Codable, Equatable, Sendable {
+public struct PDFPageSize: Codable, Equatable, Sendable {
     private static let epsilon = 0.01
 
-    let width: Measurement<UnitLength>
-    let height: Measurement<UnitLength>
+    public let width: Measurement<UnitLength>
+    public let height: Measurement<UnitLength>
 
-    static let a4: Self = .init(width: .init(value: 21, unit: .centimeters),
+    public static let a4: Self = .init(width: .init(value: 21, unit: .centimeters),
                                 height: .init(value: 29.7, unit: .centimeters))
-    static let letter: Self = .init(width: .init(value: 8.5, unit: .inches),
+    public static let letter: Self = .init(width: .init(value: 8.5, unit: .inches),
                                     height: .init(value: 11, unit: .inches))
 
-    func formatted(locale: Locale = .current) -> String {
+    public func formatted(locale: Locale = .current) -> String {
         let formatter = Self.makeFormatter(locale: locale)
 
         if self == Self.a4 {
             let paperSize = Self.formatPageSize(width: width, height: height, formatter: formatter, unit: nil)
-            return "A4 (\(paperSize))"
+            return String(localized: "A4 (\(paperSize))", bundle: #bundle)
         } else if self == Self.letter {
             let paperSize = Self.formatPageSize(width: width, height: height, formatter: formatter, unit: nil)
-            return "Letter (\(paperSize))"
+            return String(localized: "Letter (\(paperSize))", bundle: #bundle)
         } else {
             // Pick units based on the measurement system
             let unit: UnitLength = locale.measurementSystem == .metric ? .centimeters : .inches
@@ -55,7 +55,7 @@ nonisolated struct PDFPageSize: Codable, Equatable, Sendable {
         return "\(w) ⨉ \(h)"
     }
 
-    static func == (lhs: PDFPageSize, rhs: PDFPageSize) -> Bool {
+    public static func == (lhs: PDFPageSize, rhs: PDFPageSize) -> Bool {
         let lhsWidth = lhs.width.converted(to: .centimeters).value
         let lhsHeight = lhs.height.converted(to: .centimeters).value
         let rhsWidth = rhs.width.converted(to: .centimeters).value

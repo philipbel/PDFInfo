@@ -1,17 +1,22 @@
 import Cocoa
 import SwiftUI
+import PDFKitExt
 
 
 @MainActor
 class Document: NSDocument {
-    nonisolated(unsafe) var model: PDFDocumentInfo?
+    nonisolated(unsafe) var pdfDocument: PDFDocument?
+    let documentWindowController = PDFDocumentWindowController()
 
     override func data(ofType typeName: String) throws -> Data {
         throw CocoaError(.fileWriteNoPermission)
     }
 
     override nonisolated func read(from url: URL, ofType typeName: String) throws {
-        model = try PDFDocumentInfo(url: url)
+        pdfDocument = PDFDocument(url: url)
+        guard pdfDocument != nil else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
     }
 
     override var isDocumentEdited: Bool { false }
@@ -21,9 +26,6 @@ class Document: NSDocument {
     }
 
     override func makeWindowControllers() {
-        // By the time this runs, read(from:) has completed, so model is set
-        if let model {
-            addWindowController(PDFDocumentWindowController(model: model))
-        }
+        addWindowController(documentWindowController)
     }
 }

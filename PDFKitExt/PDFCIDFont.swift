@@ -1,13 +1,16 @@
 internal import Foundation
 internal import CoreGraphics
 
-public class PDFCIDFont: PDFProgramFont {
-    internal override init(from fontDictionary: CGPDFDictionaryRef) throws {
-        try super.init(from: fontDictionary)
-        try validateSubtype(expected: [.cidFontType0, .cidFontType2])
-    }
+public struct PDFCIDFont: PDFProgramFont {
+    public let descriptor: PDFFontDescriptor?
+    public let baseFont: String
+    public let subtype: PDFFontSubtype
+    public let isSubset: Bool
+    public let displayName: String
 
-    public override var debugDescription: String {
-        "PDFCIDFont(\(super.debugDescription)"
+    internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef) throws {
+        (baseFont, subtype, isSubset, displayName) = try Self.parseCommon(fromFontDictionary: fontDictionary)
+        descriptor = try Self.parseFontDescriptor(fromFontDictionary: fontDictionary)
+        try validateSubtype(expected: [.cidFontType0, .cidFontType2])
     }
 }

@@ -82,6 +82,14 @@ public extension CGPDFDictionaryRef {
         return stream
     }
 
+    func forEach(function: (_ key: String, _ object: CGPDFObjectRef) -> Void) {
+        CGPDFDictionaryApplyBlock(self, { itemKeyPtr, itemValue, _ in
+            let itemKey = String(cString: itemKeyPtr)
+            function(itemKey, itemValue)
+            return true
+        }, nil)
+    }
+
     func compactMap<T>(function: (_ key: String, _ object: CGPDFObjectRef) -> T?) -> [T] {
         var result: [T] = []
         CGPDFDictionaryApplyBlock(self, { itemKeyPtr, itemValue, _ in

@@ -77,18 +77,29 @@ fileprivate let cmapNames = [
 fileprivate let logger = Logger(subsystem: "PDFKitExt", category: String(describing: PDFType0Font.self))
 
 
-public class PDFType0Font: PDFBaseFont {
+public struct PDFType0Font: PDFFont {
+    public let baseFont: String
+    public let subtype: PDFFontSubtype
+    public let isSubset: Bool
+    public private(set) var displayName: String
     public let descendant: PDFCIDFont
     public var cmapName: String?
 
-    public override var debugDescription: String {
-        "PDFType0Font(\(super.debugDescription)"
-        + ", descendant: \(descendant.debugDescription)"
-        + ", cmapName: \"\(cmapName ?? "nil")\""
-        + ")"
+    public var id: String {
+        "\(baseFont)-\(subtype)-\(isSubset)-\(displayName)-\(descendant.id)-\(String(describing: cmapName))"
     }
 
-    internal override init(from fontDictionary: CGPDFDictionaryRef) throws {
+    public var isEmbedded: Bool {
+        descendant.isEmbedded
+    }
+
+    internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef) throws {
+        (baseFont, subtype, isSubset, displayName) = try Self.parseCommon(fromFontDictionary: fontDictionary)
+        let (displayName, cmapName) = Self.stripCmapSuffix(name: displayName)
+        logger.debug("init(): displayName: \(displayName), cmapName: \(cmapName ?? "nil")")
+        self.displayName = displayName
+        self.cmapName = cmapName
+
         guard let descendantFontsArray = fontDictionary.array(forKey: "DescendantFonts") else {
             let msg = "Type0 font has no 'DescendantFonts'"
             logger.error("init(): \(msg)")
@@ -99,12 +110,9 @@ public class PDFType0Font: PDFBaseFont {
             logger.error("init(): \(msg)")
             throw PDFKitError.corruptedObject(message: msg)
         }
-        self.descendant = try PDFCIDFont(from: descendantFontDictionary)
+        descendant = try PDFCIDFont(fromFontDictionary: descendantFontDictionary)
 
-        try super.init(from: fontDictionary)
         try validateSubtype(expected: [.type0])
-        (displayName, cmapName) = Self.stripCmapSuffix(name: displayName)
-        logger.debug("init(): displayName: \(self.displayName), cmapName: \(self.cmapName ?? "nil")")
     }
 
     private static func stripCmapSuffix(name: String) -> (displayName: String, cmapName: String?) {
@@ -115,17 +123,5 @@ public class PDFType0Font: PDFBaseFont {
             }
         }
         return (name, nil)
-    }
-
-    public override func hash(into hasher: inout Hasher) {
-        super.hash(into: &hasher)
-        hasher.combine(descendant)
-        hasher.combine(cmapName)
-    }
-
-    public static func == (lhs: borrowing PDFType0Font, rhs: borrowing PDFType0Font) -> Bool {
-        (lhs as PDFBaseFont) == (rhs as PDFBaseFont) &&
-        lhs.descendant == rhs.descendant &&
-        lhs.cmapName == rhs.cmapName
     }
 }

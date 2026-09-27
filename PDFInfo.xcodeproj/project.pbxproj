@@ -19,6 +19,7 @@
 		4A2F12963065A32D006A8160 /* CGPDFExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */; };
 		4A3433F83065A3A0001A4600 /* test-pdfs in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F11813062FAB5006A8160 /* test-pdfs */; };
 		4A3433F93065A3A0001A4600 /* test-pdfs in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F11813062FAB5006A8160 /* test-pdfs */; };
+		4A3B0838306813B30034F306 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 4A3B0837306813B30034F306 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		4A2F125230655A6B006A8160 /* CGPDFExt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CGPDFExt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A2F125A30655A6B006A8160 /* CGPDFExtTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CGPDFExtTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A2F127430655B05006A8160 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		4A3B0837306813B30034F306 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		4A42CA742FD33A3200CAE2F8 /* PDF Info.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Info.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A42CA842FD33A3300CAE2F8 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A42CA8E2FD33A3300CAE2F8 /* UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,6 +193,11 @@
 			path = UITests;
 			sourceTree = "<group>";
 		};
+		4A55AEFB306845AE00582FD4 /* Preview Assets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Preview Assets";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,6 +271,8 @@
 		4A42CA6B2FD33A3200CAE2F8 = {
 			isa = PBXGroup;
 			children = (
+				4A55AEFB306845AE00582FD4 /* Preview Assets */,
+				4A3B0837306813B30034F306 /* Localizable.xcstrings */,
 				4A2F1214306434D0006A8160 /* Help */,
 				4A92468B3061D37D00AC490A /* README.md */,
 				4A9246883061BE5D00AC490A /* LICENSE */,
@@ -426,6 +435,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				4A42CA762FD33A3200CAE2F8 /* Sources */,
+				4A55AEFB306845AE00582FD4 /* Preview Assets */,
 			);
 			name = "PDF Info";
 			packageProductDependencies = (
@@ -577,6 +587,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A2F1215306434D5006A8160 /* Help in Resources */,
+				4A3B0838306813B30034F306 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -955,8 +966,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "Preview\\ Assets";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -1007,8 +1019,9 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_ASSET_PATHS = "Preview\\ Assets";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
@@ -1111,6 +1124,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
 			};
@@ -1171,6 +1185,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;

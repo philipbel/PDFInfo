@@ -1,6 +1,8 @@
 import Cocoa
 
 class FontTableView: NSTableView {
+    static let cellInset: CGFloat = 2
+
     override func keyDown(with event: NSEvent) {
         // Space = " " (0x31 keycode, or characters == " ")
         if event.charactersIgnoringModifiers == " " {

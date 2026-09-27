@@ -15,13 +15,11 @@ private func data(_ name: String) throws -> Data {
 
 
 struct PDFKitExtTests {
-
     @Test func example() async throws {
         let document = try #require(PDFDocument(data: data("multi_font_mixed")))
         let fonts = document.fonts
         for (i, font) in fonts.enumerated() {
-            print("font[\(i)]: \(font.debugDescription)")
+            print("font[\(i)]: \(font)")
         }
     }
-
 }

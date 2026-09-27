@@ -1,4 +1,4 @@
-public enum PDFFontSubtype: String, Sendable {
+public enum PDFFontSubtype: String, Sendable, Codable {
     case type0 = "Type0"
     case type1 = "Type1"
     case mmType1 = "MMType1"
@@ -6,6 +6,25 @@ public enum PDFFontSubtype: String, Sendable {
     case trueType = "TrueType"
     case cidFontType0 = "CIDFontType0"
     case cidFontType2 = "CIDFontType2"
+
+    public var displayName: String {
+        switch self {
+        case .type0:
+            String(localized: "Type0", bundle: #bundle)
+        case .type1:
+            String(localized: "Type1", bundle: #bundle)
+        case .mmType1:
+            String(localized: "Type1MM", bundle: #bundle)
+        case .type3:
+            String(localized: "Type3", bundle: #bundle)
+        case .trueType:
+            String(localized: "TrueType", bundle: #bundle)
+        case .cidFontType0:
+            String(localized: "CID Type0", bundle: #bundle)
+        case .cidFontType2:
+            String(localized: "CID Type2", bundle: #bundle)
+        }
+    }
 }
 
 

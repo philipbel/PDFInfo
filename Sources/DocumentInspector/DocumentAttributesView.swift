@@ -1,29 +1,15 @@
 import SwiftUI
+import PDFKitExt
 
 struct DocumentAttributesView: View {
-    let document: PDFDocumentInfo
+    let url: URL
+    let document: PDFDocument
     let metadata: [(String, String?)]
 
     var body: some View {
         Section {
             LabeledContent("File") {
-                HStack(spacing: 0) {
-                    let fileString = document.url.lastPathComponent
-                    let fileHelpString = if document.url.isFileURL {
-                        document.url.relativePath
-                    } else {
-                        document.url.absoluteString
-                    }
-                    Text(fileString)
-                        .truncationMode(.middle)
-                        .lineLimit(1)
-                        .help(fileHelpString)
-                    Button("", systemImage: "arrow.right.circle.fill") {
-                        NSWorkspace.shared.open(document.url)
-                    }
-                    .buttonStyle(.plain)
-                    .help("Open \(fileHelpString)")
-                }
+                FileButton(url: url, type: .openFile)
             }
             .font(DocumentInspectorView.formFont)
         }
@@ -54,7 +40,8 @@ struct DocumentAttributesView: View {
         }
     }
 
-    init(document: PDFDocumentInfo) {
+    init(document: PDFDocument, url: URL) {
+        self.url = url
         self.document = document
         metadata = [
             ("Author", document.metadata.author),
@@ -68,18 +55,10 @@ struct DocumentAttributesView: View {
     }
 }
 
+// TODO: Check
 #Preview(traits: .sizeThatFitsLayout) {
-    DocumentAttributesView(
-        document: PDFDocumentInfo(
-            url: URL(string: "file:///a/b/c/d.pdf")!,
-            fonts: [],
-            version: "2.1",
-            pageCount: 3,
-            pageSize: .a4,
-            metadata: .init(author: "Einstein",
-                            keywords: [
-                                "foo", "bar", "baz"
-                            ])
-        )
-    )
+    let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
+    let document = PDFDocument(url: url)!
+
+    DocumentAttributesView(document: document, url: url)
 }

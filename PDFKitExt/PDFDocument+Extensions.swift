@@ -1,4 +1,4 @@
-public import PDFKit
+@_exported public import PDFKit
 internal import ObjectiveC
 private import OSLog
 
@@ -9,9 +9,45 @@ fileprivate nonisolated(unsafe) var pdfDocumentFontAssociatedKey: UInt8 = 0
 public extension PDFDocument {
     private static let logger = Logger(subsystem: "PDFKitExt", category: "PDFDocument")
 
-    var fonts: Set<PDFBaseFont> {
+    var version: String {
+        "\(majorVersion).\(minorVersion)"
+    }
+
+    var pageSize: PDFPageSize? {
+        guard let page = page(at: 0),
+              let pageRef = page.pageRef else {
+            return nil
+        }
+        let box = pageRef.getBoxRect(.mediaBox) // in points (1/72")
+        return PDFPageSize(
+            width: Measurement(value: Double(box.width) / 72, unit: .inches),
+            height: Measurement(value: Double(box.height) / 72, unit: .inches)
+        )
+    }
+
+    var metadata: PDFDocumentMetadata {
+        let title = documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String
+        let author = documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String
+        let subject = documentAttributes?[PDFDocumentAttribute.subjectAttribute] as? String
+        let producer = documentAttributes?[PDFDocumentAttribute.producerAttribute] as? String
+        let creator = documentAttributes?[PDFDocumentAttribute.creatorAttribute] as? String
+        let keywords = documentAttributes?[PDFDocumentAttribute.keywordsAttribute] as? [String] ?? []
+        let creationDate = documentAttributes?[PDFDocumentAttribute.creationDateAttribute] as? Date
+        let modDate = documentAttributes?[PDFDocumentAttribute.modificationDateAttribute] as? Date
+
+        return PDFDocumentMetadata(title: title,
+                                   subject: subject,
+                                   author: author,
+                                   keywords: keywords,
+                                   creator: creator,
+                                   producer: producer,
+                                   creationDate: creationDate,
+                                   modificationDate: modDate)
+    }
+
+    var fonts: [any PDFFont] {
         get {
-            if let fonts = objc_getAssociatedObject(self, &pdfDocumentFontAssociatedKey) as? Set<PDFBaseFont> {
+            if let fonts = objc_getAssociatedObject(self, &pdfDocumentFontAssociatedKey) as? [any PDFFont] {
                 return fonts
             }
             let collectedFonts = readFonts()
@@ -19,15 +55,14 @@ public extension PDFDocument {
 
             objc_setAssociatedObject(self,
                                      &pdfDocumentFontAssociatedKey,
-                                     collectedFonts as Set<PDFBaseFont>?,
+                                     collectedFonts as [any PDFFont]?,
                                      .OBJC_ASSOCIATION_RETAIN)
             return collectedFonts
         }
     }
 
-    private func readFonts() -> Set<PDFBaseFont> {
-        // TODO: Put in a set?
-        var found: Set<PDFBaseFont> = []
+    private func readFonts() -> [any PDFFont] {
+        var fontMap: [String: any PDFFont] = [:]
         for i in 0..<pageCount {
             guard let page = page(at: i),
                   let pageRef = page.pageRef,
@@ -36,22 +71,21 @@ public extension PDFDocument {
                   let fontDictionary = resourcesDictionary.dictionary(forKey: "Font") else {
                 continue
             }
-            found.formUnion(Self.collectFonts(fromFontDictionary: fontDictionary))
-//            found.formUnion(collectFonts(from: res))
+            Self.collectFonts(fromFontDictionary: fontDictionary, into: &fontMap)
         }
-        return found
+        return Array(fontMap.values)
     }
 
-    private static func collectFonts(fromFontDictionary fontDictionary: CGPDFDictionaryRef) -> Set<PDFBaseFont> {
-        let fonts: [PDFBaseFont] = fontDictionary.compactMap { key, object in
+    private static func collectFonts(
+        fromFontDictionary fontDictionary: CGPDFDictionaryRef,
+        into fontMap: inout [String: any PDFFont]
+    ) {
+        fontDictionary.forEach { key, object in
             guard let dictionary = try? object.asDictionary(),
-                  let pdfFont = try? PDFBaseFont.from(fontDictionary: dictionary) else {
-                return nil
+                  let pdfFont = try? PDFFontParser.fontFrom(fontDictionary: dictionary) else {
+                return
             }
-            let objectPtr = UInt(bitPattern: object.rawValue)
-            logger.debug("collectFonts(): Font objectPtr=\(String(format: "%02X", objectPtr))")
-            return pdfFont
+            fontMap[pdfFont.id] = pdfFont
         }
-        return Set(fonts)
     }
 }

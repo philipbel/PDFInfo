@@ -2,30 +2,25 @@ internal import Foundation
 internal import CoreGraphics
 
 
-public class PDFProgramFont: PDFBaseFont {
-    public var descriptor: PDFFontDescriptor?
+public protocol PDFProgramFont: PDFFont {
+    var descriptor: PDFFontDescriptor? { get }
+}
+
+
+extension PDFProgramFont {
+    public var id: String {
+        return "\(baseFont)-\(subtype)-\(isSubset)-\(displayName)-\(String(describing: descriptor?.id))"
+    }
 
     public var isEmbedded: Bool {
         descriptor?.program != nil
     }
 
-    public override func hash(into hasher: inout Hasher) {
-        super.hash(into: &hasher)
-        hasher.combine(descriptor)
-    }
-
-    public static func == (lhs: borrowing PDFProgramFont, rhs: borrowing PDFProgramFont) -> Bool {
-        (lhs as PDFBaseFont) == (rhs as PDFBaseFont) && lhs.descriptor == rhs.descriptor
-    }
-
-    public override var debugDescription: String {
-        "PDFProgramFont(\(super.debugDescription), descriptor: \(descriptor?.debugDescription ?? "null"))"
-    }
-
-    internal override init(from fontDictionary: CGPDFDictionaryRef) throws {
-        try super.init(from: fontDictionary)
+    internal static func parseFontDescriptor(fromFontDictionary fontDictionary: CGPDFDictionaryRef) throws
+    -> PDFFontDescriptor? {
         if let fontDescriptorDict = fontDictionary.dictionary(forKey: "FontDescriptor") {
-            self.descriptor = try PDFFontDescriptor(from: fontDescriptorDict)
+            return try PDFFontDescriptor(from: fontDescriptorDict)
         }
+        return nil
     }
 }

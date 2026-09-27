@@ -1,5 +1,6 @@
-import AppKit
+import Cocoa
 import Foundation
+import PDFKitExt
 
 
 struct FontUtil {
@@ -24,4 +25,33 @@ struct FontUtil {
         }
         return nil
     }
+
+    static func typeString(for font: any PDFFont) -> String {
+        // See https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/utils/pdffonts.cc?ref_type=heads#L43 and
+        // Section 9.5 of ISO-32000-2 (PDF-2.0)
+        switch font {
+        case let type0Font as PDFType0Font:
+            var s = PDFFontSubtype.type0.displayName
+            let descendandSubtype = type0Font.descendant.subtype
+            s += " ("
+            s += descendandSubtype.displayName
+            if let programKind = type0Font.descendant.descriptor?.program?.kind {
+                s += "/"
+                s += programKind.displayName
+            }
+            s += ")"
+            return s
+        case let programFont as any PDFProgramFont:
+            var s = programFont.subtype.displayName
+            if let programKind = programFont.descriptor?.program?.kind {
+                s += " ("
+                s += programKind.displayName
+                s += ")"
+            }
+            return s
+        default:
+            return font.subtype.displayName
+        }
+    }
+
 }

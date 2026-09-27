@@ -5,9 +5,9 @@ internal import OSLog
 fileprivate let logger = Logger(subsystem: "PDFKitExt", category: String(describing: PDFFontProgram.self))
 
 
-internal struct PDFFontProgram {
-    var data: Data
-    var kind: PDFFontProgramKind
+public struct PDFFontProgram {
+    public var data: Data
+    public var kind: PDFFontProgramKind
 
     init?(fromFontDescriptorDictionary fontDescriptorDictionary: CGPDFDictionaryRef) throws {
         if let stream = fontDescriptorDictionary.stream(forKey: "FontFile") {
@@ -63,17 +63,8 @@ internal struct PDFFontProgram {
 }
 
 
-// MARK: CustomDebugStringConvertible
-
-extension PDFFontProgram: CustomDebugStringConvertible {
-    var debugDescription: String {
-        "PDFFontProgram(kind: \(kind), data: \(data.count) byte(s))"
+extension PDFFontProgram: Identifiable {
+    public var id: String {
+        "\(kind)-\(data.hashValue)"
     }
 }
-
-
-// MARK: Hashable
-
-extension PDFFontProgram: Hashable {
-}
-
