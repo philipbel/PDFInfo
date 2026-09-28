@@ -2,6 +2,7 @@ import Cocoa
 import SwiftUI
 import UniformTypeIdentifiers
 import PDFKitExt
+import OSLog
 
 
 private extension NSToolbarItem.Identifier {
@@ -15,6 +16,8 @@ final class PDFDocumentWindowController: NSWindowController {
     private static let inspectorVisibleKey = "inspectorVisible"
     private static let minimumWindowSize = NSSize(width: 600, height: 400)
     private static let defaultWindowSize = NSSize(width: 800, height: 600)
+
+    private static let logger = Logger(subsystem: "PDFInfo", category: "PDFDocumentWindowController")
 
     private lazy var splitViewController: NSSplitViewController = {
         let splitViewController = NSSplitViewController()
@@ -110,17 +113,19 @@ final class PDFDocumentWindowController: NSWindowController {
         window.setFrameAutosaveName(Self.windowFrameSaveKey)
     }
 
-    private func update() {
+    func update() {
         guard let window else {
+            Self.logger.warning("update(): no window")
             return
         }
         guard let document = document as? Document,
             let url = document.fileURL,
             let pdfDocument else {
+            Self.logger.warning("update(): no document, url or PDFDocument")
             window.contentViewController = nil
-
             return
         }
+        Self.logger.debug("update(): updating from \(url)")
         updateInspectorTooltips()
         documentInspectorViewController.rootView = AnyView(DocumentInspectorView(document: pdfDocument, url: url))
         tableViewController.update(fonts: pdfDocument.fonts)
