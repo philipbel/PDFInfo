@@ -19,15 +19,6 @@ enum TestUtil {
         testPDFDirectory().appendingPathComponent("\(name).pdf")
     }
 
-    static func screenshot(of element: XCUIElement, name: String) throws {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appending(components: "screenshot", directoryHint: .isDirectory)
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let url = tempDir.appendingPathComponent(name, conformingTo: .png)
-        try element.screenshot().pngRepresentation.write(to: url)
-        print("screenshot '\(name)' saved to \(url.path())")
-    }
-
     static func findOpenPanel(inApp app: XCUIApplication) -> XCUIElement {
         let panel = app.windows["Open"]
         XCTAssert(panel.waitForExistence(), "Open panel not found")
