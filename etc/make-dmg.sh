@@ -12,7 +12,8 @@ fi
 VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "${APP}/Contents/Info.plist")
 APP_BASE_NAME=$(basename "${APP}")
 APP_NAME=${APP_BASE_NAME%.*}
-DMG="${APP_NAME// /}-${VERSION}.dmg"
+DMG_NAME="${APP_NAME// /}-${VERSION}.dmg"
+DMG="$(dirname "${APP}")/${DMG_NAME}"
 
 WINDOW_W=500; WINDOW_H=300
 ICON_SIZE=100
