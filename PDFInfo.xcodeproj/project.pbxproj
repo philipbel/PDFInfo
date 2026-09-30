@@ -19,6 +19,7 @@
 		4A2F12963065A32D006A8160 /* CGPDFExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */; };
 		4A3433F83065A3A0001A4600 /* test-pdfs in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F11813062FAB5006A8160 /* test-pdfs */; };
 		4A3433F93065A3A0001A4600 /* test-pdfs in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F11813062FAB5006A8160 /* test-pdfs */; };
+		4AFF1E97306B0E0E00BDC530 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 4AFF1E96306B0E0E00BDC530 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -242,6 +243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A2F12303065310F006A8160 /* PDFKitExt.framework in Frameworks */,
+				4AFF1E97306B0E0E00BDC530 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +445,7 @@
 			);
 			name = "PDF Info";
 			packageProductDependencies = (
+				4AFF1E96306B0E0E00BDC530 /* Sparkle */,
 			);
 			productName = "PDF Fonts";
 			productReference = 4A42CA742FD33A3200CAE2F8 /* PDF Info.app */;
@@ -539,6 +542,9 @@
 			);
 			mainGroup = 4A42CA6B2FD33A3200CAE2F8;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4AFF1E95306B0E0E00BDC530 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4A42CA752FD33A3200CAE2F8 /* Products */;
 			projectDirPath = "";
@@ -1365,6 +1371,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4AFF1E95306B0E0E00BDC530 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4AFF1E96306B0E0E00BDC530 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4AFF1E95306B0E0E00BDC530 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
 }

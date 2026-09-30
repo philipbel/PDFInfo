@@ -26,6 +26,12 @@
                                     <action selector="showSettings:" target="-1" id="hwm-Zw-9oW"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Check for Updates..." id="vjo-ql-xpd">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="checkForUpdates:" target="-1" id="aLD-fk-sZl"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
                             <menuItem title="Services" id="NMo-om-nkz">
                                 <modifierMask key="keyEquivalentModifierMask"/>

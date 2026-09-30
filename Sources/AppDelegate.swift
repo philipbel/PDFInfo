@@ -1,12 +1,21 @@
 import AppKit
+import Sparkle
+
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    private var updateController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil,
+    )
+    private var settingsWindowController: SettingsWindowController!
+    private var topLevelObjeects: NSArray? = nil
+
     func applicationWillFinishLaunching(_ notification: Notification) {
         /*
          * Load the menu here. See https://developer.apple.com/forums/thread/776832
          */
-        var topLevel: NSArray? = nil
-        Bundle.main.loadNibNamed("MainMenu", owner: NSApp, topLevelObjects: &topLevel)
+        Bundle.main.loadNibNamed("MainMenu", owner: NSApp, topLevelObjects: &topLevelObjeects)
     }
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -14,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Settings.previewText.key: Settings.previewText.default,
             Settings.previewFontSize.key: Settings.previewFontSize.default
         ])
+        settingsWindowController = SettingsWindowController(updateController: updateController)
     }
 
     func applicationShouldOpenUntitledFile(_ sender: NSApplication) -> Bool {
@@ -44,6 +54,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc
     func showSettings(_ sender: Any?) {
-        SettingsWindowController.shared.show()
+        settingsWindowController.showWindow(sender)
+    }
+
+    @objc
+    func checkForUpdates(_ sender: Any?) {
+        updateController.checkForUpdates(sender)
     }
 }

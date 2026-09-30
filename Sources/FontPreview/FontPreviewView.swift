@@ -50,7 +50,7 @@ fileprivate final class FontPreviewViewModel {
     }
 
     private func updatePreviewFont() {
-        let (isSystemFont, nsFont) = Self.buildPreviewFont(for: pdfFont, size: previewFontSize)
+        let (isSystemFont, nsFont) = Self.buildPreviewFont(for: pdfFont, size: CGFloat(previewFontSize))
         self.isSystemFont = isSystemFont
 
         previewFont = if let nsFont {

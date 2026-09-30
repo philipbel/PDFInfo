@@ -4,6 +4,14 @@
 <dict>
 	<key>CFBundleHelpBookFolder</key>
 	<string>Help</string>
+	<key>SUPublicEDKey</key>
+	<string>LQd/vK+15r9frW2Kd8pFbshsxMHthDgq+De6xCtPa9U=</string>
+	<key>SURequireSignedFeed</key>
+	<true/>
+	<key>SUVerifyUpdateBeforeExtraction</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://philipbel.github.io/PDFInfo/appcast.xml</string>
 	<key>CFBundleHelpBookName</key>
 	<string>PDF Info Help</string>
 	<key>CFBundleDocumentTypes</key>
