@@ -9,11 +9,11 @@ struct FontTableViewColumn {
         NSUserInterfaceItemIdentifier(key)
     }
 
-    static let nameColumn = FontTableViewColumn(title: "Name", key: "name")
-    static let typeColumn = FontTableViewColumn(title: "Type", key: "type")
-    static let subsetColumn = FontTableViewColumn(title: "Subset", key: "subset")
-    static let embeddedColumn = FontTableViewColumn(title: "Embedded", key: "embedded")
-    static let installedColumn = FontTableViewColumn(title: "Installed", key: "installed")
+    static let nameColumn = FontTableViewColumn(title: String(localized: "Name"), key: "name")
+    static let typeColumn = FontTableViewColumn(title: String(localized: "Type"), key: "type")
+    static let subsetColumn = FontTableViewColumn(title: String(localized: "Subset"), key: "subset")
+    static let embeddedColumn = FontTableViewColumn(title: String(localized: "Embedded"), key: "embedded")
+    static let installedColumn = FontTableViewColumn(title: String(localized: "Installed"), key: "installed")
 
     static let allColumns: [FontTableViewColumn] = [
         .nameColumn,

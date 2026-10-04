@@ -14,15 +14,10 @@ public extension PDFDocument {
     }
 
     var pageSize: PDFPageSize? {
-        guard let page = page(at: 0),
-              let pageRef = page.pageRef else {
+        guard let page = page(at: 0) else {
             return nil
         }
-        let box = pageRef.getBoxRect(.mediaBox) // in points (1/72")
-        return PDFPageSize(
-            width: Measurement(value: Double(box.width) / 72, unit: .inches),
-            height: Measurement(value: Double(box.height) / 72, unit: .inches)
-        )
+        return PDFPageSize(fromPage: page)
     }
 
     var metadata: PDFDocumentMetadata {
@@ -82,7 +77,7 @@ public extension PDFDocument {
     ) {
         fontDictionary.forEach { key, object in
             guard let dictionary = try? object.asDictionary(),
-                  let pdfFont = try? PDFFontParser.fontFrom(fontDictionary: dictionary) else {
+                  let pdfFont = try? PDFFontParser.fontFrom(fontDictionary: dictionary, key: key) else {
                 return
             }
             fontMap[pdfFont.id] = pdfFont

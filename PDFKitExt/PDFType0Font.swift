@@ -36,7 +36,8 @@ fileprivate let cmapNames = [
     "UniCNS-UTF16-H", // Unicode (UTF-16BE) encoding for the Adobe-CNS1-6 character collection; contains mappings for all the characters in the HKSCS-2001 character set and contains both 2- and 4-byte character codes
     "UniCNS-UTF16-V", // Vertical version of UniCNS-UTF16-H
     //Japanese
-    "83pv-RKSJ-H", // Mac OS, JIS X 0208 character set with KanjiTalk6 extensions, Shift-JIS encoding, Script Manager code 1 90ms-RKSJ-H Microsoft Code Page 932 (lfCharSet 0x80), JIS X 0208 character set with NEC and IBM® extensions
+    "83pv-RKSJ-H", // Mac OS, JIS X 0208 character set with KanjiTalk6 extensions, Shift-JIS encoding, Script Manager code 1
+    "90ms-RKSJ-H", // Microsoft Code Page 932 (lfCharSet 0x80), JIS X 0208 character set with NEC and IBM® extensions
     "90ms-RKSJ-V", // Vertical version of 90ms-RKSJ-H
     "90msp-RKSJ-H", // Same as 90ms-RKSJ-H but replaces half-width Latin characters with proportional forms
     "90msp-RKSJ-V", // Vertical version of 90msp-RKSJ-H
@@ -58,8 +59,7 @@ fileprivate let cmapNames = [
     //Korean
     "KSC-EUC-H", // KS X 1001:1992 character set, EUC-KR encoding
     "KSC-EUC-V", // Vertical version of KSC-EUC-H
-    "KSCms-UHC-H", // Microsoft Code Page 949 (lfCharSet 0x81), KS X 1001:1992 character set plus
-    "8822", // additional hangul, Unified Hangul Code (UHC) encoding
+    "KSCms-UHC-H", // Microsoft Code Page 949 (lfCharSet 0x81), KS X 1001:1992 character set plus 8822 additional hangul, Unified Hangul Code (UHC) encoding
     "KSCms-UHC-V", // Vertical version of KSCms-UHC-H
     "KSCms-UHC-HW-H", // Same as KSCms-UHC-H but replaces proportional Latin characters with half-width forms
     "KSCms-UHC-HW-V", // Vertical version of KSCms-UHC-HW-H
@@ -93,8 +93,8 @@ public struct PDFType0Font: PDFFont {
         descendant.isEmbedded
     }
 
-    internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef) throws {
-        (baseFont, subtype, isSubset, displayName) = try Self.parseCommon(fromFontDictionary: fontDictionary)
+    internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef, key: String) throws {
+        (baseFont, subtype, isSubset, displayName) = try Self.parseCommon(fromFontDictionary: fontDictionary, key: key)
         let (displayName, cmapName) = Self.stripCmapSuffix(name: displayName)
         logger.debug("init(): displayName: \(displayName), cmapName: \(cmapName ?? "nil")")
         self.displayName = displayName
@@ -110,18 +110,20 @@ public struct PDFType0Font: PDFFont {
             logger.error("init(): \(msg)")
             throw PDFKitError.corruptedObject(message: msg)
         }
-        descendant = try PDFCIDFont(fromFontDictionary: descendantFontDictionary)
+        descendant = try PDFCIDFont(fromFontDictionary: descendantFontDictionary, key: key)
 
         try validateSubtype(expected: [.type0])
     }
 
     private static func stripCmapSuffix(name: String) -> (displayName: String, cmapName: String?) {
-        for cmapName in cmapNames {
+        let suffixes = cmapNames.filter {
+            name.hasSuffix("-" + $0)
+        }.sorted { $0.count > $1.count }
+        if let cmapName = suffixes.first {
             let suffix = "-" + cmapName
-            if name.hasSuffix(suffix) {
-                return (String(name.dropLast(suffix.count)), cmapName)
-            }
+            return (displayName: String(name.dropLast(suffix.count)), cmapName: cmapName)
+        } else {
+            return (name, nil)
         }
-        return (name, nil)
     }
 }

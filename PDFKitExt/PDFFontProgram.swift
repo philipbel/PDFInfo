@@ -5,9 +5,10 @@ internal import OSLog
 fileprivate let logger = Logger(subsystem: "PDFKitExt", category: String(describing: PDFFontProgram.self))
 
 
-public struct PDFFontProgram {
-    public var data: Data
-    public var kind: PDFFontProgramKind
+public struct PDFFontProgram: Identifiable {
+    public let data: Data
+    public let kind: PDFFontProgramKind
+    public let id: String
 
     init?(fromFontDescriptorDictionary fontDescriptorDictionary: CGPDFDictionaryRef) throws {
         if let stream = fontDescriptorDictionary.stream(forKey: "FontFile") {
@@ -59,12 +60,6 @@ public struct PDFFontProgram {
             logger.debug("init(): No font program found in font descriptor")
             return nil
         }
-    }
-}
-
-
-extension PDFFontProgram: Identifiable {
-    public var id: String {
-        "\(kind)-\(data.hashValue)"
+        id = "\(kind)-\(data.hashValue)"
     }
 }

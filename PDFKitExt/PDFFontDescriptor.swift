@@ -6,7 +6,7 @@ private import OSLog
 fileprivate let logger = Logger(subsystem: "PDFKitExt", category: String(describing: PDFFontDescriptor.self))
 
 
-public struct PDFFontDescriptor {
+public struct PDFFontDescriptor: Identifiable {
     public struct Flags: OptionSet, Sendable {
         public var rawValue: UInt32
 
@@ -39,17 +39,17 @@ public struct PDFFontDescriptor {
         }
     }
 
-
     public let name: String
     public let fontFamily: String?
-    public var fontWeight: Int?
-    public var flags: Flags
-    public var program: PDFFontProgram?
+    public let fontWeight: Int?
+    public let flags: Flags
+    public let program: PDFFontProgram?
+    public let id: String
 
     internal init(from fontDescriptorDictionary: CGPDFDictionaryRef) throws {
         let type = fontDescriptorDictionary.name(forKey: "Type")
         guard let type else {
-            let msg = "'FontDescriptor' has not 'Type'"
+            let msg = "'FontDescriptor' has no 'Type'"
             logger.error("init(): \(msg)")
             throw PDFKitError.corruptedObject(message: msg)
         }
@@ -71,14 +71,8 @@ public struct PDFFontDescriptor {
         self.fontFamily = fontDescriptorDictionary.string(forKey: "FontFamily")
         self.fontWeight = fontDescriptorDictionary.number(forKey: "FontWeight").map(Int.init)
         self.name = name
-        self.flags = Flags(rawValue: UInt32(flags))
+        self.flags = Flags(rawValue: UInt32(truncatingIfNeeded: flags))
         self.program = try PDFFontProgram(fromFontDescriptorDictionary: fontDescriptorDictionary)
-    }
-}
-
-
-extension PDFFontDescriptor: Identifiable {
-    public var id: String {
-        "\(name)-\(String(describing: fontFamily))-\(String(describing: fontWeight))-\(flags)-\(String(describing: program?.id))"
+        self.id = "\(name)-\(String(describing: fontFamily))-\(String(describing: fontWeight))-\(flags)-\(String(describing: program?.id))"
     }
 }

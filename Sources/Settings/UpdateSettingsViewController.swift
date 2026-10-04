@@ -28,19 +28,25 @@ class UpdateSettingsViewController: NSViewController {
 
     let updater: SPUUpdater
     private var cancelBag = Set<AnyCancellable>()
-    private let checkCheckBox = NSButton(checkboxWithTitle: String(localized: "Automatically:"),
+    private let checkCheckBox = NSButton(checkboxWithTitle: String(localized: "Check for updates:"),
                                          target: nil,
                                          action: nil)
     private let downloadUpdatesCheckBox = NSButton(checkboxWithTitle: String(localized: "Download automatically"),
                                                    target: nil,
                                                    action: nil)
-
     private let updateIntervalPopupButton = NSPopUpButton().then {
         $0.menu?.items = UpdateInterval.allCases.map { interval in
             NSMenuItem(title: interval.displayName, action: nil, keyEquivalent: "").then {
                 $0.tag = interval.rawValue
             }
         }
+    }
+    private let checkForUpdatesButton = NSButton().then {
+        $0.title = String(localized: "Check for Updates Now")
+    }
+    private let lastUpdateCheckLabel = NSTextField(labelWithString: "").then {
+        $0.font = .preferredFont(forTextStyle: .footnote)
+        $0.textColor = .secondaryLabelColor
     }
 
     init(updater: SPUUpdater) {
@@ -56,33 +62,24 @@ class UpdateSettingsViewController: NSViewController {
         view = NSView(frame: .zero)
 
         let container = NSStackView.vertical(views: [
-            NSGridView(views: [
-                [
-                    NSTextField(labelWithString: String(localized: "Check for Updates:")),
-                    NSStackView.horizontal(views: [
-                        checkCheckBox,
-                        updateIntervalPopupButton
-                    ], alignment: .firstBaseline),
-                ],
-                [
-                    NSGridCell.emptyContentView,
-                    NSStackView.horizontal(views: [
-                        downloadUpdatesCheckBox,
-                    ]).then {
-                        $0.edgeInsets.left = 20
-                    },
-                ],
+            NSStackView.vertical(views: [
+                NSStackView.horizontal(views: [
+                    checkCheckBox,
+                    updateIntervalPopupButton
+                ], alignment: .firstBaseline),
+                NSStackView.horizontal(views: [
+                    downloadUpdatesCheckBox,
+                ]).then {
+                    $0.edgeInsets.left = 20
+                },
+            ], alignment: .leading),
+            NSStackView.vertical(views: [
+                checkForUpdatesButton,
+                lastUpdateCheckLabel,
             ]).then {
-                $0.rowAlignment = .firstBaseline
-                $0.column(at: 0).xPlacement = .trailing
-                $0.translatesAutoresizingMaskIntoConstraints = false
-            },
-            NSButton(
-                title: String(localized: "Check for Updates Now"),
-                target: self,
-                action: #selector(checkForUpdatesNow(_:))
-            )
-        ], spacing: 20)
+                $0.edgeInsets.top = 30
+            }
+        ])
 
         view.addSubview(container)
 
@@ -107,6 +104,9 @@ class UpdateSettingsViewController: NSViewController {
         downloadUpdatesCheckBox.target = self
         downloadUpdatesCheckBox.action = #selector(downloadAutomaticallyCheckBoxClicked(_:))
 
+        checkForUpdatesButton.target = self
+        checkForUpdatesButton.action = #selector(checkForUpdatesNow(_:))
+
         updater.publisher(for: \.automaticallyChecksForUpdates)
             .sink { [weak self] in
                 self?.checkCheckBox.state = $0 ? .on : .off
@@ -125,6 +125,16 @@ class UpdateSettingsViewController: NSViewController {
             .sink { [weak self] tag in
                 let updateInterval = UpdateInterval(rawValue: Int(tag)) ?? Self.defaultUpdateInterval
                 self?.updateIntervalPopupButton.selectItem(withTag: updateInterval.rawValue)
+            }
+            .store(in: &cancelBag)
+
+        updater.publisher(for: \.lastUpdateCheckDate)
+            .sink { [weak self] date in
+                if let date {
+                    self?.lastUpdateCheckLabel.stringValue = String(localized: "Last check: \(date.formatted())")
+                } else {
+                    self?.lastUpdateCheckLabel.stringValue = String(localized: "Never", comment: "Last update date")
+                }
             }
             .store(in: &cancelBag)
     }

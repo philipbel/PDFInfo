@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct FileButton: View {
@@ -34,6 +33,7 @@ struct FileButton: View {
             }
             .buttonStyle(.plain)
             .help(helpString(path: path))
+            .accessibilityLabel(Text(accessibilityLabelString(file: fileString)))
         }
     }
 
@@ -49,9 +49,18 @@ struct FileButton: View {
     private func helpString(path: String) -> String {
         switch type {
         case .openFile:
-            "Open \(path)"
+            String(localized: "Open \(path)")
         case .revealFile:
-            "Reveal \(path) in Finder"
+            String(localized: "Reveal \(path) in Finder")
+        }
+    }
+
+    private func accessibilityLabelString(file: String) -> String {
+        switch type {
+        case .openFile:
+            String(localized: "Open \(file)")
+        case .revealFile:
+            String(localized: "Reveal \(file) in Finder")
         }
     }
 }

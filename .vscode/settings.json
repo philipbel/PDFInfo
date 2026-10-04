@@ -4,7 +4,9 @@
         "fitz",
         "fontfile",
         "fontname",
-        "fontsize"
+        "fontsize",
+        "pdfinfo",
+        "philipbel"
     ],
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",

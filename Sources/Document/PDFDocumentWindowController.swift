@@ -3,17 +3,22 @@ import SwiftUI
 import UniformTypeIdentifiers
 import PDFKitExt
 import OSLog
+import SettingsKit
 
 
-private extension NSToolbarItem.Identifier {
+fileprivate extension NSToolbarItem.Identifier {
     static let documentInspector = NSToolbarItem.Identifier("documentInspector")
     static let inspectorSeparator = NSToolbarItem.Identifier("inspectorSeparator")
 }
 
 
+fileprivate extension UserDefaults {
+    static let inspectorVisible = Setting(key: "inspectorVisible", default: true)
+}
+
+
 final class PDFDocumentWindowController: NSWindowController {
     private static let windowFrameSaveKey: NSWindow.FrameAutosaveName = "PDFDocumentWindow"
-    private static let inspectorVisibleKey = "inspectorVisible"
     private static let minimumWindowSize = NSSize(width: 600, height: 400)
     private static let defaultWindowSize = NSSize(width: 800, height: 600)
 
@@ -36,6 +41,7 @@ final class PDFDocumentWindowController: NSWindowController {
     private lazy var inspectorSplitViewItem: NSSplitViewItem = {
         let inspectorSplitViewItem = NSSplitViewItem(inspectorWithViewController: documentInspectorViewController)
         inspectorSplitViewItem.canCollapse = true
+        inspectorSplitViewItem.isCollapsed = false
         inspectorSplitViewItem.minimumThickness = 250
         inspectorSplitViewItem.maximumThickness = 500
         return inspectorSplitViewItem
@@ -47,10 +53,11 @@ final class PDFDocumentWindowController: NSWindowController {
         return i
     }()
     private lazy var documentInspectorButton: NSButton = {
-        let b = NSButton(image: NSImage(systemSymbolName: "sidebar.trailing",
-                                        accessibilityDescription: "Document Inspector")!,
+        let b = NSButton(title: "",
                          target: self,
                          action: #selector(toggleInspector(_:)))
+        b.image = NSImage(systemSymbolName: "sidebar.trailing",
+                          accessibilityDescription: String(localized: "Document Inspector"))
         b.setButtonType(.pushOnPushOff)
         b.bezelStyle = .toolbar
         return b
@@ -98,19 +105,16 @@ final class PDFDocumentWindowController: NSWindowController {
         dragForwardView.autoresizingMask = [.width, .height]
         window.contentView?.addSubview(dragForwardView)
 
+        restoreInspectorVisibleState()
         inspectorCollapseObservation = inspectorSplitViewItem.observe(\.isCollapsed,
-                                                                       options: [.new]) { [weak self] _, _ in
+                                                                       options: [.initial, .new]) { [weak self] _, _ in
             DispatchQueue.main.async {
                 self?.updateInspectorState()
             }
         }
-        restoreInspectorVisibleState()
-        updateInspectorState()
 
         window.delegate = self
         self.window = window
-        // Do this last
-        window.setFrameAutosaveName(Self.windowFrameSaveKey)
     }
 
     func update() {
@@ -118,11 +122,19 @@ final class PDFDocumentWindowController: NSWindowController {
             Self.logger.warning("update(): no window")
             return
         }
-        guard let document = document as? Document,
-            let url = document.fileURL,
+        guard let document = document as? Document else {
+            return
+        }
+        guard let url = document.fileURL,
             let pdfDocument else {
-            Self.logger.warning("update(): no document, url or PDFDocument")
-            window.contentViewController = nil
+            Self.logger.error("update(): no document, url or PDFDocument")
+            presentError(
+                CocoaError(.fileReadCorruptFile),
+                modalFor: window,
+                delegate: nil,
+                didPresent: nil,
+                contextInfo: nil
+            )
             return
         }
         Self.logger.debug("update(): updating from \(url)")
@@ -135,6 +147,36 @@ final class PDFDocumentWindowController: NSWindowController {
         fontPreviewWindowController.update(font: font)
         fontPreviewWindowController.showWindow(self)
     }
+
+    override func showWindow(_ sender: Any?) {
+        placeWindow()
+        super.showWindow(sender)
+    }
+
+    private func placeWindow() {
+        guard let window,
+              !window.isVisible else {
+            return
+        }
+
+        let topWindow = NSApplication.shared.orderedWindows.first {
+            $0.isVisible && $0 != window && $0.windowController is PDFDocumentWindowController
+        }
+
+        // 1. Restore the saved window frame, if any
+        let frameRestored = window.setFrameUsingName(Self.windowFrameSaveKey)
+
+        if let topWindow {
+            // 2a) Place the window cascaded off the last window
+            let topLeft = window.cascadeTopLeft(from: CGPoint(x: topWindow.frame.minX, y: topWindow.frame.maxY))
+            _ = window.cascadeTopLeft(from: topLeft)
+        } else if !frameRestored {
+            // 2b) First window, no previously saved frame => center
+            window.center()
+        }
+        // 3. Save the frame for future windows
+        window.saveFrame(usingName: Self.windowFrameSaveKey)
+    }
 }
 
 
@@ -144,12 +186,20 @@ extension PDFDocumentWindowController: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         windowDocument?.close()
         fontPreviewWindowController.close()
+        window?.saveFrame(usingName: Self.windowFrameSaveKey)
+    }
+
+    func windowDidResize(_ notification: Notification) {
+        window?.saveFrame(usingName: Self.windowFrameSaveKey)
     }
 }
 
 
 // MARK: Inspector
 
+/// Note: we're not observing the `UserDefaults`'s `inspectorVisibleKey` so that hiding/showing the inspector in one
+/// window doesn't immediately affect the inspector's state in other windows. Rather, only new document windows will be
+/// affected.
 extension PDFDocumentWindowController {
     @objc
     private func toggleInspector(_ sender: Any?) {
@@ -157,11 +207,11 @@ extension PDFDocumentWindowController {
     }
 
     private func restoreInspectorVisibleState() {
-        inspectorSplitViewItem.isCollapsed = !UserDefaults.standard.bool(forKey: Self.inspectorVisibleKey)
+        inspectorSplitViewItem.isCollapsed = !UserDefaults.standard[\.inspectorVisible]
     }
 
     private func persistInspectorVisibleState() {
-        UserDefaults.standard.set(!inspectorSplitViewItem.isCollapsed, forKey: Self.inspectorVisibleKey)
+        UserDefaults.standard[\.inspectorVisible] = !inspectorSplitViewItem.isCollapsed
     }
 
     private func updateInspectorState() {
@@ -212,17 +262,11 @@ extension PDFDocumentWindowController: NSToolbarDelegate {
     }
 
     private func updateInspectorTooltips() {
-         if inspectorSplitViewItem.isCollapsed {
-             documentInspectorToolbarItem.toolTip = String(localized: "Show the document inspector")
+        if inspectorSplitViewItem.isCollapsed {
+            documentInspectorToolbarItem.toolTip = String(localized: "Show the document inspector")
         } else {
             documentInspectorToolbarItem.toolTip = String(localized: "Hide the document inspector")
         }
-    }
-}
-
-extension PDFDocumentWindowController: NSToolbarItemValidation {
-    func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
-        return true
     }
 }
 

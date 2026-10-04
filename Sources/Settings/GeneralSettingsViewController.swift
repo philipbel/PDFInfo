@@ -1,5 +1,14 @@
 import Cocoa
 import Combine
+import SettingsKit
+
+
+extension UserDefaults {
+    static let previewText = Setting(key: "previewText",
+                                     default: String(localized: "The quick brown fox jumps over the lazy dog"),
+                                     validator: .emptyString())
+    static let previewFontSize = Setting(key: "previewFontSize", default: 20, in: 10...50)
+}
 
 
 class GeneralSettingsViewController: NSViewController {
@@ -9,8 +18,8 @@ class GeneralSettingsViewController: NSViewController {
     private let previewFontSizeTextField = NSTextField(string: "").then {
         $0.formatter = NumberFormatter().then {
             $0.allowsFloats = false
-            $0.minimum = NSNumber(value: Settings.previewFontSizeRange.lowerBound)
-            $0.maximum = NSNumber(value: Settings.previewFontSizeRange.upperBound)
+            $0.minimum = NSNumber(value: UserDefaults.previewFontSize.validator.range.lowerBound)
+            $0.maximum = NSNumber(value: UserDefaults.previewFontSize.validator.range.upperBound)
         }
     }
     private let grid = NSGridView().then {
@@ -19,8 +28,8 @@ class GeneralSettingsViewController: NSViewController {
         $0.columnSpacing = 8
     }
     private let previewFontSizeStepper = NSStepper().then {
-        $0.minValue = Double(Settings.previewFontSizeRange.lowerBound)
-        $0.maxValue = Double(Settings.previewFontSizeRange.upperBound)
+        $0.minValue = Double(UserDefaults.previewFontSize.validator.range.lowerBound)
+        $0.maxValue = Double(UserDefaults.previewFontSize.validator.range.upperBound)
         $0.increment = 1
     }
 
@@ -67,7 +76,7 @@ class GeneralSettingsViewController: NSViewController {
         previewFontSizeStepper.action = #selector(textFontSizeDidChange(_:))
 
         let textFieldFont = previewTextField.font ?? .systemFont(ofSize: NSFont.systemFontSize)
-        let previewTextWidth = Settings.previewText.default.size(withAttributes: [.font: textFieldFont]).width + 50
+        let previewTextWidth = UserDefaults.previewText.default.size(withAttributes: [.font: textFieldFont]).width + 50
         NSLayoutConstraint.activate([
             grid.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             grid.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
@@ -79,12 +88,14 @@ class GeneralSettingsViewController: NSViewController {
         ])
 
         UserDefaults.standard.publisher(for: \.previewText)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.previewTextField.stringValue = $0
             }
             .store(in: &cancelBag)
 
         UserDefaults.standard.publisher(for: \.previewFontSize)
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] in
                 self?.previewFontSizeStepper.integerValue = $0
                 self?.previewFontSizeTextField.integerValue = $0
@@ -95,19 +106,23 @@ class GeneralSettingsViewController: NSViewController {
     override func viewWillDisappear() {
         super.viewWillDisappear()
 
-        // Save the current values. UserDefault's properties do validation
-        UserDefaults.standard.previewText = previewTextField.stringValue
-        UserDefaults.standard.previewFontSize = previewFontSizeTextField.integerValue
+        // Save the current values
+        UserDefaults.standard[\.previewText] = previewTextField.stringValue
+        if !previewFontSizeTextField.stringValue.isEmpty {
+            UserDefaults.standard[\.previewFontSize] = previewFontSizeTextField.integerValue
+        }
     }
 
     @objc
     private func textFontSizeDidChange(_ sender: NSControl) {
-        UserDefaults.standard.previewFontSize = sender.integerValue
+        UserDefaults.standard[\.previewFontSize] = sender.integerValue
+        sender.integerValue = UserDefaults.standard[\.previewFontSize]
     }
 
     @objc
     private func previewTextDidChange(_ sender: NSControl) {
-        UserDefaults.standard.previewText = sender.stringValue
+        UserDefaults.standard[\.previewText] = sender.stringValue
+        sender.stringValue = UserDefaults.standard[\.previewText]
     }
 }
 

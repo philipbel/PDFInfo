@@ -16,15 +16,14 @@ fileprivate struct FontPreviewWrapperView: View {
     }
 }
 
-@MainActor
-final class FontPreviewWindowController: NSWindowController {
-    private static let autosaveName: NSWindow.FrameAutosaveName = "fontPreview"
 
+final class FontPreviewWindowController: NSWindowController {
     private lazy var previewViewController: NSHostingController = {
         let previewViewController = NSHostingController(rootView: FontPreviewWrapperView(pdfFont: nil))
         previewViewController.sizingOptions = .preferredContentSize
         return previewViewController
     }()
+    private var alreadyShown = false
 
     convenience init() {
         let panel = NSPanel()
@@ -36,7 +35,6 @@ final class FontPreviewWindowController: NSWindowController {
 
         self.init(window: panel)
         panel.contentViewController = previewViewController
-        panel.setFrameAutosaveName(Self.autosaveName)
     }
 
     override init(window: NSWindow?) {
@@ -44,6 +42,16 @@ final class FontPreviewWindowController: NSWindowController {
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) not used") }
+
+    override func showWindow(_ sender: Any?) {
+        if let window, !alreadyShown {
+            window.contentView?.layoutSubtreeIfNeeded()
+            window.setContentSize(previewViewController.view.fittingSize)
+            window.center()
+            alreadyShown = true
+        }
+        super.showWindow(sender)
+    }
 
     func update(font pdfFont: any PDFFont) {
         previewViewController.rootView = FontPreviewWrapperView(pdfFont: pdfFont)

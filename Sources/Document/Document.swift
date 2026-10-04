@@ -20,8 +20,7 @@ class Document: NSDocument {
         guard pdfDocument != nil else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        let attributes = try FileManager.default.attributesOfItem(atPath: url.path())
-        lastModificationDate = attributes[.modificationDate] as? Date
+        lastModificationDate = try? url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
     }
 
     override var isDocumentEdited: Bool { false }
@@ -46,18 +45,18 @@ extension Document {
             Self.logger.warning("presentedItemDidChange(): fileURL is nil")
             return
         }
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path()) else {
-            Self.logger.warning("Cannot obtain attributes of \(fileURL)")
-            return
-        }
-        guard let modificationDate = attributes[.modificationDate] as? Date,
-            modificationDate != lastModificationDate else {
-            return
-        }
-        lastModificationDate = modificationDate
-        pdfDocument = PDFDocument(url: fileURL)
-        DispatchQueue.main.async { [weak self] in
-            self?.documentWindowController?.update()
+        // Reload after a while to avoid a race with another writer
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self else { return }
+            let modificationDate = try? fileURL.resourceValues(
+                forKeys: [.contentModificationDateKey]).contentModificationDate
+            guard let modificationDate,
+                  modificationDate != lastModificationDate else {
+                return
+            }
+            lastModificationDate = modificationDate
+            pdfDocument = PDFDocument(url: fileURL)
+            documentWindowController?.update()
         }
     }
 }

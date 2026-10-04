@@ -3,7 +3,7 @@ import Foundation
 import PDFKitExt
 
 
-struct FontUtil {
+enum FontUtil {
     static func getSystemFont(named name: String, size: CGFloat) -> NSFont? {
         // 1. As given: PostScript name or family
         if let f = NSFont(name: name, size: size) {
@@ -14,12 +14,14 @@ struct FontUtil {
         // 2. "<Family> Regular", drop the Regular part
         if name.hasSuffix(" Regular") {
             let family = String(name.dropLast(" Regular".count))
-            if let f = NSFont(name: family, size: size) {
+            if let f = NSFont(name: family, size: size),
+               f.familyName == family {
                 return f
             }
             // 3. family name only, resolve to a concrete member via descriptor
             let desc = NSFontDescriptor(fontAttributes: [.family: family])
-            if let f = NSFont(descriptor: desc, size: size) {
+            if let f = NSFont(descriptor: desc, size: size),
+               f.familyName == family {
                 return f
             }
         }
@@ -27,31 +29,66 @@ struct FontUtil {
     }
 
     static func typeString(for font: any PDFFont) -> String {
-        // See https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/utils/pdffonts.cc?ref_type=heads#L43 and
+        // See https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/poppler/GfxFont.cc#L288 and
         // Section 9.5 of ISO-32000-2 (PDF-2.0)
-        switch font {
-        case let type0Font as PDFType0Font:
-            var s = PDFFontSubtype.type0.displayName
-            let descendandSubtype = type0Font.descendant.subtype
-            s += " ("
-            s += descendandSubtype.displayName
-            if let programKind = type0Font.descendant.descriptor?.program?.kind {
-                s += "/"
-                s += programKind.displayName
+        if let type0Font = font as? PDFType0Font {
+            return typeString(for: type0Font.descendant)
+        } else if let programFont = font as? any PDFProgramFont {
+            let programKind = programFont.descriptor?.program?.kind
+
+            switch font.subtype {
+            case .type1, .mmType1:
+                switch programKind {
+                case .none, .type1:
+                    return String(localized: "Type 1")
+                case .type1C:
+                    return String(localized: "Type 1C")
+                case .openType:
+                    return String(localized: "Type 1C (OT)")
+                default:
+                    break
+                }
+            case .type3:
+                return String(localized: "Type 3")
+            case .trueType:
+                switch programKind {
+                case .none, .trueType:
+                    return String(localized: "TrueType")
+                case .openType:
+                    return String(localized: "TrueType (OT)")
+                default:
+                    break
+                }
+            case .cidFontType0:
+                switch programKind {
+                case .none:
+                    return String(localized: "CID Type 0")
+                case .cidFontType0C:
+                    return String(localized: "CID Type 0C")
+                case .openType:
+                    return String(localized: "CID Type 0C (OT)")
+                default:
+                    break
+                }
+            case .cidFontType2:
+                switch programKind {
+                case .none, .trueType:
+                    return String(localized: "CID TrueType")
+                case .openType:
+                    return String(localized: "CID TrueType (OT)")
+                default:
+                    break
+                }
+            default:
+                break
             }
-            s += ")"
-            return s
-        case let programFont as any PDFProgramFont:
-            var s = programFont.subtype.displayName
-            if let programKind = programFont.descriptor?.program?.kind {
-                s += " ("
-                s += programKind.displayName
-                s += ")"
+            if let programKind {
+                return "\(font.subtype.displayName) (\(programKind.displayName))"
+            } else {
+                return "\(font.subtype.displayName)"
             }
-            return s
-        default:
+        } else {
             return font.subtype.displayName
         }
     }
-
 }

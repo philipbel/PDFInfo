@@ -14,9 +14,8 @@ public extension CGPDFObjectRef {
 
     func asBool() throws -> Bool? {
         try Self.verifyTypes(expected: .boolean, actual: type)
-        var boolean: CGPDFBoolean?
-        guard CGPDFObjectGetValue(self, .boolean, &boolean),
-              let boolean else {
+        var boolean: CGPDFBoolean = 0
+        guard CGPDFObjectGetValue(self, .boolean, &boolean) else {
             return nil
         }
         return boolean != 0
@@ -24,9 +23,8 @@ public extension CGPDFObjectRef {
 
     func asInt() throws -> Int? {
         try Self.verifyTypes(expected: .integer, actual: type)
-        var integer: CGPDFInteger?
-        guard CGPDFObjectGetValue(self, .integer, &integer),
-              let integer else {
+        var integer: CGPDFInteger = 0
+        guard CGPDFObjectGetValue(self, .integer, &integer) else {
             return nil
         }
         return integer
@@ -34,9 +32,8 @@ public extension CGPDFObjectRef {
 
     func asReal() throws -> CGFloat? {
         try Self.verifyTypes(expected: .real, actual: type)
-        var float: CGFloat?
-        guard CGPDFObjectGetValue(self, .real, &float),
-              let float else {
+        var float: CGFloat = 0
+        guard CGPDFObjectGetValue(self, .real, &float) else {
             return nil
         }
         return float

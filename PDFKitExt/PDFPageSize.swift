@@ -1,29 +1,75 @@
 public import Foundation
+internal import PDFKit
+
 
 public struct PDFPageSize: Codable, Equatable, Sendable {
+    public enum Orientation: String, Sendable, Codable {
+        case portrait = "portrait"
+        case landscape = "landscape"
+
+        public var displayName: String {
+            switch self {
+            case .portrait:
+                String(localized: "Portrait", bundle: #bundle)
+            case .landscape:
+                String(localized: "Landscape", bundle: #bundle)
+            }
+        }
+    }
+
     private static let epsilon = 0.01
 
     public let width: Measurement<UnitLength>
     public let height: Measurement<UnitLength>
+    public var orientation: Orientation {
+        return if width <= height {
+            .portrait
+        } else {
+            .landscape
+        }
+    }
 
     public static let a4: Self = .init(width: .init(value: 21, unit: .centimeters),
-                                height: .init(value: 29.7, unit: .centimeters))
+                                       height: .init(value: 29.7, unit: .centimeters))
     public static let letter: Self = .init(width: .init(value: 8.5, unit: .inches),
-                                    height: .init(value: 11, unit: .inches))
+                                           height: .init(value: 11, unit: .inches))
+
+    internal init(width: Measurement<UnitLength>, height: Measurement<UnitLength>) {
+        self.width = width
+        self.height = height
+    }
+
+    internal init?(fromPage page: PDFPage) {
+        guard let pageRef = page.pageRef else {
+            return nil
+        }
+        let box = pageRef.getBoxRect(.cropBox) // in points (1/72")
+        var width = Measurement(value: box.width / 72, unit: UnitLength.inches)
+        var height = Measurement(value: box.height / 72, unit: UnitLength.inches)
+        if page.rotation == 90 || page.rotation == 270 {
+            (width, height) = (height, width)
+        }
+        self.init(width: width, height: height)
+    }
 
     public func formatted(locale: Locale = .current) -> String {
         let formatter = Self.makeFormatter(locale: locale)
 
-        if self == Self.a4 {
-            let paperSize = Self.formatPageSize(width: width, height: height, formatter: formatter, unit: nil)
-            return String(localized: "A4 (\(paperSize))", bundle: #bundle)
-        } else if self == Self.letter {
-            let paperSize = Self.formatPageSize(width: width, height: height, formatter: formatter, unit: nil)
-            return String(localized: "Letter (\(paperSize))", bundle: #bundle)
+        let pageSize = if orientation == .portrait {
+            self
+        } else {
+            PDFPageSize(width: height, height: width)
+        }
+        if pageSize == Self.a4 {
+            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: nil)
+            return String(localized: "A4 (\(paperSize), \(orientation.displayName))", bundle: #bundle)
+        } else if pageSize == Self.letter {
+            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: nil)
+            return String(localized: "Letter (\(paperSize), \(orientation.displayName))", bundle: #bundle)
         } else {
             // Pick units based on the measurement system
             let unit: UnitLength = locale.measurementSystem == .metric ? .centimeters : .inches
-            return Self.formatPageSize(width: width, height: height, formatter: formatter, unit: unit)
+            return Self.formatPageSize(self, formatter: formatter, unit: unit)
         }
     }
 
@@ -37,20 +83,19 @@ public struct PDFPageSize: Codable, Equatable, Sendable {
     }
 
     private static func formatPageSize(
-        width: Measurement<UnitLength>,
-        height: Measurement<UnitLength>,
+        _ pageSize: PDFPageSize,
         formatter: MeasurementFormatter,
         unit: UnitLength?
     ) -> String {
         let w = if let unit {
-            formatter.string(from: width.converted(to: unit))
+            formatter.string(from: pageSize.width.converted(to: unit))
         } else {
-            formatter.string(from: width)
+            formatter.string(from: pageSize.width)
         }
         let h = if let unit {
-            formatter.string(from: height.converted(to: unit))
+            formatter.string(from: pageSize.height.converted(to: unit))
         } else {
-            formatter.string(from: height)
+            formatter.string(from: pageSize.height)
         }
         return "\(w) ⨉ \(h)"
     }

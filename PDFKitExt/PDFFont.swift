@@ -23,7 +23,7 @@ extension PDFFont  {
 
 
 extension PDFFont {
-    internal static func parseCommon(fromFontDictionary fontDictionary: CGPDFDictionaryRef) throws
+    internal static func parseCommon(fromFontDictionary fontDictionary: CGPDFDictionaryRef, key: String) throws
     -> (baseFont: String, subtype: PDFFontSubtype, isSubset: Bool, displayName: String) {
         // TODO: subtype is read twice, here and in from(fontDictionary:)
         let subtype = try PDFFontParser.getSubtype(from: fontDictionary)
@@ -38,13 +38,21 @@ extension PDFFont {
             logger.error("init(): error: \(err)")
             throw err
         }
-        guard let baseFont = fontDictionary.name(forKey: "BaseFont") else {
-            let err = PDFKitError.corruptedObject(message: "No 'BaseFont'")
-            logger.error("init(): error: \(err)")
-            throw err
+        let baseFont: String
+        let displayName: String
+        let isSubset: Bool
+        if let b = fontDictionary.name(forKey: "BaseFont") {
+            baseFont = b
+            (displayName, isSubset) = Self.stripSubsetPrefix(baseFont)
+        } else {
+            // Type3 fonts have no BaseFont, see 9.6.4 Type 3 fonts. Name is optional
+            if let name = fontDictionary.name(forKey: "Name") {
+                (baseFont, isSubset) = Self.stripSubsetPrefix(name)
+            } else {
+                (baseFont, isSubset) = (key, false)
+            }
+            displayName = baseFont
         }
-        let (displayName, isSubset) = Self.stripSubsetPrefix(baseFont)
-
         return (baseFont: baseFont, subtype: subtype, isSubset: isSubset, displayName: displayName)
     }
 

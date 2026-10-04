@@ -9,20 +9,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         userDriverDelegate: nil,
     )
     private var settingsWindowController: SettingsWindowController!
-    private var topLevelObjeects: NSArray? = nil
+    private var topLevelObjects: NSArray? = nil
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         /*
          * Load the menu here. See https://developer.apple.com/forums/thread/776832
          */
-        Bundle.main.loadNibNamed("MainMenu", owner: NSApp, topLevelObjects: &topLevelObjeects)
+        Bundle.main.loadNibNamed("MainMenu", owner: NSApp, topLevelObjects: &topLevelObjects)
     }
 
     func applicationDidFinishLaunching(_ note: Notification) {
-        UserDefaults.standard.register(defaults: [
-            Settings.previewText.key: Settings.previewText.default,
-            Settings.previewFontSize.key: Settings.previewFontSize.default
-        ])
         settingsWindowController = SettingsWindowController(updateController: updateController)
     }
 

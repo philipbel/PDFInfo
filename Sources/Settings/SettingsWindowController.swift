@@ -2,9 +2,7 @@ import Cocoa
 import Sparkle
 
 
-@MainActor
 final class SettingsWindowController: NSWindowController {
-    private var updateController: SPUStandardUpdaterController!
     private var windowWasAlreadyShownOnce = false
 
     override init(window: NSWindow? = nil) {
@@ -16,14 +14,14 @@ final class SettingsWindowController: NSWindowController {
         tabViewController.tabStyle = .toolbar
         tabViewController.addTabViewItem(
             Self.makeSettingsTabViewItem(
-                title: "General",
+                title: String(localized: "General"),
                 symbol: "gear",
                 viewController: GeneralSettingsViewController()
             ),
         )
         tabViewController.addTabViewItem(
             Self.makeSettingsTabViewItem(
-                title: "Updates",
+                title: String(localized: "Updates"),
                 symbol: "arrow.trianglehead.2.clockwise.rotate.90",
                 viewController: UpdateSettingsViewController(updater: updateController.updater)
             )
@@ -35,7 +33,6 @@ final class SettingsWindowController: NSWindowController {
         w.isReleasedWhenClosed = false
 
         self.init(window: w)
-        self.updateController = updateController
     }
 
     required init?(coder: NSCoder) {

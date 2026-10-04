@@ -2,89 +2,6 @@ import SwiftUI
 import PDFKitExt
 
 
-@Observable
-fileprivate final class FontPreviewViewModel {
-    let pdfFont: any PDFFont
-    private(set) var isSystemFont: Bool = false
-    private(set) var previewFont: Font? = nil
-    private(set) var previewFontURL: URL? = nil
-    let typeString: String
-    let flagString: String
-    private(set) var previewText = Settings.previewText.default
-    private(set) var previewFontSize = Settings.previewFontSize.default
-    @ObservationIgnored
-    private var previewTextObservation: NSKeyValueObservation? = nil
-    @ObservationIgnored
-    private var previewFontSizeObservation: NSKeyValueObservation? = nil
-
-    init(font pdfFont: any PDFFont) {
-        self.pdfFont = pdfFont
-        typeString = FontUtil.typeString(for: pdfFont)
-
-        if let flagsDict = (pdfFont as? any PDFProgramFont)?.descriptor?.flags.displayDictionary {
-            flagString = flagsDict.compactMap { key, value in
-                value ? key : nil
-            }.joined(separator: ", ")
-        } else {
-            flagString = ""
-        }
-
-        previewTextObservation = UserDefaults.standard
-            .observe(\.previewText, options: [.initial, .new]) { [weak self] _, value in
-            if let v = value.newValue {
-                DispatchQueue.main.async {
-                    self?.previewText = v
-                }
-            }
-        }
-
-        previewFontSizeObservation = UserDefaults.standard
-            .observe(\.previewFontSize, options: [.initial, .new]) { [weak self] _, value in
-            if let v = value.newValue {
-                DispatchQueue.main.async {
-                    self?.previewFontSize = v
-                    self?.updatePreviewFont()
-                }
-            }
-        }
-    }
-
-    private func updatePreviewFont() {
-        let (isSystemFont, nsFont) = Self.buildPreviewFont(for: pdfFont, size: CGFloat(previewFontSize))
-        self.isSystemFont = isSystemFont
-
-        previewFont = if let nsFont {
-            Font(nsFont)
-        } else {
-            nil
-        }
-
-        previewFontURL = nsFont.flatMap {
-            CTFontCopyAttribute($0, kCTFontURLAttribute) as? URL
-        }
-    }
-
-    private static func buildPreviewFont(for pdfFont: any PDFFont,
-                                         size: CGFloat) -> (isSystemFont: Bool, previewFont: NSFont?) {
-        if let systemFont = FontUtil.getSystemFont(named: pdfFont.displayName, size: size) {
-            return (isSystemFont: true, previewFont: systemFont)
-        }
-        guard let programFont = pdfFont as? any PDFProgramFont,
-              let fontData = programFont.descriptor?.program?.data else {
-            return (isSystemFont: false, previewFont: nil)
-        }
-        guard let provider = CGDataProvider(data: fontData as CFData) else {
-            return (isSystemFont: false, previewFont: nil)
-        }
-        guard let cgFont = CGFont(provider) else {
-            return (isSystemFont: false, previewFont: nil)
-        }
-        let ctFont = CTFontCreateWithGraphicsFont(cgFont, size, nil, nil)
-        return (isSystemFont: false, ctFont as NSFont)
-    }
-}
-
-
 struct FontPreviewView: View {
     @State private var viewModel: FontPreviewViewModel
     @AppStorage("fontPreviewDetailsExpanded")
@@ -157,9 +74,13 @@ struct FontPreviewView: View {
                     .fixedSize()
                 }
                 .buttonStyle(.plain)
+                .accessibilityValue(isFontDetailsSectionExpanded ? Text("Expanded") : Text("Collapsed"))
+                .accessibilityHint(
+                    isFontDetailsSectionExpanded ? Text("Hide the font details") : Text("Show the font details"))
             }
         }
         .formStyle(.grouped)
+        .scrollDisabled(true)
     }
 
     @ViewBuilder
@@ -167,8 +88,13 @@ struct FontPreviewView: View {
         LabeledContent("Name") {
             Text(viewModel.pdfFont.displayName)
         }
-        LabeledContent("Type") {
-            Text(viewModel.typeString)
+        LabeledContent("Subtype") {
+            Text(viewModel.subtypeString)
+        }
+        if let programKindString = viewModel.programKindString {
+            LabeledContent("Program Kind") {
+                Text(programKindString)
+            }
         }
         LabeledContent("Embedded") {
             Text(viewModel.pdfFont.isEmbedded ? "Yes" : "No")
@@ -199,7 +125,7 @@ struct FontPreviewView: View {
 
     TabView {
         ForEach(Array(document.fonts.enumerated()), id: \.offset) { i, font in
-            FontPreviewView(font: document.fonts[i], showDetails: false)
+            FontPreviewView(font: font, showDetails: false)
                 .tabItem {
                     Text("\(i)")
                 }
@@ -214,7 +140,7 @@ struct FontPreviewView: View {
 
     TabView {
         ForEach(Array(document.fonts.enumerated()), id: \.offset) { i, font in
-            FontPreviewView(font: document.fonts[i], showDetails: true)
+            FontPreviewView(font: font, showDetails: true)
                 .tabItem {
                     Text("\(i)")
                 }

@@ -5,7 +5,7 @@ private import OSLog
 public struct PDFFontParser {
     private static let logger = Logger(subsystem: "PDFKitExt", category: "PDFFontParser")
 
-    public static func fontFrom(fontDictionary: CGPDFDictionaryRef) throws -> any PDFFont? {
+    public static func fontFrom(fontDictionary: CGPDFDictionaryRef, key: String) throws -> any PDFFont {
         let subtype: PDFFontSubtype
         do {
             subtype = try Self.getSubtype(from: fontDictionary)
@@ -15,18 +15,18 @@ public struct PDFFontParser {
         }
         logger.debug("from(): creating font for subtype \(subtype)")
         switch subtype {
-        case .type0: return try PDFType0Font(fromFontDictionary: fontDictionary)
-        case .type1, .mmType1: return try PDFType1Font(fromFontDictionary: fontDictionary)
-        case .type3: return try PDFType3Font(fromFontDictionary: fontDictionary)
-        case .trueType: return try PDFTrueTypeFont(fromFontDictionary: fontDictionary)
-        case .cidFontType0, .cidFontType2: return try PDFCIDFont(fromFontDictionary: fontDictionary)
+        case .type0: return try PDFType0Font(fromFontDictionary: fontDictionary, key: key)
+        case .type1, .mmType1: return try PDFType1Font(fromFontDictionary: fontDictionary, key: key)
+        case .type3: return try PDFType3Font(fromFontDictionary: fontDictionary, key: key)
+        case .trueType: return try PDFTrueTypeFont(fromFontDictionary: fontDictionary, key: key)
+        case .cidFontType0, .cidFontType2: return try PDFCIDFont(fromFontDictionary: fontDictionary, key: key)
         }
     }
 
     internal static func getSubtype(from fontDictionary: CGPDFDictionaryRef) throws -> PDFFontSubtype {
         guard let subtype = fontDictionary.name(forKey: "Subtype") else {
             let msg = "No 'Subtype'"
-            logger.error("getSubtype(): \(msg))")
+            logger.error("getSubtype(): \(msg)")
             throw PDFKitError.corruptedObject(message: msg)
         }
         switch subtype {

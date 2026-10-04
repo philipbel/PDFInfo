@@ -14,7 +14,6 @@ struct DocumentInspectorView: View {
             DocumentKeywordsView(keywords: document.metadata.keywords)
         }
         .formStyle(.grouped)
-
     }
 
     init(document: PDFDocument, url: URL) {

@@ -12,6 +12,9 @@
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://philipbel.github.io/PDFInfo/appcast.xml</string>
+    <!-- Default update interval in seconds -> weekly  -->
+	<key>SUScheduledCheckInterval</key>
+	<integer>604800</integer>
 	<key>CFBundleHelpBookName</key>
 	<string>PDF Info Help</string>
 	<key>CFBundleDocumentTypes</key>

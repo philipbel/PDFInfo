@@ -6,8 +6,7 @@ fileprivate struct DropOverlayInfoView: View {
     let count: Int
 
     private var message: String {
-        count == 1 ? "Drop 1 PDF file to open"
-                   : "Drop \(count) PDF files to open"
+        String(localized: "Drop \(count) PDF files to open")
     }
 
     var body: some View {
@@ -88,7 +87,6 @@ final class DropOverlayView: NSView {
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         toggleOverlay(visible: false)
         return destination?.performDragOperation?(sender) ?? false
-
     }
 
     override func draggingExited(_ sender: NSDraggingInfo?) {

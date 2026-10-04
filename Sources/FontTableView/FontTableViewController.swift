@@ -27,7 +27,6 @@ final class FontTableViewController: NSViewController {
 
         configureColumns()
         tableView.autosaveName = "font-table-view"
-        tableView.autosaveTableColumns = true
         tableView.dataSource = self
         tableView.delegate = self
         tableView.usesAlternatingRowBackgroundColors = true
@@ -36,13 +35,9 @@ final class FontTableViewController: NSViewController {
         tableView.target = self // Selector target
         tableView.doubleAction = #selector(handleDoubleClick)
         tableView.setAccessibilityIdentifier("fonts-table")
+        tableView.sortDescriptors = [NSSortDescriptor(key: FontTableViewColumn.nameColumn.key, ascending: true)]
 
         self.view = scrollView
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        doUpdate()
     }
 
     override func quickLook(with event: NSEvent) {
@@ -68,7 +63,7 @@ final class FontTableViewController: NSViewController {
         let popover = NSPopover()
         popover.behavior = .transient // dismiss on click-away / Escape
         let fontPreviewViewController = NSHostingController(rootView: FontPreviewView(font: font, showDetails: false))
-        fontPreviewViewController.sizingOptions = . preferredContentSize
+        fontPreviewViewController.sizingOptions = .preferredContentSize
         popover.contentViewController = fontPreviewViewController
         popover.show(relativeTo: anchorRect, of: tableView, preferredEdge: .maxY)
         previewPopover = popover
@@ -87,7 +82,7 @@ final class FontTableViewController: NSViewController {
         let cellFont = NSFont.systemFont(ofSize: NSFont.systemFontSize)
         let attrs = [NSAttributedString.Key.font: cellFont]
 
-        let padding = 2 * FontTableView.cellInset
+        let padding = 4 * FontTableView.cellInset
         for column in tableView.tableColumns {
             switch column.identifier {
             case FontTableViewColumn.nameColumn.identifier:
@@ -104,7 +99,7 @@ final class FontTableViewController: NSViewController {
                     max(partialResult, (value as NSString).size(withAttributes: attrs).width)
                 }
                 column.width = maxWidth + padding
-                column.minWidth = column.width
+                column.minWidth = maxWidth + padding
             }
         }
     }
@@ -123,18 +118,23 @@ final class FontTableViewController: NSViewController {
     }
 
     func update(fonts: [any PDFFont]) {
-        self.fonts = fonts
-        doUpdate()
-    }
+        previewPopover?.close()
 
-    private func doUpdate() {
-        tableView.sortDescriptors = [NSSortDescriptor(key: FontTableViewColumn.nameColumn.key, ascending: true)]
-        fonts.sort { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
+        self.fonts = fonts
         updateSystemAvailableFonts()
+        sort(
+            by: tableView.sortDescriptors.first ?? NSSortDescriptor(
+                key: FontTableViewColumn.nameColumn.key,
+                ascending: true
+            )
+        )
         tableView.reloadData()
-        // Resize the columns after the table has reloaded
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.sizeColumnsToFit()
+        // Column sizing
+        if !tableView.autosaveTableColumns {
+            // On first run, first resize the columns based on the data
+            sizeColumnsToFit()
+            // Now load the user's preferences, if any
+            tableView.autosaveTableColumns = true
         }
     }
 
@@ -155,6 +155,32 @@ final class FontTableViewController: NSViewController {
             }
         })
     }
+
+    private func sort(by sortDescriptor: NSSortDescriptor) {
+        guard let key = sortDescriptor.key else {
+            return
+        }
+
+        fonts.sort { a, b in
+            let (a, b) = sortDescriptor.ascending ? (a, b) : (b, a)
+            let result: Bool
+            switch key {
+            case FontTableViewColumn.nameColumn.key:
+                result = a.displayName.localizedStandardCompare(b.displayName) == .orderedAscending
+            case FontTableViewColumn.typeColumn.key:
+                result = FontUtil.typeString(for: a)
+                    .localizedStandardCompare(FontUtil.typeString(for: b)) == .orderedAscending
+            case FontTableViewColumn.embeddedColumn.key:
+                result = (a.isEmbedded ? 1 : 0) < (b.isEmbedded ? 1 : 0)
+            case FontTableViewColumn.subsetColumn.key:
+                result = (a.isSubset ? 1 : 0) < (b.isSubset ? 1 : 0)
+            case FontTableViewColumn.installedColumn.key:
+                result = (systemAvailableFonts.contains(a.id) ? 1 : 0) < (systemAvailableFonts.contains(b.id) ? 1 : 0)
+            default: return false
+            }
+            return result
+        }
+    }
 }
 
 
@@ -166,31 +192,10 @@ extension FontTableViewController: NSTableViewDataSource {
 
     func tableView(_ tableView: NSTableView,
                    sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
-        guard let sort = tableView.sortDescriptors.first,
-              let key = sort.key else { return }
-        fonts.sort { a, b in
-            let result: Bool
-            switch key {
-            case FontTableViewColumn.nameColumn.key:
-                result = a.displayName.localizedStandardCompare(b.displayName) == .orderedAscending
-            case FontTableViewColumn.typeColumn.key:
-                result = FontUtil.typeString(for: a)
-                    .localizedStandardCompare(FontUtil.typeString(for: b)) == .orderedAscending
-            case FontTableViewColumn.embeddedColumn.key:
-                if let a = a as? any PDFProgramFont,
-                   let b = b as? any PDFProgramFont {
-                    result = (a.isEmbedded ? 1 : 0) < (b.isEmbedded ? 1 : 0)
-                } else {
-                    result = false
-                }
-            case FontTableViewColumn.subsetColumn.key:
-                result = (a.isSubset ? 1 : 0) < (b.isSubset ? 1 : 0)
-            case FontTableViewColumn.installedColumn.key:
-                result = (systemAvailableFonts.contains(a.id) ? 1 : 0) < (systemAvailableFonts.contains(b.id) ? 1 : 0)
-            default: return false
-            }
-            return sort.ascending ? result : !result
+        guard let sortDescriptor = tableView.sortDescriptors.first else {
+            return
         }
+        sort(by: sortDescriptor)
         tableView.reloadData()
     }
 }
@@ -200,6 +205,13 @@ extension FontTableViewController: NSTableViewDataSource {
 // MARK: Delegate
 //
 extension FontTableViewController: NSTableViewDelegate {
+    private func makeTableCellView<T: NSTableCellView>(ofType: T.Type,
+                                                       withIdentifier identifier: NSUserInterfaceItemIdentifier) -> T {
+        let tableCellView = (tableView.makeView(withIdentifier: identifier, owner: self) as? T) ?? T(frame: .zero)
+        tableCellView.identifier = identifier
+        return tableCellView
+    }
+
     func tableView(_ tableView: NSTableView,
                    viewFor tableColumn: NSTableColumn?,
                    row: Int) -> NSView? {
@@ -208,23 +220,25 @@ extension FontTableViewController: NSTableViewDelegate {
 
         switch column.identifier.rawValue {
         case FontTableViewColumn.nameColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
-            ?? TextFieldTableCellView(identifier: column.identifier, text: font.displayName)
+            return makeTableCellView(ofType: TextFieldTableCellView.self, withIdentifier: column.identifier).then {
+                $0.configure(text: font.displayName)
+            }
         case FontTableViewColumn.typeColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? NSTableCellView
-            ?? TextFieldTableCellView(identifier: column.identifier, text: FontUtil.typeString(for: font))
+            return makeTableCellView(ofType: TextFieldTableCellView.self, withIdentifier: column.identifier).then {
+                $0.configure(text: FontUtil.typeString(for: font))
+            }
         case FontTableViewColumn.subsetColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
-            ?? CheckTableCellView(identifier: column.identifier, checked: font.isSubset)
+            return makeTableCellView(ofType: CheckTableCellView.self, withIdentifier: column.identifier).then {
+                $0.configure(checked: font.isSubset)
+            }
         case FontTableViewColumn.embeddedColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
-            ?? CheckTableCellView(
-                identifier: column.identifier,
-                checked: font.isEmbedded
-            )
+            return makeTableCellView(ofType: CheckTableCellView.self, withIdentifier: column.identifier).then {
+                $0.configure(checked: font.isEmbedded)
+            }
         case FontTableViewColumn.installedColumn.key:
-            return tableView.makeView(withIdentifier: column.identifier, owner: self) as? CheckTableCellView
-            ?? CheckTableCellView(identifier: column.identifier, checked: systemAvailableFonts.contains(font.id))
+            return makeTableCellView(ofType: CheckTableCellView.self, withIdentifier: column.identifier).then {
+                $0.configure(checked: systemAvailableFonts.contains(font.id))
+            }
         default:
             return nil
         }
