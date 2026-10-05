@@ -144,7 +144,7 @@ final class PDFDocumentWindowController: NSWindowController {
     }
 
     private func previewFont(_ font: any PDFFont) {
-        fontPreviewWindowController.update(font: font)
+        fontPreviewWindowController.configure(font: font)
         fontPreviewWindowController.showWindow(self)
     }
 

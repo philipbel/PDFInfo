@@ -62,9 +62,7 @@ final class FontTableViewController: NSViewController {
 
         let popover = NSPopover()
         popover.behavior = .transient // dismiss on click-away / Escape
-        let fontPreviewViewController = NSHostingController(rootView: FontPreviewView(font: font, showDetails: false))
-        fontPreviewViewController.sizingOptions = .preferredContentSize
-        popover.contentViewController = fontPreviewViewController
+        popover.contentViewController = FontQuickLookViewController(font: font)
         popover.show(relativeTo: anchorRect, of: tableView, preferredEdge: .maxY)
         previewPopover = popover
     }

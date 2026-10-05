@@ -3,26 +3,8 @@ import SwiftUI
 import PDFKitExt
 
 
-fileprivate struct FontPreviewWrapperView: View {
-    let pdfFont: any PDFFont?
-
-    var body: some View {
-        if let pdfFont {
-            FontPreviewView(font: pdfFont, showDetails: true)
-                .id(pdfFont.id)
-        } else {
-            ContentUnavailableView("No font selected", systemImage: "textformat")
-        }
-    }
-}
-
-
 final class FontPreviewWindowController: NSWindowController {
-    private lazy var previewViewController: NSHostingController = {
-        let previewViewController = NSHostingController(rootView: FontPreviewWrapperView(pdfFont: nil))
-        previewViewController.sizingOptions = .preferredContentSize
-        return previewViewController
-    }()
+    private var previewViewController = FontPreviewViewController()
     private var alreadyShown = false
 
     convenience init() {
@@ -53,7 +35,7 @@ final class FontPreviewWindowController: NSWindowController {
         super.showWindow(sender)
     }
 
-    func update(font pdfFont: any PDFFont) {
-        previewViewController.rootView = FontPreviewWrapperView(pdfFont: pdfFont)
+    func configure(font pdfFont: any PDFFont) {
+        previewViewController.configure(font: pdfFont)
     }
 }

@@ -28,6 +28,46 @@ enum FontUtil {
         return nil
     }
 
+    static func descriptor(from pdfFont: any PDFFont) -> PDFFontDescriptor? {
+        return (pdfFont as? PDFType0Font)?.descendant.descriptor
+        ?? (pdfFont as? any PDFProgramFont)?.descriptor
+    }
+
+    static func program(from pdfFont: any PDFFont) -> PDFFontProgram? {
+        return descriptor(from: pdfFont)?.program
+    }
+
+    static func buildPreviewFont(
+        from pdfFont: any PDFFont, size previewFontSize: CGFloat
+    ) -> (isSystemFont: Bool, previewFont: NSFont?) {
+        if let systemFont = FontUtil.getSystemFont(named: pdfFont.displayName, size: CGFloat(previewFontSize)) {
+            return (isSystemFont: true, previewFont: systemFont)
+        }
+        guard let program = program(from: pdfFont) else {
+            return (isSystemFont: false, previewFont: nil)
+        }
+
+        guard let provider = CGDataProvider(data: program.data as CFData) else {
+            return (isSystemFont: false, previewFont: nil)
+        }
+        guard let cgFont = CGFont(provider) else {
+            return (isSystemFont: false, previewFont: nil)
+        }
+        let ctFont = CTFontCreateWithGraphicsFont(cgFont, CGFloat(previewFontSize), nil, nil)
+        return (isSystemFont: false, ctFont as NSFont)
+    }
+
+    static func flagsString(from pdfFont: any PDFFont) -> String {
+        guard let descriptor = descriptor(from: pdfFont) else {
+            return ""
+        }
+        return descriptor.flags.displayDictionary.compactMap { key, value in
+            value ? key : nil
+        }
+        .sorted()
+        .joined(separator: ", ")
+    }
+
     static func typeString(for font: any PDFFont) -> String {
         // See https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/poppler/GfxFont.cc#L288 and
         // Section 9.5 of ISO-32000-2 (PDF-2.0)
