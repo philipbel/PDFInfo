@@ -45,7 +45,6 @@ final class DropOverlayView: NSView {
         let v = NSHostingView(rootView: DropOverlayInfoView(count: 0))
         v.translatesAutoresizingMaskIntoConstraints = false
         v.alphaValue = 0
-        v.isHidden = false
         addSubview(v)
         NSLayoutConstraint.activate([
             v.leadingAnchor.constraint(equalTo: leadingAnchor),

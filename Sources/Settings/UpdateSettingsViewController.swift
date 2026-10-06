@@ -122,8 +122,8 @@ class UpdateSettingsViewController: NSViewController {
             .store(in: &cancelBag)
 
         updater.publisher(for: \.updateCheckInterval)
-            .sink { [weak self] tag in
-                let updateInterval = UpdateInterval(rawValue: Int(tag)) ?? Self.defaultUpdateInterval
+            .sink { [weak self] interval in
+                let updateInterval = UpdateInterval(rawValue: Int(interval)) ?? Self.defaultUpdateInterval
                 self?.updateIntervalPopupButton.selectItem(withTag: updateInterval.rawValue)
             }
             .store(in: &cancelBag)
@@ -133,7 +133,7 @@ class UpdateSettingsViewController: NSViewController {
                 if let date {
                     self?.lastUpdateCheckLabel.stringValue = String(localized: "Last check: \(date.formatted())")
                 } else {
-                    self?.lastUpdateCheckLabel.stringValue = String(localized: "Never", comment: "Last update date")
+                    self?.lastUpdateCheckLabel.stringValue = String(localized: "Last check: never")
                 }
             }
             .store(in: &cancelBag)

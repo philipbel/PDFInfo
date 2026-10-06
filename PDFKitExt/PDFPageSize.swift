@@ -61,10 +61,10 @@ public struct PDFPageSize: Codable, Equatable, Sendable {
             PDFPageSize(width: height, height: width)
         }
         if pageSize == Self.a4 {
-            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: nil)
+            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: Self.a4.width.unit)
             return String(localized: "A4 (\(paperSize), \(orientation.displayName))", bundle: #bundle)
         } else if pageSize == Self.letter {
-            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: nil)
+            let paperSize = Self.formatPageSize(self, formatter: formatter, unit: Self.a4.width.unit)
             return String(localized: "Letter (\(paperSize), \(orientation.displayName))", bundle: #bundle)
         } else {
             // Pick units based on the measurement system
@@ -77,8 +77,7 @@ public struct PDFPageSize: Codable, Equatable, Sendable {
         let formatter = MeasurementFormatter()
         formatter.locale = locale
         formatter.unitStyle = .short
-        formatter.unitOptions = .providedUnit
-        formatter.numberFormatter.maximumFractionDigits = 1
+        formatter.numberFormatter.maximumFractionDigits = 2
         return formatter
     }
 

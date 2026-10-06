@@ -19,10 +19,14 @@ class FontQuickLookViewController: NSViewController {
     override func loadView() {
         view = NSView()
 
-        previewView.stringValue = UserDefaults.standard[\.previewText]
         let previewFontSize = UserDefaults.standard[\.previewFontSize]
         let (_, nsFont) = FontUtil.buildPreviewFont(from: pdfFont, size: CGFloat(previewFontSize))
         previewView.font = nsFont
+        if nsFont != nil {
+            previewView.stringValue = UserDefaults.standard[\.previewText]
+        } else {
+            previewView.stringValue = String(localized: "No preview avaialble")
+        }
     }
 
     override func viewDidLoad() {

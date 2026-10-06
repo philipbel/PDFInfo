@@ -4,7 +4,7 @@ import PDFKitExt
 
 
 final class FontPreviewWindowController: NSWindowController {
-    private var previewViewController = FontPreviewViewController()
+    private let previewViewController = FontPreviewViewController()
     private var alreadyShown = false
 
     convenience init() {

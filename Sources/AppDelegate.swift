@@ -3,7 +3,7 @@ import Sparkle
 
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private var updateController = SPUStandardUpdaterController(
+    private let updateController = SPUStandardUpdaterController(
         startingUpdater: true,
         updaterDelegate: nil,
         userDriverDelegate: nil,

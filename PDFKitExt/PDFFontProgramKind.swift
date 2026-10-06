@@ -15,7 +15,7 @@ public enum PDFFontProgramKind: String, Sendable, Codable {
     //   uses CIDFont operators (this is equivalent to subtype CIDFontType0C)
     // - A Type1 font dictionary or CIDFontType0 CIDFont dictionary, if the embedded font program contains a "CFF "
     //   table without CIDFont operators
-    case openType = "OpenType"
+    case openType = "openType"
 
     public var displayName: String {
         switch self {

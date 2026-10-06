@@ -81,9 +81,9 @@ public struct PDFType0Font: PDFFont {
     public let baseFont: String
     public let subtype: PDFFontSubtype
     public let isSubset: Bool
-    public private(set) var displayName: String
+    public let displayName: String
     public let descendant: PDFCIDFont
-    public var cmapName: String?
+    public let cmapName: String?
 
     public var id: String {
         "\(baseFont)-\(subtype)-\(isSubset)-\(displayName)-\(descendant.id)-\(String(describing: cmapName))"
@@ -94,11 +94,14 @@ public struct PDFType0Font: PDFFont {
     }
 
     internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef, key: String) throws {
-        (baseFont, subtype, isSubset, displayName) = try Self.parseCommon(fromFontDictionary: fontDictionary, key: key)
-        let (displayName, cmapName) = Self.stripCmapSuffix(name: displayName)
-        logger.debug("init(): displayName: \(displayName), cmapName: \(cmapName ?? "nil")")
-        self.displayName = displayName
-        self.cmapName = cmapName
+        let commonProperties = try Self.parseCommon(fromFontDictionary: fontDictionary, key: key)
+        (displayName, cmapName) = Self.stripCmapSuffix(name: commonProperties.displayName)
+
+        baseFont = commonProperties.baseFont
+        subtype = commonProperties.subtype
+        isSubset = commonProperties.isSubset
+
+        logger.debug("init(): displayName: \(self.displayName), cmapName: \(self.cmapName ?? "nil")")
 
         guard let descendantFontsArray = fontDictionary.array(forKey: "DescendantFonts") else {
             let msg = "Type0 font has no 'DescendantFonts'"

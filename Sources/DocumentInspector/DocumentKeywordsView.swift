@@ -18,6 +18,7 @@ struct DocumentKeywordsView: View {
                     LabeledContent("") {
                         TextField("", text: .constant(keyword))
                             .font(DocumentInspectorView.formFont)
+                            .textSelection(.enabled)
                     }
                     .labelsHidden()
                     .labeledContentStyle(KeywordLabeledContentStyle())
@@ -28,7 +29,9 @@ struct DocumentKeywordsView: View {
 }
 
 #Preview {
-    DocumentKeywordsView(keywords: [
-        "foo", "goo", "bar", "baz"
-    ])
+    Form {
+        DocumentKeywordsView(keywords: [
+            "foo", "goo", "bar", "baz"
+        ])
+    }.formStyle(.grouped)
 }

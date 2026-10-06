@@ -40,7 +40,7 @@ enum FontUtil {
     static func buildPreviewFont(
         from pdfFont: any PDFFont, size previewFontSize: CGFloat
     ) -> (isSystemFont: Bool, previewFont: NSFont?) {
-        if let systemFont = FontUtil.getSystemFont(named: pdfFont.displayName, size: CGFloat(previewFontSize)) {
+        if let systemFont = FontUtil.getSystemFont(named: pdfFont.displayName, size: previewFontSize) {
             return (isSystemFont: true, previewFont: systemFont)
         }
         guard let program = program(from: pdfFont) else {
@@ -53,7 +53,7 @@ enum FontUtil {
         guard let cgFont = CGFont(provider) else {
             return (isSystemFont: false, previewFont: nil)
         }
-        let ctFont = CTFontCreateWithGraphicsFont(cgFont, CGFloat(previewFontSize), nil, nil)
+        let ctFont = CTFontCreateWithGraphicsFont(cgFont, previewFontSize, nil, nil)
         return (isSystemFont: false, ctFont as NSFont)
     }
 
@@ -68,7 +68,7 @@ enum FontUtil {
         .joined(separator: ", ")
     }
 
-    static func typeString(for font: any PDFFont) -> String {
+    static nonisolated func typeString(for font: any PDFFont) -> String {
         // See https://gitlab.freedesktop.org/poppler/poppler/-/blob/master/poppler/GfxFont.cc#L288 and
         // Section 9.5 of ISO-32000-2 (PDF-2.0)
         if let type0Font = font as? PDFType0Font {
