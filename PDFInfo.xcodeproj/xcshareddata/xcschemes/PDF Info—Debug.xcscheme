@@ -86,6 +86,10 @@
             argument = "-NSShowAllViews YES"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-SUFeedURL http://127.0.0.1:8000/appcast.xml"
+            isEnabled = "YES">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
