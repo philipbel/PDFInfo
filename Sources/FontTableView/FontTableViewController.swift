@@ -37,7 +37,12 @@ final class FontTableViewController: NSViewController {
         tableView.target = self // Selector target
         tableView.doubleAction = #selector(handleDoubleClick)
         tableView.setAccessibilityIdentifier("fonts-table")
-        tableView.sortDescriptors = [PDFFontSortDescriptor(key: FontTableViewColumn.nameColumn.key, ascending: true)]
+        // Initially, sort ascending by name
+        tableView.sortDescriptors = [FontTableViewColumn.nameColumn.sortDescriptor(ascending: true)]
+        // Now load the user's preferences, if any
+        // This must happen after setting sortDescriptors, so the user's sorting order is applied
+        // sizeColumnsToFit() will later resize the columns based on content
+        tableView.autosaveTableColumns = true
 
         self.view = scrollView
     }
@@ -75,11 +80,9 @@ final class FontTableViewController: NSViewController {
         for column in FontTableViewColumn.allCases {
             let tableColumn = NSTableColumn(identifier: column.identifier)
             tableColumn.title = column.title
-            tableColumn.sortDescriptorPrototype = PDFFontSortDescriptor(
-                key: column.key,
-                ascending: true,
-                systemAvailableFonts: systemAvailableFonts
-            )
+            tableColumn.headerToolTip = column.toolTip
+            // Default sort descriptor for this column
+            tableColumn.sortDescriptorPrototype = column.sortDescriptor(ascending: true)
             tableView.addTableColumn(tableColumn)
         }
     }
@@ -88,24 +91,33 @@ final class FontTableViewController: NSViewController {
         let cellFont = NSFont.systemFont(ofSize: NSFont.systemFontSize)
         let attrs = [NSAttributedString.Key.font: cellFont]
 
-        let padding = 4 * FontTableView.cellInset
-        for column in tableView.tableColumns {
-            switch column.identifier {
-            case FontTableViewColumn.nameColumn.identifier:
-                column.minWidth = Self.nameColumnMinWidth + padding
-                column.maxWidth = .infinity
-            case FontTableViewColumn.subsetColumn.identifier,
-                FontTableViewColumn.embeddedColumn.identifier,
-                FontTableViewColumn.installedColumn.identifier:
-                column.minWidth = headerWidth(for: column) + padding
-                column.width = column.minWidth
-                column.maxWidth = column.minWidth
-            default:
-                let maxWidth = columnValues(for: column).reduce(headerWidth(for: column)) { partialResult, value in
-                    max(partialResult, (value as NSString).size(withAttributes: attrs).width)
-                }
-                column.width = maxWidth + padding
-                column.minWidth = maxWidth + padding
+        for tableViewColumn in tableView.tableColumns {
+            guard let column = FontTableViewColumn(identifier: tableViewColumn.identifier) else {
+                assertionFailure("Unrecognized column with identifier \(tableViewColumn.identifier)")
+                continue
+            }
+
+            switch column {
+            case .nameColumn:
+                tableViewColumn.minWidth = Self.nameColumnMinWidth + FontTableView.columnHorizontalPadding
+                tableViewColumn.maxWidth = .infinity
+                tableViewColumn.resizingMask = [ .autoresizingMask, .userResizingMask ]
+            case .subsetColumn,
+                    .embeddedColumn,
+                    .installedColumn:
+                tableViewColumn.width = headerWidth(for: tableViewColumn) + FontTableView.columnHorizontalPadding
+                tableViewColumn.minWidth = tableViewColumn.width
+                tableViewColumn.maxWidth = tableViewColumn.width
+                tableViewColumn.resizingMask = [] // no resizing
+            case .typeColumn:
+                let maxContentWidth = columnValues(for: tableViewColumn)
+                    .reduce(headerWidth(for: tableViewColumn)) { partialResult, value in
+                        max(partialResult, (value as NSString).size(withAttributes: attrs).width)
+                    }
+                tableViewColumn.width = maxContentWidth + FontTableView.columnHorizontalPadding
+                tableViewColumn.minWidth = tableViewColumn.width
+                tableViewColumn.maxWidth = tableViewColumn.width
+                tableViewColumn.resizingMask = [] // no resizing
             }
         }
     }
@@ -131,42 +143,12 @@ final class FontTableViewController: NSViewController {
         // New fonts
         self.fonts = fonts
         updateSystemAvailableFonts()
-        // Update the prototype font descriptors in each of the table view's columns
-        for column in tableView.tableColumns {
-            guard let c = FontTableViewColumn(identifier: column.identifier) else {
-                continue
-            }
-            column.sortDescriptorPrototype = PDFFontSortDescriptor(
-                key: c.key,
-                ascending: true,
-                systemAvailableFonts: systemAvailableFonts
-            )
-        }
-        // Update the font descriptors in the table view
-        rebuildFontDescriptors()
         // Now sort
         sort()
         // Only then reload
         tableView.reloadData()
         // Column sizing after the data has been reloaded
-        if !tableView.autosaveTableColumns {
-            // On first run, first resize the columns based on the data
-            sizeColumnsToFit()
-            // Now load the user's preferences, if any
-            tableView.autosaveTableColumns = true
-        }
-    }
-
-    private func rebuildFontDescriptors() {
-        tableView.sortDescriptors = tableView.sortDescriptors.compactMap {
-            guard let key = $0.key,
-                  let column = FontTableViewColumn(rawValue: key) else {
-                return nil
-            }
-            return PDFFontSortDescriptor(key: column.key,
-                                         ascending: $0.ascending,
-                                         systemAvailableFonts: systemAvailableFonts)
-        }
+        sizeColumnsToFit()
     }
 
     @objc
@@ -188,25 +170,67 @@ final class FontTableViewController: NSViewController {
     }
 
     private func sort() {
-        let unrecognizedSortDescriptors = tableView.sortDescriptors.filter { !($0 is PDFFontSortDescriptor) }
-        if !unrecognizedSortDescriptors.isEmpty {
-            assertionFailure("Found unrecognized sort descriptors: \(unrecognizedSortDescriptors)")
+        var sortDescriptors = tableView.sortDescriptors
+        // Append the name sort descriptor at the end as a tie-breaker if not already in there
+        if !tableView.sortDescriptors.contains(where: {
+            $0.key == FontTableViewColumn.nameColumn.key
+        }) {
+            sortDescriptors.append(FontTableViewColumn.nameColumn.sortDescriptor(ascending: true))
         }
-        let sortDescriptors = tableView.sortDescriptors.compactMap { $0 as? PDFFontSortDescriptor } + [
-            PDFFontSortDescriptor(key: FontTableViewColumn.nameColumn.key, ascending: true)
-        ]
+        let orderAndColumnPairs = sortDescriptors.compactMap {
+            (descriptor: NSSortDescriptor) -> (ascending: Bool, column: FontTableViewColumn)? in
+            guard let key = descriptor.key else {
+                assertionFailure("No key")
+                return nil
+            }
+            guard let column = FontTableViewColumn(rawValue: key) else {
+                assertionFailure("No column for key '\(key)'")
+                return nil
+            }
+            return (ascending: descriptor.ascending, column: column)
+        }
+        Self.logger.debug("Sorting \(self.fonts.count) font(s) by \(orderAndColumnPairs)")
+
         fonts.sort { a, b in
-            for descriptor in sortDescriptors {
-                switch descriptor.compare(a, to: b) {
-                case .orderedAscending:
-                    return true
-                case .orderedDescending:
-                    return false
-                case .orderedSame:
+            for (ascending, column) in orderAndColumnPairs {
+                let result: ComparisonResult
+                switch column {
+                case .nameColumn:
+                    result = a.displayName.localizedStandardCompare(b.displayName)
+                case .typeColumn:
+                    result = FontUtil.typeString(for: a)
+                        .localizedStandardCompare(FontUtil.typeString(for: b))
+                case .embeddedColumn:
+                    result = Self.compare(a.isEmbedded, b.isEmbedded)
+                case .subsetColumn:
+                    result = Self.compare(a.isSubset, b.isSubset)
+                case .installedColumn:
+                    result = Self.compare(systemAvailableFonts.contains(a.id), systemAvailableFonts.contains(b.id))
+                }
+
+                if result == .orderedSame {
+                    // Try next descriptor
                     continue
+                }
+
+                if ascending {
+                    return result == .orderedAscending
+                } else {
+                    return result == .orderedDescending
                 }
             }
             return false
+        }
+    }
+
+    private static func compare(_ a: Bool, _ b: Bool) -> ComparisonResult {
+        return switch (a ? 1 : 0) - (b ? 1 : 0) {
+        case -1:
+                .orderedAscending
+        case 1:
+                .orderedDescending
+        default:
+                .orderedSame
         }
     }
 }
@@ -274,4 +298,15 @@ extension FontTableViewController: NSTableViewDelegate {
         guard let popover = previewPopover, popover.isShown else { return }
         showPreviewPopover(for: tableView.selectedRow)
     }
+}
+
+
+#Preview(traits: .sizeThatFitsLayout) {
+    let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
+    let document = PDFDocument(url: url)!
+
+    let viewController = FontTableViewController()
+    viewController.loadViewIfNeeded()
+    viewController.update(fonts: document.fonts)
+    return viewController
 }
