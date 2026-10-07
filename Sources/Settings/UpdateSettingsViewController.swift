@@ -47,6 +47,7 @@ class UpdateSettingsViewController: NSViewController {
     private let lastUpdateCheckLabel = NSTextField(labelWithString: "").then {
         $0.font = .preferredFont(forTextStyle: .footnote)
         $0.textColor = .secondaryLabelColor
+        $0.isSelectable = true
     }
 
     init(updater: SPUUpdater) {
@@ -70,7 +71,7 @@ class UpdateSettingsViewController: NSViewController {
                 NSStackView.horizontal(views: [
                     downloadUpdatesCheckBox,
                 ]).then {
-                    $0.edgeInsets.left = 20
+                    $0.edgeInsets.left = 24
                 },
             ], alignment: .leading),
             NSStackView.vertical(views: [
