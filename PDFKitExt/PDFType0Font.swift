@@ -95,13 +95,15 @@ public struct PDFType0Font: PDFFont {
 
     internal init(fromFontDictionary fontDictionary: CGPDFDictionaryRef, key: String) throws {
         let commonProperties = try Self.parseCommon(fromFontDictionary: fontDictionary, key: key)
-        (displayName, cmapName) = Self.stripCmapSuffix(name: commonProperties.displayName)
+        let (displayName, cmapName) = Self.stripCmapSuffix(name: commonProperties.displayName)
 
         baseFont = commonProperties.baseFont
         subtype = commonProperties.subtype
         isSubset = commonProperties.isSubset
+        self.displayName = displayName
+        self.cmapName = cmapName
 
-        logger.debug("init(): displayName: \(self.displayName), cmapName: \(self.cmapName ?? "nil")")
+        logger.debug("init(): displayName: \(displayName), cmapName: \(cmapName ?? "nil")")
 
         guard let descendantFontsArray = fontDictionary.array(forKey: "DescendantFonts") else {
             let msg = "Type0 font has no 'DescendantFonts'"

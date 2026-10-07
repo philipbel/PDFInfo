@@ -42,7 +42,7 @@ final nonisolated class PDFFontSortDescriptor: NSSortDescriptor {
         }
         guard let rhs = object2 as? any PDFFont else {
             assertionFailure("object2 is not PDFFont: \(type(of: object2))")
-                return .orderedSame
+            return .orderedSame
         }
 
         let result: ComparisonResult

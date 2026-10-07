@@ -26,7 +26,7 @@ class UpdateSettingsViewController: NSViewController {
     }
     private static let defaultUpdateInterval = UpdateInterval.weekly
 
-    let updater: SPUUpdater
+    private let updater: SPUUpdater
     private var cancelBag = Set<AnyCancellable>()
     private let checkCheckBox = NSButton(checkboxWithTitle: String(localized: "Check for updates:"),
                                          target: nil,

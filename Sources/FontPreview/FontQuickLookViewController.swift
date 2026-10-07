@@ -25,7 +25,7 @@ class FontQuickLookViewController: NSViewController {
         if nsFont != nil {
             previewView.stringValue = UserDefaults.standard[\.previewText]
         } else {
-            previewView.stringValue = String(localized: "No preview avaialble")
+            previewView.stringValue = String(localized: "No preview available")
         }
     }
 

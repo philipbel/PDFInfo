@@ -143,15 +143,7 @@ final class FontTableViewController: NSViewController {
             )
         }
         // Update the font descriptors in the table view
-        tableView.sortDescriptors = tableView.sortDescriptors.compactMap {
-            guard let key = $0.key,
-                  let column = FontTableViewColumn(rawValue: key) else {
-                return nil
-            }
-            return PDFFontSortDescriptor(key: column.key,
-                                         ascending: $0.ascending,
-                                         systemAvailableFonts: systemAvailableFonts)
-        }
+        rebuildFontDescriptors()
         // Now sort
         sort()
         // Only then reload
@@ -162,6 +154,18 @@ final class FontTableViewController: NSViewController {
             sizeColumnsToFit()
             // Now load the user's preferences, if any
             tableView.autosaveTableColumns = true
+        }
+    }
+
+    private func rebuildFontDescriptors() {
+        tableView.sortDescriptors = tableView.sortDescriptors.compactMap {
+            guard let key = $0.key,
+                  let column = FontTableViewColumn(rawValue: key) else {
+                return nil
+            }
+            return PDFFontSortDescriptor(key: column.key,
+                                         ascending: $0.ascending,
+                                         systemAvailableFonts: systemAvailableFonts)
         }
     }
 
@@ -185,7 +189,7 @@ final class FontTableViewController: NSViewController {
 
     private func sort() {
         let unrecognizedSortDescriptors = tableView.sortDescriptors.filter { !($0 is PDFFontSortDescriptor) }
-        guard unrecognizedSortDescriptors.isEmpty else {
+        if !unrecognizedSortDescriptors.isEmpty {
             assertionFailure("Found unrecognized sort descriptors: \(unrecognizedSortDescriptors)")
         }
         let sortDescriptors = tableView.sortDescriptors.compactMap { $0 as? PDFFontSortDescriptor } + [
@@ -260,7 +264,7 @@ extension FontTableViewController: NSTableViewDelegate {
             return makeTableCellView(ofType: CheckTableCellView.self, withIdentifier: tableColumn.identifier).then {
                 $0.configure(checked: systemAvailableFonts.contains(font.id))
             }
-        default:
+        case nil:
             return nil
         }
     }

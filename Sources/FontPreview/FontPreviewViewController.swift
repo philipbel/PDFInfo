@@ -18,6 +18,7 @@ class FontPreviewViewController: NSViewController {
             update()
         }
     }
+    private var previewFontURL: URL?
     private var cancelBag = Set<AnyCancellable>()
 
     private lazy var grid = NSGridView().then {
@@ -42,7 +43,10 @@ class FontPreviewViewController: NSViewController {
         ])
         $0.addRow(with: [
             NSTextField(labelWithString: String(localized: "File:")),
-            fontFileLabel
+            NSStackView.horizontal(views: [
+                fontFileLabel,
+                revealFileButton,
+            ], alignment: .firstBaseline, spacing: 4)
         ])
         $0.column(at: 0).xPlacement = .trailing
         $0.column(at: 1).xPlacement = .leading
@@ -105,6 +109,15 @@ class FontPreviewViewController: NSViewController {
     }
     private let fontFileLabel = NSTextField(labelWithString: "").then {
         $0.isSelectable = true
+    }
+    private lazy var revealFileButton = NSButton().then {
+        $0.image = NSImage(systemSymbolName: "magnifyingglass.circle.fill", accessibilityDescription: "")
+        $0.toolTip = String(localized: "Reveal in Finder")
+        $0.isBordered = false
+        $0.imagePosition = .imageOnly
+        $0.controlSize = .small
+        $0.target = self
+        $0.action = #selector(revealFile(_:))
     }
 
     init(font pdfFont: any PDFFont? = nil) {
@@ -205,7 +218,6 @@ class FontPreviewViewController: NSViewController {
             FontUtil.buildPreviewFont(from: $0, size: previewFontSize).previewFont
         }
 
-        var previewFontURL: URL?
         if let nsFont {
             previewLabel.font = nsFont
             previewLabel.stringValue = UserDefaults.standard[\.previewText]
@@ -216,9 +228,22 @@ class FontPreviewViewController: NSViewController {
         }
         if let previewFontURL {
             fontFileLabel.stringValue = previewFontURL.lastPathComponent
+
+            let fileName = previewFontURL.lastPathComponent
+            revealFileButton.isHidden = false
+            revealFileButton.setAccessibilityTitle(revealFileButton.toolTip)
         } else {
             fontFileLabel.stringValue = String(localized: "Not installed")
+            revealFileButton.isHidden = true
         }
+    }
+
+    @objc
+    private func revealFile(_ sender: NSButton) {
+        guard let previewFontURL else {
+            return
+        }
+        NSWorkspace.shared.activateFileViewerSelecting([previewFontURL])
     }
 }
 
