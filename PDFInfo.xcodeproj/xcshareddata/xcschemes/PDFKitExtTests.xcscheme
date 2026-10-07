@@ -24,36 +24,6 @@
                ReferencedContainer = "container:PDFInfo.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4A42CA832FD33A3300CAE2F8"
-               BuildableName = "Tests.xctest"
-               ReferencedContainer = "container:PDFInfo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4A2F125930655A6B006A8160"
-               BuildableName = "CGPDFExtTests.xctest"
-               ReferencedContainer = "container:PDFInfo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4A42CA8D2FD33A3300CAE2F8"
-               BuildableName = "UITests.xctest"
-               ReferencedContainer = "container:PDFInfo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

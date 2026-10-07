@@ -1,4 +1,4 @@
-import Foundation
+public import Foundation
 
 nonisolated public protocol SettingValue: Equatable, Sendable { }
 

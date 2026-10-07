@@ -68,7 +68,7 @@ public struct PDFPageSize: Codable, Equatable, Sendable {
             return String(localized: "Letter (\(paperSize), \(orientation.displayName))", bundle: #bundle)
         } else {
             // Pick units based on the measurement system
-            let unit: UnitLength = locale.measurementSystem == .metric ? .centimeters : .inches
+            let unit: UnitLength = locale.measurementSystem == .us ? .inches : .centimeters
             return Self.formatPageSize(self, formatter: formatter, unit: unit)
         }
     }

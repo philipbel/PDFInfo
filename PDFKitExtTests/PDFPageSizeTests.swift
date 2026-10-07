@@ -1,6 +1,7 @@
 import Testing
 import Foundation
-@testable import PDF_Info
+@testable import PDFKitExt
+
 
 @Suite("PDFPageSize equality")
 struct PDFPageSizeTests {
@@ -45,21 +46,27 @@ struct PDFPageSizeTests {
         let a4Height = formatter.string(from: Measurement(value: 29.7, unit: UnitLength.centimeters))
         let letterWidth = formatter.string(from: Measurement(value: 8.5, unit: UnitLength.inches))
         let letterHeight = formatter.string(from: Measurement(value: 11, unit: UnitLength.inches))
-        let customUnit: UnitLength = locale.measurementSystem == .metric ? .centimeters : .inches
+        let customUnit: UnitLength = locale.measurementSystem == .us ? .inches : .centimeters
         let customWidth = Measurement(value: 12, unit: UnitLength.feet).converted(to: customUnit)
         let customWidthString = formatter.string(from: customWidth)
         let customHeight = Measurement(value: 23, unit: UnitLength.fathoms).converted(to: customUnit)
         let customHeightString = formatter.string(from: customHeight)
         let customPageSize = PDFPageSize(width: customWidth, height: customHeight)
 
-        #expect(PDFPageSize.a4.formatted(locale: locale) == "A4 (\(a4Width) ⨉ \(a4Height))")
-        #expect(PDFPageSize.letter.formatted(locale: locale) == "Letter (\(letterWidth) ⨉ \(letterHeight))")
+        let a4Landscape = PDFPageSize(width: Measurement(value: 29.7, unit: UnitLength.centimeters),
+                                      height: Measurement(value: 21, unit: UnitLength.centimeters))
+        let a4LandscapeWidth = formatter.string(from: a4Landscape.width)
+        let a4LandscapeHeight = formatter.string(from: a4Landscape.height)
+
+        #expect(PDFPageSize.a4.formatted(locale: locale) == "A4 (\(a4Width) ⨉ \(a4Height), Portrait)")
+        #expect(a4Landscape.formatted(locale: locale) == "A4 (\(a4LandscapeWidth) ⨉ \(a4LandscapeHeight), Landscape)")
+        #expect(PDFPageSize.letter.formatted(locale: locale) == "Letter (\(letterWidth) ⨉ \(letterHeight), Portrait)")
         #expect(customPageSize.formatted(locale: locale) == "\(customWidthString) ⨉ \(customHeightString)")
     }
 
     @Test func formatting() throws {
         Self.testFormatting(locale: Locale(identifier: "en-US"))
-        Self.testFormatting(locale: Locale(identifier: "en-UK"))
+        Self.testFormatting(locale: Locale(identifier: "en-GB"))
         Self.testFormatting(locale: Locale(identifier: "de-DE"))
     }
 }
