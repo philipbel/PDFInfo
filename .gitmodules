@@ -1,3 +1,6 @@
 [submodule "extern/zlib-ng"]
 	path = extern/zlib-ng
 	url = https://github.com/zlib-ng/zlib-ng.git
+[submodule "extern/libjpeg-turbo"]
+	path = extern/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
