@@ -1,8 +1,14 @@
 {
     "recommendations": [
         "charliermarsh.ruff",
+        "ms-python.python",
+        "ms-vscode.cpptools",
+        "redhat.vscode-xml",
+        "rust-lang.rust-analyzer",
+        "vadimcn.vscode-lldb",
+        "ymotongpoo.licenser",
         "fill-labs.dependi",
         "ms-python.python",
-        "tamasfe.even-better-toml"
+        "tamasfe.even-better-toml",
     ]
 }

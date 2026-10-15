@@ -1,0 +1,97 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cmake configure: pdf-engine-core",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "cmake",
+                "-S",
+                "${workspaceFolder}/pdf-engine/core",
+                "-B",
+                "${workspaceFolder}/build/macos/arm64/pdf-engine-core",
+                "-G",
+                "Ninja",
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-DCMAKE_PREFIX_PATH=${workspaceFolder}/build/prefix/macos/arm64",
+                "-DCMAKE_OSX_ARCHITECTURES=arm64",
+                "-DCMAKE_OSX_DEPLOYMENT_TARGET=14.0"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "cmake: pdf-engine-core",
+            "type": "shell",
+            "command": "uv",
+            "args": [
+                "run",
+                "cmake",
+                "--build",
+                "${workspaceFolder}/build/macos/arm64/pdf-engine-core"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "cmake configure: pdf-engine-core",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc",
+            "presentation": {
+                "clear": true
+            }
+        },
+        {
+            "label": "rust: pdf-engine",
+            "dependsOn": "core: build",
+            "type": "cargo",
+            "command": "build",
+            "args": [
+                "-p",
+                "pdf-engine"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+        },
+        {
+            "label": "rust: pdfinfo-gtk",
+            "type": "cargo",
+            "command": "build",
+            "args": [
+                "-p",
+                "pdfinfo-gtk"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "env": {
+                // See https://developer.gnome.org/documentation/tools/inspector.html
+                "GTK_DEBUG": "interactive",
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "revealProblems": "onProblem",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            }
+        }
+    ]
+}

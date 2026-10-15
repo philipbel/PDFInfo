@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE schemalist SYSTEM "https://gitlab.gnome.org/GNOME/glib/-/raw/main/gio/gschema.dtd">
+<schemalist gettext-domain="pdfinfo">
+    <schema id="com.github.philipbel.PDFInfo" path="/com/github/philipbel/PDFInfo/">
+        <key name="window-width" type="i">
+            <default>800</default>
+        </key>
+        <key name="window-height" type="i">
+            <default>600</default>
+        </key>
+        <key name="window-maximized" type="b">
+            <default>false</default>
+        </key>
+        <key name="show-inspector" type="b">
+            <default>true</default>
+        </key>
+        <key name="show-preview" type="b">
+            <default>true</default>
+        </key>
+        <key name="preview-font-text" type="s">
+            <default l10n="messages" >"The quick brown fox jumps over the lazy dog"</default>
+        </key>
+        <key name="preview-font-size" type="i">
+            <default>20</default>
+            <range min="10" max="100"></range>
+        </key>
+    </schema>
+</schemalist>

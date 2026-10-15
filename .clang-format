@@ -1,0 +1,23 @@
+---
+BasedOnStyle: LLVM
+UseTab: Never
+IndentWidth: 4
+ColumnLimit: 100
+LineEnding: LF
+---
+Language: Cpp
+PointerAlignment: Right
+DerivePointerAlignment: false
+AlignAfterOpenBracket: true
+EmptyLineBeforeAccessModifier: Always
+NamespaceIndentation: Inner
+PackArguments:
+  BinPack: OnePerLine
+SortUsingDeclarations: Lexicographic
+WrapNamespaceBodyWithEmptyLines: Always
+AllowShortIfStatementsOnASingleLine: false
+IndentCaseLabels: false
+MaxEmptyLinesToKeep: 2
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBinaryOperators: NonAssignment
+AlignOperands: DontAlign

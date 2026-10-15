@@ -1,15 +1,80 @@
 {
+    "explorer.excludeGitIgnore": true,
+    "search.exclude": {
+        "extern": true
+    },
+    "VsCodeTaskButtons.tasks": [
+        {
+            "label": "rust: pdfinfo-gtk",
+            "task": "rust: pdfinfo-gtk"
+        },
+        {
+            "label": "rust: pdf-engine",
+            "task": "rust: pdf-engine"
+        },
+        {
+            "label": "cmake: pdf-engine-core",
+            "task": "cmake: pdf-engine-core"
+        }
+    ],
+    // Rust
+    "[rust]": {
+        "editor.defaultFormatter": "rust-lang.rust-analyzer",
+        "editor.formatOnSave": true,
+        "editor.wordWrapColumn": 100,
+        "rewrap.wrappingColumn": 100,
+    },
+   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+   "rust-analyzer.check.command": "clippy",
+    // Python
     "python.analysis.typeCheckingMode": "standard",
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports.ruff": "explicit"
+        }
+    },
+    // C/C++
+    // TODO: Don't hardcode
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos/arm64/pdf-engine-core/compile_commands.json",
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.formatting": "clangFormat",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true,
+    },
+    // License
+    "licenser.license": "MIT",
+    "licenser.author": "Philip B. (philipbel)",
+    "licenser.projectName": "PDF Info",
+    // Spelling
     "cSpell.words": [
+        "accels",
+        "bindtextdomain",
+        "cmap",
+        "codeset",
+        "concatcp",
+        "Crossfade",
         "fitz",
         "fontfile",
         "fontname",
         "fontsize",
+        "formatx",
+        "freetype",
+        "gettextrs",
+        "gresource",
+        "gschema",
+        "GTRUE",
+        "halign",
+        "langinfo",
         "pdfinfo",
-        "philipbel"
+        "pdfs",
+        "philipbel",
+        "setlocale",
+        "strdup",
+        "vexpand",
+        "vhomogeneous",
+        "xalign",
     ],
-    "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
-        "editor.formatOnSave": true
-    }
 }

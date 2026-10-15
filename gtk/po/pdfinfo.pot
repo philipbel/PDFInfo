@@ -1,0 +1,235 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PDFInfo package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PDFInfo\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-12 18:04+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gtk/src/inspector.rs:56
+msgid "File"
+msgstr ""
+
+#: gtk/src/inspector.rs:60
+msgid "PDF Version"
+msgstr ""
+
+#: gtk/src/inspector.rs:61
+msgid "Page Count"
+msgstr ""
+
+#: gtk/src/inspector.rs:62
+msgid "Page Size"
+msgstr ""
+
+#: gtk/src/inspector.rs:68
+msgid "Author"
+msgstr ""
+
+#: gtk/src/inspector.rs:69
+msgid "Title"
+msgstr ""
+
+#: gtk/src/inspector.rs:70
+msgid "Subject"
+msgstr ""
+
+#: gtk/src/inspector.rs:71
+msgid "Creator"
+msgstr ""
+
+#: gtk/src/inspector.rs:72
+msgid "Producer"
+msgstr ""
+
+#: gtk/src/inspector.rs:73
+msgid "Creation Date"
+msgstr ""
+
+#: gtk/src/inspector.rs:74
+msgid "Modification Date"
+msgstr ""
+
+#: gtk/src/inspector.rs:88
+msgid "Keywords"
+msgstr ""
+
+#: gtk/src/inspector.rs:219
+msgid "A4"
+msgstr ""
+
+#: gtk/src/inspector.rs:220
+msgid "Letter"
+msgstr ""
+
+#: gtk/src/inspector.rs:241
+#, rust-format
+msgid "{width}x{height}{space}mm"
+msgstr ""
+
+#: gtk/src/inspector.rs:248
+msgid "Portrait"
+msgstr ""
+
+#: gtk/src/inspector.rs:249
+msgid "Landscape"
+msgstr ""
+
+#: gtk/src/preferences.rs:51 gtk/src/app.rs:186
+msgid "General"
+msgstr ""
+
+#: gtk/src/preferences.rs:52
+msgid "Font Preview"
+msgstr ""
+
+#: gtk/src/preferences.rs:53
+msgid "Preview Text"
+msgstr ""
+
+#: gtk/src/preferences.rs:55
+msgid "Preview Font Size"
+msgstr ""
+
+#: gtk/src/font_list.rs:47
+msgid "Name"
+msgstr ""
+
+#: gtk/src/font_list.rs:55
+msgid "Type"
+msgstr ""
+
+#: gtk/src/font_list.rs:59
+msgid "Subset"
+msgstr ""
+
+#: gtk/src/font_list.rs:63
+msgid "Embedded"
+msgstr ""
+
+#: gtk/src/font_list.rs:150
+msgid "Type 0"
+msgstr ""
+
+#: gtk/src/font_list.rs:151
+msgid "Type 1"
+msgstr ""
+
+#: gtk/src/font_list.rs:152
+msgid "Type 1C"
+msgstr ""
+
+#: gtk/src/font_list.rs:153
+msgid "Type 1C (OpenType)"
+msgstr ""
+
+#: gtk/src/font_list.rs:154
+msgid "Type 3"
+msgstr ""
+
+#: gtk/src/font_list.rs:155
+msgid "TrueType"
+msgstr ""
+
+#: gtk/src/font_list.rs:156
+msgid "TrueType (OpenType)"
+msgstr ""
+
+#: gtk/src/font_list.rs:157
+msgid "CID Type 0"
+msgstr ""
+
+#: gtk/src/font_list.rs:158
+msgid "CID Type 0C"
+msgstr ""
+
+#: gtk/src/font_list.rs:159
+msgid "CID Type0C (OpenType)"
+msgstr ""
+
+#: gtk/src/font_list.rs:160
+msgid "CID TrueType"
+msgstr ""
+
+#: gtk/src/font_list.rs:161
+msgid "CID TrueType (OpenType)"
+msgstr ""
+
+#: gtk/src/main_window.rs:70
+msgid "No Document"
+msgstr ""
+
+#: gtk/src/main_window.rs:72
+msgid "Open a PDF to inspect its fonts"
+msgstr ""
+
+#: gtk/src/main_window.rs:142
+msgid "Main Menu"
+msgstr ""
+
+#: gtk/src/main_window.rs:171
+msgid "_New Window"
+msgstr ""
+
+#: gtk/src/main_window.rs:172
+msgid "_Close Window"
+msgstr ""
+
+#: gtk/src/main_window.rs:176
+msgid "_Preferences"
+msgstr ""
+
+#: gtk/src/main_window.rs:180
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: gtk/src/main_window.rs:183
+msgid "About PDF Info"
+msgstr ""
+
+#: gtk/src/main_window.rs:251
+msgid "PDF Documents"
+msgstr ""
+
+#: gtk/src/main_window.rs:259
+msgid "Open PDF"
+msgstr ""
+
+#: gtk/src/main_window.rs:283
+msgid "Hide the document inspector"
+msgstr ""
+
+#: gtk/src/main_window.rs:285
+msgid "Show the document inspector"
+msgstr ""
+
+#: gtk/src/font_preview.rs:43
+msgid "Select a font to preview"
+msgstr ""
+
+#: gtk/src/app.rs:172
+msgid "Inspect the fonts in PDF documents"
+msgstr ""
+
+#: gtk/src/app.rs:198
+msgid "Show or hide the inspector"
+msgstr ""
+
+#: gtk/src/app.rs:201
+msgid "Show preferences"
+msgstr ""
+
+#: gtk/src/app.rs:202
+msgid "Show keyboard shortcuts"
+msgstr ""

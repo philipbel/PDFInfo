@@ -1,5 +1,6 @@
 # PDF Info
 
+<!-- TODO: Update -->
 PDF Info is a small, native macOS app for inspecting PDF fonts and metadata.
 
 <img
@@ -12,17 +13,9 @@ PDF Info is a small, native macOS app for inspecting PDF fonts and metadata.
 [MIT License](https://github.com/philipbel/PDFInfo/tree/master?tab=MIT-1-ov-file)
 
 
-## Requirements
-
-* macOS 14 Sonoma or later.
-* Intel or Apple Silicon
-
-Tested on macOS 27 Golden Gate with Apple Silicon. Please file an
-[issue](https://github.com/philipbel/PDFInfo/issues/new/choose) if the app
-doesn't work for you.
-
-
 ## Installation
+
+### macOS
 
 There are two ways to install PDF Info:
 
@@ -44,12 +37,71 @@ There are two ways to install PDF Info:
 
 ## Development
 
-Requirements:
-1. Xcode
-2. For generating test PDF files:
-    - Python 3.14
-    - uv (`brew install uv`)
+Once you have a rust toolchain (see below for platform-specific instructions):
+- ```rustup toolchain install nightly --component rustfmt```
+- ```rustup component add clippy``` 
 
-3. For making releases:
-    - gh (`brew install gh`)
-    - create-dmg (`brew install create-dmg`)
+
+### macOS Requirements
+
+1. macOS 14 Sonoma or later, Intel or Apple Silicon.
+2. Xcode
+3. Rust:
+   ```
+   brew install rustup
+   ```
+4. uv (for generating test PDF files and to install CMake and Ninja):
+   ```
+   brew install uv
+   ```
+5. For making releases:
+
+   5.1. GitHub:
+     ```
+     brew install gh
+     ```
+
+   5.2 create-dmg:
+    ```
+    brew install create-dmg
+    ```
+
+Tested on macOS 27 Golden Gate with Apple Silicon. Please file an
+[issue](https://github.com/philipbel/PDFInfo/issues/new/choose) if the app
+doesn't work for you.
+
+### Gtk (macOS) Requirements
+
+1. Gtk4 + Adwaita:
+   ```
+   brew install gtk4 libadwaita adwaita-icon-theme
+   ```
+2. pkg-config:
+   ```
+   brew install pkg-config
+   ```
+3. uv:
+   ```
+   brew install uv
+   ```
+4. LLVM
+   ```
+   brew install llvm
+   ```
+5. gettext
+   ```
+   brew install gettext
+   ```
+
+### Gtk (Linux) Requirements
+
+TODO:
+
+
+### Windows
+TODO:
+1. Visual Studio
+2. LLVM for bindgen
+   ```
+   winget install LLVM.LLVM
+   ```

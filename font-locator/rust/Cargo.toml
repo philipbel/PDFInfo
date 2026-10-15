@@ -1,0 +1,12 @@
+[package]
+name = "font-locator"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+common = { version = "0.1.0", path = "../../common" }
+
+
+[build-dependencies]
+bindgen = "0.73.2"
+cmake = "0.1.58"
