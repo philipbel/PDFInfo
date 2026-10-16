@@ -119,8 +119,18 @@ TODO:
 
 ### Windows
 TODO:
-1. Visual Studio
-2. LLVM for bindgen
+1. Rust, for example using rustup via winget:
+   ```
+   winget install Rustlang.Rustup
+   ```
+3. Microsoft's C++ compiler
+   ```
+   winget install Microsoft.VisualStudio.BuildTools
+   ```
+   Once installed, launch the Visual Studio Installer, go to Modify, and install "Desktop development with C++". You
+   can skip "C++ CMake tools for Windows".
+
+3. LLVM (for bindgen)
    ```
    winget install LLVM.LLVM
    ```
