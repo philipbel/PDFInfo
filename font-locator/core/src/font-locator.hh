@@ -15,6 +15,7 @@ struct font_locator_font {
     std::string path;
 };
 
+namespace internal {
 
 extern std::string getKeyForFontName(std::string_view name);
 
@@ -23,3 +24,5 @@ extern void maybeUpdateFontForKey(const std::string &key, const font_locator_fon
 
 // Platform-specific
 extern void enumerateSystemFonts();
+
+} // namespace internal

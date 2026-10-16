@@ -10,5 +10,6 @@
         "fill-labs.dependi",
         "ms-python.python",
         "tamasfe.even-better-toml",
+        "ms-vscode.cmake-tools",
     ]
 }

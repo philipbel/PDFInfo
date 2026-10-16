@@ -13,6 +13,8 @@
 
 using namespace std;
 
+namespace {
+
 struct CFReleaser {
     void operator()(CFTypeRef ref) const {
         if (ref) {
@@ -49,7 +51,6 @@ string CFStringToString(CFStringRef cfString) {
     return s;
 }
 
-
 string CFURLGetFileSystemPath(CFURLRef url) {
     char buffer[PATH_MAX];
     if (!CFURLGetFileSystemRepresentation(url, true, (UInt8 *)buffer, PATH_MAX)) {
@@ -57,6 +58,12 @@ string CFURLGetFileSystemPath(CFURLRef url) {
     }
     return string{buffer};
 }
+
+} // namespace
+
+
+namespace internal {
+
 
 void enumerateSystemFonts() {
     CFPtr<CTFontCollectionRef> collection{CTFontCollectionCreateFromAvailableFonts(nullptr)};
@@ -128,12 +135,14 @@ void enumerateSystemFonts() {
     }
 
     for (const auto &[name, font] : psNamedFonts) {
-        const auto key = getKeyForFontName(name);
-        maybeUpdateFontForKey(key, font);
+        const auto key = internal::getKeyForFontName(name);
+        internal::maybeUpdateFontForKey(key, font);
     }
 
     for (const auto &[name, font] : otherFonts) {
-        const auto key = getKeyForFontName(name);
-        maybeUpdateFontForKey(key, font);
+        const auto key = internal::getKeyForFontName(name);
+        internal::maybeUpdateFontForKey(key, font);
     }
 }
+
+} // namespace internal

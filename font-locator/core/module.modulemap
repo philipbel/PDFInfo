@@ -1,0 +1,7 @@
+framework module FontLocatorCore {
+    umbrella header "font-locator.h"
+    export *
+    link "c++"
+    link framework "CoreText"
+    link framework "CoreFoundation"
+}

@@ -1,5 +1,5 @@
 {
-    "explorer.excludeGitIgnore": true,
+    "explorer.excludeGitIgnore": false,
     "search.exclude": {
         "extern": true
     },

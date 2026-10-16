@@ -17,9 +17,10 @@ static unordered_map<string, font_locator_font> font_map;
 
 
 static void doInit() {
-    call_once(init_flag, enumerateSystemFonts);
+    call_once(init_flag, internal::enumerateSystemFonts);
 }
 
+namespace internal {
 
 string getKeyForFontName(string_view name) {
     // XXX: This doesn't handle Unicode
@@ -33,6 +34,27 @@ string getKeyForFontName(string_view name) {
     }
     return key;
 }
+
+
+void maybeUpdateFontForKey(const std::string &key, const font_locator_font &font) {
+    if (key.empty()) {
+        return;
+    }
+    font_map.try_emplace(key, font);
+}
+
+const font_locator_font *findFontForKey(const string &key) {
+    if (key.empty()) {
+        return nullptr;
+    }
+    const auto iter = font_map.find(key);
+    if (iter == font_map.end()) {
+        return nullptr;
+    }
+    return &iter->second;
+}
+
+} // namespace internal
 
 
 void font_locator_init() {
@@ -50,8 +72,8 @@ const struct font_locator_font *font_locator_find_font(const char *name) {
     }
     try {
         doInit();
-        const auto key = getKeyForFontName(name);
-        return findFontForKey(key);
+        const auto key = internal::getKeyForFontName(name);
+        return internal::findFontForKey(key);
     } catch (...) {
         // TODO: Warn
         return nullptr;
@@ -68,24 +90,4 @@ const char *font_locator_font_get_postscript_name(const font_locator_font *font)
 const char *font_locator_font_get_path(const font_locator_font *font) {
     assert(font != nullptr);
     return font->path.c_str();
-}
-
-
-const font_locator_font *findFontForKey(const string &key) {
-    if (key.empty()) {
-        return nullptr;
-    }
-    const auto iter = font_map.find(key);
-    if (iter == font_map.end()) {
-        return nullptr;
-    }
-    return &iter->second;
-}
-
-
-void maybeUpdateFontForKey(const std::string &key, const font_locator_font &font) {
-    if (key.empty()) {
-        return;
-    }
-    font_map.try_emplace(key, font);
 }

@@ -14,28 +14,18 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set (SRCS
-    src/font-locator.cc
-)
-
-if (APPLE)
-    list(APPEND SRCS src/font-locator-macos.cc)
-endif (APPLE)
-
-
-add_library (font-locator-core STATIC
-    ${SRCS}
-)
+# Not currently used
+set(DEPS_UNIVERSAL_LIB_DIR "" CACHE PATH "(macOS) Directory containing dependencies' static universal libs")
 
 if(APPLE)
-    find_library(CORE_TEXT CoreText REQUIRED)
-    find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
-    target_link_libraries(font-locator-core PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
+    if(NOT DEPS_UNIVERSAL_LIB_DIR)
+        message(FATAL_ERROR "DEPS_UNIVERSAL_LIB_DIR is required")
+    endif()
 endif()
 
 
-if (NOT MSVC)
-    target_compile_options(font-locator-core PRIVATE
+if(NOT MSVC)
+    add_compile_options(
         -Wall
         -Wextra
         -Wpedantic
@@ -43,13 +33,58 @@ if (NOT MSVC)
         -Wimplicit-fallthrough
         -Wreturn-type
     )
-endif ()
+endif()
 
+set(SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator.cc)
+if(APPLE)
+    list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator-macos.cc)
+endif(APPLE)
+set(HDRS ${CMAKE_CURRENT_SOURCE_DIR}/include/font-locator/font-locator.h)
+set(MODULEMAP ${CMAKE_CURRENT_SOURCE_DIR}/module.modulemap)
 
-target_include_directories(font-locator-core
-    PUBLIC include)
+add_library(font-locator-objs OBJECT ${SRCS})
+target_include_directories(font-locator-objs PUBLIC include)
+
+add_library(font-locator-core STATIC $<TARGET_OBJECTS:font-locator-objs>)
+target_include_directories(font-locator-core PUBLIC include)
+
+if(APPLE)
+    find_library(CORE_TEXT CoreText REQUIRED)
+    find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
+    target_link_libraries(font-locator-core PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
+endif()
 
 install(TARGETS font-locator-core ARCHIVE DESTINATION lib)
 install(
     DIRECTORY include/font-locator
     DESTINATION include)
+
+
+if (APPLE)
+    add_library(FontLocatorCore STATIC
+        $<TARGET_OBJECTS:font-locator-objs>
+        ${HDRS}
+        ${MODULEMAP}
+    )
+    set_source_files_properties(${MODULEMAP} PROPERTIES
+        MACOSX_PACKAGE_LOCATION Modules
+    )
+    set_target_properties(FontLocatorCore PROPERTIES
+        FRAMEWORK TRUE
+        FRAMEWORK_VERSION A
+        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.FontLocatorCore
+        VERSION 1.0.0
+        SOVERSION 1.0.0
+        PUBLIC_HEADER "${HDRS}"
+    )
+    target_include_directories(FontLocatorCore
+        PUBLIC include)
+    target_link_libraries(FontLocatorCore PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
+
+    add_custom_command(TARGET FontLocatorCore POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            Versions/Current/Modules $<TARGET_BUNDLE_DIR:FontLocatorCore>/Modules
+    )
+    
+    install(TARGETS FontLocatorCore FRAMEWORK DESTINATION lib)
+endif ()

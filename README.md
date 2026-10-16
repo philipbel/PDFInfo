@@ -37,6 +37,25 @@ There are two ways to install PDF Info:
 
 ## Development
 
+1. Install the requirements for your OS/environment.
+2. Create a Python virtual environment:
+   ```
+   uv venv --python 3.14
+   ```
+3. Activate it
+   ```
+   source .venv/bin/activate
+   ```
+4. Install Python dependencies
+   ```
+   uv sync
+   ```
+5. Build external dependencies (installed into `build/prefix/`):
+   ```
+   ./etc/make-deps.py
+   ```
+
+
 Once you have a rust toolchain (see below for platform-specific instructions):
 - ```rustup toolchain install nightly --component rustfmt```
 - ```rustup component add clippy``` 

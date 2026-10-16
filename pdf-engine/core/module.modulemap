@@ -1,0 +1,5 @@
+framework module PDFEngineCore {
+    umbrella header "pdf-engine.h"
+    export *
+    link "c++"
+}
