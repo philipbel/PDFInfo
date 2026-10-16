@@ -1,7 +1,7 @@
 internal import PDFEngineCore
 
 
-public struct PDFFontDescriptorFlags: Sendable, OptionSet {
+public struct PDFFontDescriptorFlags: OptionSet, Sendable, Hashable {
     public let rawValue: UInt32
 
     public static let fixedPitch = PDFFontDescriptorFlags(rawValue: PDF_FONT_DESCRIPTOR_FLAG_FIXED_PITCH.rawValue)

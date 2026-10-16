@@ -1,5 +1,5 @@
 import AppKit
-import PDFKitExt
+import PDFEngine
 import OSLog
 
 
@@ -8,12 +8,12 @@ final class FontTableViewController: NSViewController {
 
     private static let nameColumnMinWidth: CGFloat = 50
 
-    private var fonts: [any PDFFont] = []
-    private var systemAvailableFonts: Set<String> = Set()
+    private var fonts: [PDFFont] = []
+    private var systemAvailableFonts: Set<PDFFont.ID> = Set()
     private let tableView = FontTableView()
     private var previewPopover: NSPopover?
 
-    var onDoubleClick: ((any PDFFont) -> Void)?
+    var onDoubleClick: ((PDFFont) -> Void)?
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -125,7 +125,7 @@ final class FontTableViewController: NSViewController {
     private func columnValues(for column: NSTableColumn) -> [String] {
         if let c = FontTableViewColumn(identifier: column.identifier),
            c == .typeColumn {
-            return fonts.map(FontUtil.typeString(for:))
+            return fonts.map { $0.displayType.localizedString }
         } else {
             // the other columns are checkboxes
             return []
@@ -137,7 +137,7 @@ final class FontTableViewController: NSViewController {
         return (column.title as NSString).size(withAttributes: attrs).width
     }
 
-    func update(fonts: [any PDFFont]) {
+    func update(fonts: [PDFFont]) {
         previewPopover?.close()
 
         // New fonts
@@ -161,7 +161,7 @@ final class FontTableViewController: NSViewController {
 
     private func updateSystemAvailableFonts() {
         systemAvailableFonts = Set(fonts.compactMap {
-            if FontUtil.getSystemFont(named: $0.displayName, size: 10) != nil {
+            if FontUtil.getSystemFont(for: $0, size: 10) != nil {
                 return $0.id
             } else {
                 return nil
@@ -196,10 +196,9 @@ final class FontTableViewController: NSViewController {
                 let result: ComparisonResult
                 switch column {
                 case .nameColumn:
-                    result = a.displayName.localizedStandardCompare(b.displayName)
+                    result = (a.displayName ?? "").localizedStandardCompare(b.displayName ?? "")
                 case .typeColumn:
-                    result = FontUtil.typeString(for: a)
-                        .localizedStandardCompare(FontUtil.typeString(for: b))
+                    result = a.displayType.localizedString.localizedStandardCompare(b.displayType.localizedString)
                 case .embeddedColumn:
                     result = Self.compare(a.isEmbedded, b.isEmbedded)
                 case .subsetColumn:
@@ -270,11 +269,11 @@ extension FontTableViewController: NSTableViewDelegate {
         switch FontTableViewColumn(identifier: tableColumn.identifier) {
         case .nameColumn:
             return makeTableCellView(ofType: TextFieldTableCellView.self, withIdentifier: tableColumn.identifier).then {
-                $0.configure(text: font.displayName)
+                $0.configure(text: font.displayName ?? "")
             }
         case .typeColumn:
             return makeTableCellView(ofType: TextFieldTableCellView.self, withIdentifier: tableColumn.identifier).then {
-                $0.configure(text: FontUtil.typeString(for: font))
+                $0.configure(text: font.displayType.localizedString)
             }
         case .subsetColumn:
             return makeTableCellView(ofType: CheckTableCellView.self, withIdentifier: tableColumn.identifier).then {
@@ -303,7 +302,8 @@ extension FontTableViewController: NSTableViewDelegate {
 
 #Preview(traits: .sizeThatFitsLayout) {
     let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
-    let document = PDFDocument(url: url)!
+    let data = try! Data(contentsOf: url)
+    let document = PDFDocument(data: data)!
 
     let viewController = FontTableViewController()
     viewController.loadViewIfNeeded()

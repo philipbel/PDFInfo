@@ -1,7 +1,7 @@
 import Cocoa
 import SwiftUI
-import PDFKitExt
 import OSLog
+import PDFEngine
 
 
 @MainActor
@@ -16,7 +16,8 @@ class Document: NSDocument {
     }
 
     override nonisolated func read(from url: URL, ofType typeName: String) throws {
-        pdfDocument = PDFDocument(url: url)
+        let data = try Data(contentsOf: url)
+        pdfDocument = PDFDocument(data: data)
         guard pdfDocument != nil else {
             throw CocoaError(.fileReadCorruptFile)
         }
@@ -55,7 +56,11 @@ extension Document {
                 return
             }
             lastModificationDate = modificationDate
-            pdfDocument = PDFDocument(url: fileURL)
+            guard let data = try? Data(contentsOf: fileURL) else {
+                Self.logger.warning("Failed to load document from \(fileURL)")
+                return
+            }
+            pdfDocument = PDFDocument(data: data)
             documentWindowController?.update()
         }
     }

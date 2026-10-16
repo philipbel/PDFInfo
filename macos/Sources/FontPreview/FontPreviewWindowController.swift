@@ -1,5 +1,5 @@
 import Cocoa
-import PDFKitExt
+import PDFEngine
 
 
 final class FontPreviewWindowController: NSWindowController {
@@ -34,7 +34,7 @@ final class FontPreviewWindowController: NSWindowController {
         super.showWindow(sender)
     }
 
-    func configure(font pdfFont: any PDFFont) {
+    func configure(font pdfFont: PDFFont) {
         previewViewController.configure(font: pdfFont)
     }
 }

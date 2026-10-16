@@ -1,5 +1,5 @@
 import Cocoa
-import PDFKitExt
+import PDFEngine
 import SettingsKit
 
 
@@ -13,7 +13,7 @@ class FontPreviewViewController: NSViewController {
         NSLayoutConstraint.Priority.windowSizeStayPut.rawValue + 1)
 
 
-    private var pdfFont: any PDFFont? {
+    private var pdfFont: PDFFont? {
         didSet {
             update()
         }
@@ -40,6 +40,10 @@ class FontPreviewViewController: NSViewController {
         $0.addRow(with: [
             NSTextField(labelWithString: String(localized: "Subset:")),
             fontSubsetLabel
+        ])
+        $0.addRow(with: [
+            NSTextField(labelWithString: String(localized: "Flags:")),
+            fontFlagsLabel
         ])
         $0.addRow(with: [
             NSTextField(labelWithString: String(localized: "File:")),
@@ -107,6 +111,9 @@ class FontPreviewViewController: NSViewController {
     private let fontSubsetLabel = NSTextField(labelWithString: "").then {
         $0.isSelectable = true
     }
+    private let fontFlagsLabel = NSTextField(labelWithString: "").then {
+        $0.isSelectable = true
+    }
     private let fontFileLabel = NSTextField(labelWithString: "").then {
         $0.isSelectable = true
     }
@@ -120,7 +127,7 @@ class FontPreviewViewController: NSViewController {
         $0.action = #selector(revealFile(_:))
     }
 
-    init(font pdfFont: any PDFFont? = nil) {
+    init(font pdfFont: PDFFont? = nil) {
         self.pdfFont = pdfFont
 
         super.init(nibName: nil, bundle: nil)
@@ -136,13 +143,15 @@ class FontPreviewViewController: NSViewController {
 
         view = NSView(frame: .zero)
 
+        let previewSectionLabelContainer = NSStackView.horizontal(views: [
+            previewSectionLabel,
+        ]).then {
+            $0.edgeInsets.left = 10
+            $0.setHuggingPriority(.defaultHigh, for: .vertical)
+        }
+
         let container = NSStackView.vertical(views: [
-            NSStackView.horizontal(views: [
-                previewSectionLabel,
-            ]).then {
-                $0.edgeInsets.left = 10
-                $0.setHuggingPriority(.defaultHigh, for: .vertical)
-            },
+            previewSectionLabelContainer,
             previewBox,
             disclosureContainer,
             gridContainer,
@@ -160,7 +169,11 @@ class FontPreviewViewController: NSViewController {
             grid.heightAnchor.constraint(equalToConstant: 0)
                 // Prevent the grid from growing vertically
                 .setting(\.priority, to: Self.fitContentLayoutPriority),
+
             previewBox.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
+            previewSectionLabelContainer.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
+            disclosureContainer.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
+            gridContainer.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
         ])
     }
 
@@ -194,7 +207,7 @@ class FontPreviewViewController: NSViewController {
         updateDetailsVisibility(expanded: expanded)
     }
 
-    func configure(font pdfFont: any PDFFont) {
+    func configure(font pdfFont: PDFFont) {
         self.pdfFont = pdfFont
     }
 
@@ -206,9 +219,10 @@ class FontPreviewViewController: NSViewController {
         updatePreviewFont()
 
         fontNameLabel.stringValue = pdfFont?.displayName ?? ""
-        fontSubtypeLabel.stringValue = pdfFont?.subtype.displayName ?? ""
+        fontSubtypeLabel.stringValue = pdfFont?.subtype.localizedString ?? ""
         fontEmbeddedLabel.stringValue = pdfFont?.isEmbedded == true ? String(localized: "Yes") : String(localized: "No")
         fontSubsetLabel.stringValue = pdfFont?.isSubset == true ? String(localized: "Yes") : String(localized: "No")
+        fontFlagsLabel.stringValue = pdfFont?.descriptor?.flags.localizedString ?? String(localized: "None", comment: "No flags")
     }
 
     private func updatePreviewFont(size previewFontSize: CGFloat? = nil) {
@@ -228,8 +242,6 @@ class FontPreviewViewController: NSViewController {
         }
         if let previewFontURL {
             fontFileLabel.stringValue = previewFontURL.lastPathComponent
-
-            let fileName = previewFontURL.lastPathComponent
             revealFileButton.isHidden = false
             revealFileButton.setAccessibilityTitle(revealFileButton.toolTip)
         } else {
@@ -250,7 +262,8 @@ class FontPreviewViewController: NSViewController {
 
 #Preview(traits: .sizeThatFitsLayout) {
     let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
-    let document = PDFDocument(url: url)!
+    let data = try! Data(contentsOf: url)
+    let document = PDFDocument(data: data)!
 
     FontPreviewViewController(font: document.fonts.first!)
 }

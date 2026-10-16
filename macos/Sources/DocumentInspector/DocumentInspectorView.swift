@@ -1,5 +1,5 @@
 import SwiftUI
-import PDFKitExt
+import PDFEngine
 
 
 struct DocumentInspectorView: View {
@@ -11,7 +11,9 @@ struct DocumentInspectorView: View {
     var body: some View {
         Form {
             DocumentAttributesView(document: document, url: url)
-            DocumentKeywordsView(keywords: document.metadata.keywords)
+            if let metadata = document.metadata {
+                DocumentKeywordsView(keywords: metadata.keywords)
+            }
         }
         .formStyle(.grouped)
     }
@@ -24,7 +26,8 @@ struct DocumentInspectorView: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
-    let document = PDFDocument(url: url)!
+    let data = try! Data(contentsOf: url)
+    let document = PDFDocument(data: data)!
 
     DocumentInspectorView(document: document, url: url)
         .formStyle(.grouped)

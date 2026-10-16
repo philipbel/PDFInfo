@@ -1,5 +1,6 @@
 import AppKit
 import Sparkle
+import FontLocator
 
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -16,6 +17,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
          * Load the menu here. See https://developer.apple.com/forums/thread/776832
          */
         Bundle.main.loadNibNamed("MainMenu", owner: NSApp, topLevelObjects: &topLevelObjects)
+
+        FontLocatorManager.initialize()
     }
 
     func applicationDidFinishLaunching(_ note: Notification) {

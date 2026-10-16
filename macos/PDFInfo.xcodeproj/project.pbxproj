@@ -8,14 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4A2F1215306434D5006A8160 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 4A2F1214306434D0006A8160 /* Help */; };
-		4A2F12263065310F006A8160 /* PDFKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F121D3065310F006A8160 /* PDFKitExt.framework */; };
-		4A2F12303065310F006A8160 /* PDFKitExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F121D3065310F006A8160 /* PDFKitExt.framework */; };
-		4A2F12313065310F006A8160 /* PDFKitExt.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F121D3065310F006A8160 /* PDFKitExt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4A2F123B306531AA006A8160 /* PDFKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F123A306531AA006A8160 /* PDFKit.framework */; };
-		4A2F126F30655AE2006A8160 /* CGPDFExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */; };
-		4A2F127030655AE2006A8160 /* CGPDFExt.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		4A2F127530655B05006A8160 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F127430655B05006A8160 /* CoreGraphics.framework */; };
-		4A2F12963065A32D006A8160 /* CGPDFExt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */; };
 		4A5E75D630819D3A0029DE41 /* PDFEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A5E75D030819D3A0029DE41 /* PDFEngine.framework */; };
 		4A5E75D730819D3A0029DE41 /* PDFEngine.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4A5E75D030819D3A0029DE41 /* PDFEngine.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4A5E75F230826E4B0029DE41 /* FontLocator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A5E75EC30826E4B0029DE41 /* FontLocator.framework */; };
@@ -27,41 +19,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4A2F12273065310F006A8160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A2F121C3065310F006A8160;
-			remoteInfo = PDFKitExt;
-		};
-		4A2F12293065310F006A8160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A42CA732FD33A3200CAE2F8;
-			remoteInfo = "PDF Info";
-		};
-		4A2F122E3065310F006A8160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A2F121C3065310F006A8160;
-			remoteInfo = PDFKitExt;
-		};
-		4A2F127130655AE2006A8160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A2F125130655A6B006A8160;
-			remoteInfo = CGPDFExt;
-		};
-		4A2F12983065A32D006A8160 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 4A2F125130655A6B006A8160;
-			remoteInfo = CGPDFExt;
-		};
 		4A42CA852FD33A3300CAE2F8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4A42CA6C2FD33A3200CAE2F8 /* Project object */;
@@ -108,19 +65,7 @@
 			files = (
 				4A5E75F330826E4B0029DE41 /* FontLocator.framework in Embed Frameworks */,
 				4AB9C87330704FC200708688 /* SettingsKit.framework in Embed Frameworks */,
-				4A2F12313065310F006A8160 /* PDFKitExt.framework in Embed Frameworks */,
 				4A5E75D730819D3A0029DE41 /* PDFEngine.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F127330655AE2006A8160 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				4A2F127030655AE2006A8160 /* CGPDFExt.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,11 +74,7 @@
 
 /* Begin PBXFileReference section */
 		4A2F1214306434D0006A8160 /* Help */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Help; sourceTree = "<group>"; };
-		4A2F121D3065310F006A8160 /* PDFKitExt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PDFKitExt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A2F12253065310F006A8160 /* PDFKitExtTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PDFKitExtTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A2F123A306531AA006A8160 /* PDFKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PDFKit.framework; path = System/Library/Frameworks/PDFKit.framework; sourceTree = SDKROOT; };
-		4A2F125230655A6B006A8160 /* CGPDFExt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CGPDFExt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A2F125A30655A6B006A8160 /* CGPDFExtTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CGPDFExtTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A2F127430655B05006A8160 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		4A42CA742FD33A3200CAE2F8 /* PDF Info.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PDF Info.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A42CA842FD33A3300CAE2F8 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -201,44 +142,10 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		4A2F121A3065310F006A8160 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4A2F123B306531AA006A8160 /* PDFKit.framework in Frameworks */,
-				4A2F126F30655AE2006A8160 /* CGPDFExt.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F12223065310F006A8160 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4A2F12263065310F006A8160 /* PDFKitExt.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F124F30655A6B006A8160 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4A2F127530655B05006A8160 /* CoreGraphics.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F125730655A6B006A8160 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				4A2F12963065A32D006A8160 /* CGPDFExt.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4A42CA712FD33A3200CAE2F8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A2F12303065310F006A8160 /* PDFKitExt.framework in Frameworks */,
 				4AFF1E97306B0E0E00BDC530 /* Sparkle in Frameworks */,
 				4A5E75F230826E4B0029DE41 /* FontLocator.framework in Frameworks */,
 				4AB9C87230704FC200708688 /* SettingsKit.framework in Frameworks */,
@@ -318,10 +225,6 @@
 				4A42CA742FD33A3200CAE2F8 /* PDF Info.app */,
 				4A42CA842FD33A3300CAE2F8 /* Tests.xctest */,
 				4A42CA8E2FD33A3300CAE2F8 /* UITests.xctest */,
-				4A2F121D3065310F006A8160 /* PDFKitExt.framework */,
-				4A2F12253065310F006A8160 /* PDFKitExtTests.xctest */,
-				4A2F125230655A6B006A8160 /* CGPDFExt.framework */,
-				4A2F125A30655A6B006A8160 /* CGPDFExtTests.xctest */,
 				4AB9C86C30704FC200708688 /* SettingsKit.framework */,
 				4A5E75D030819D3A0029DE41 /* PDFEngine.framework */,
 				4A5E75EC30826E4B0029DE41 /* FontLocator.framework */,
@@ -332,20 +235,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		4A2F12183065310F006A8160 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F124D30655A6B006A8160 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4A5E75CB30819D3A0029DE41 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -370,89 +259,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		4A2F121C3065310F006A8160 /* PDFKitExt */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4A2F12323065310F006A8160 /* Build configuration list for PBXNativeTarget "PDFKitExt" */;
-			buildPhases = (
-				4A2F12183065310F006A8160 /* Headers */,
-				4A2F12193065310F006A8160 /* Sources */,
-				4A2F121A3065310F006A8160 /* Frameworks */,
-				4A2F121B3065310F006A8160 /* Resources */,
-				4A2F127330655AE2006A8160 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4A2F127230655AE2006A8160 /* PBXTargetDependency */,
-			);
-			name = PDFKitExt;
-			packageProductDependencies = (
-			);
-			productName = PDFKitExt;
-			productReference = 4A2F121D3065310F006A8160 /* PDFKitExt.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		4A2F12243065310F006A8160 /* PDFKitExtTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4A2F12363065310F006A8160 /* Build configuration list for PBXNativeTarget "PDFKitExtTests" */;
-			buildPhases = (
-				4A2F12213065310F006A8160 /* Sources */,
-				4A2F12223065310F006A8160 /* Frameworks */,
-				4A2F12233065310F006A8160 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4A2F12283065310F006A8160 /* PBXTargetDependency */,
-				4A2F122A3065310F006A8160 /* PBXTargetDependency */,
-			);
-			name = PDFKitExtTests;
-			packageProductDependencies = (
-			);
-			productName = PDFKitExtTests;
-			productReference = 4A2F12253065310F006A8160 /* PDFKitExtTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		4A2F125130655A6B006A8160 /* CGPDFExt */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4A2F126730655A6B006A8160 /* Build configuration list for PBXNativeTarget "CGPDFExt" */;
-			buildPhases = (
-				4A2F124D30655A6B006A8160 /* Headers */,
-				4A2F124E30655A6B006A8160 /* Sources */,
-				4A2F124F30655A6B006A8160 /* Frameworks */,
-				4A2F125030655A6B006A8160 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = CGPDFExt;
-			packageProductDependencies = (
-			);
-			productName = CGPDFExt;
-			productReference = 4A2F125230655A6B006A8160 /* CGPDFExt.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		4A2F125930655A6B006A8160 /* CGPDFExtTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 4A2F126A30655A6B006A8160 /* Build configuration list for PBXNativeTarget "CGPDFExtTests" */;
-			buildPhases = (
-				4A2F125630655A6B006A8160 /* Sources */,
-				4A2F125730655A6B006A8160 /* Frameworks */,
-				4A2F125830655A6B006A8160 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4A2F12993065A32D006A8160 /* PBXTargetDependency */,
-			);
-			name = CGPDFExtTests;
-			packageProductDependencies = (
-			);
-			productName = CGPDFExtTests;
-			productReference = 4A2F125A30655A6B006A8160 /* CGPDFExtTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		4A42CA732FD33A3200CAE2F8 /* PDF Info */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4A42CA972FD33A3300CAE2F8 /* Build configuration list for PBXNativeTarget "PDF Info" */;
@@ -466,7 +272,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				4A2F122F3065310F006A8160 /* PBXTargetDependency */,
 				4AB9C87130704FC200708688 /* PBXTargetDependency */,
 				4A5E75D530819D3A0029DE41 /* PBXTargetDependency */,
 				4A5E75F130826E4B0029DE41 /* PBXTargetDependency */,
@@ -609,18 +414,6 @@
 				LastSwiftUpdateCheck = 2700;
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
-					4A2F121C3065310F006A8160 = {
-						CreatedOnToolsVersion = 27.0;
-					};
-					4A2F12243065310F006A8160 = {
-						CreatedOnToolsVersion = 27.0;
-					};
-					4A2F125130655A6B006A8160 = {
-						CreatedOnToolsVersion = 27.0;
-					};
-					4A2F125930655A6B006A8160 = {
-						CreatedOnToolsVersion = 27.0;
-					};
 					4A42CA732FD33A3200CAE2F8 = {
 						CreatedOnToolsVersion = 26.5;
 					};
@@ -663,10 +456,6 @@
 				4A42CA732FD33A3200CAE2F8 /* PDF Info */,
 				4A42CA832FD33A3300CAE2F8 /* Tests */,
 				4A42CA8D2FD33A3300CAE2F8 /* UITests */,
-				4A2F121C3065310F006A8160 /* PDFKitExt */,
-				4A2F12243065310F006A8160 /* PDFKitExtTests */,
-				4A2F125130655A6B006A8160 /* CGPDFExt */,
-				4A2F125930655A6B006A8160 /* CGPDFExtTests */,
 				4AB9C86B30704FC200708688 /* SettingsKit */,
 				4A5E75CF30819D3A0029DE41 /* PDFEngine */,
 				4A5E75EB30826E4B0029DE41 /* FontLocator */,
@@ -675,34 +464,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		4A2F121B3065310F006A8160 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F12233065310F006A8160 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F125030655A6B006A8160 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F125830655A6B006A8160 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4A42CA722FD33A3200CAE2F8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -772,34 +533,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		4A2F12193065310F006A8160 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F12213065310F006A8160 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F124E30655A6B006A8160 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		4A2F125630655A6B006A8160 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4A42CA702FD33A3200CAE2F8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -845,31 +578,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4A2F12283065310F006A8160 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A2F121C3065310F006A8160 /* PDFKitExt */;
-			targetProxy = 4A2F12273065310F006A8160 /* PBXContainerItemProxy */;
-		};
-		4A2F122A3065310F006A8160 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A42CA732FD33A3200CAE2F8 /* PDF Info */;
-			targetProxy = 4A2F12293065310F006A8160 /* PBXContainerItemProxy */;
-		};
-		4A2F122F3065310F006A8160 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A2F121C3065310F006A8160 /* PDFKitExt */;
-			targetProxy = 4A2F122E3065310F006A8160 /* PBXContainerItemProxy */;
-		};
-		4A2F127230655AE2006A8160 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A2F125130655A6B006A8160 /* CGPDFExt */;
-			targetProxy = 4A2F127130655AE2006A8160 /* PBXContainerItemProxy */;
-		};
-		4A2F12993065A32D006A8160 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 4A2F125130655A6B006A8160 /* CGPDFExt */;
-			targetProxy = 4A2F12983065A32D006A8160 /* PBXContainerItemProxy */;
-		};
 		4A42CA862FD33A3300CAE2F8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4A42CA732FD33A3200CAE2F8 /* PDF Info */;
@@ -898,238 +606,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		4A2F12333065310F006A8160 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright ©️ 2026 Philip B.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.PDFKitExt;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		4A2F12343065310F006A8160 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright ©️ 2026 Philip B.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.PDFKitExt;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		4A2F12373065310F006A8160 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.PDFKitExtTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		4A2F12383065310F006A8160 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.PDFKitExtTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		4A2F126830655A6B006A8160 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright ©️ 2026 Philip B.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.CGPDFExt;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		4A2F126930655A6B006A8160 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_MODULE_VERIFIER = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright ©️ 2026 Philip B.";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
-				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.CGPDFExt;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INSTALL_MODULE = YES;
-				SWIFT_INSTALL_OBJC_HEADER = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		4A2F126B30655A6B006A8160 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.CGPDFExtTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		4A2F126C30655A6B006A8160 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.philipbel.PDFInfo.CGPDFExtTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		4A42CA982FD33A3300CAE2F8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1717,42 +1193,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		4A2F12323065310F006A8160 /* Build configuration list for PBXNativeTarget "PDFKitExt" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4A2F12333065310F006A8160 /* Debug */,
-				4A2F12343065310F006A8160 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4A2F12363065310F006A8160 /* Build configuration list for PBXNativeTarget "PDFKitExtTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4A2F12373065310F006A8160 /* Debug */,
-				4A2F12383065310F006A8160 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4A2F126730655A6B006A8160 /* Build configuration list for PBXNativeTarget "CGPDFExt" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4A2F126830655A6B006A8160 /* Debug */,
-				4A2F126930655A6B006A8160 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		4A2F126A30655A6B006A8160 /* Build configuration list for PBXNativeTarget "CGPDFExtTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				4A2F126B30655A6B006A8160 /* Debug */,
-				4A2F126C30655A6B006A8160 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		4A42CA6F2FD33A3200CAE2F8 /* Build configuration list for PBXProject "PDFInfo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

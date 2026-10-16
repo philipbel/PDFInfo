@@ -1,9 +1,9 @@
 import Cocoa
 import SwiftUI
 import UniformTypeIdentifiers
-import PDFKitExt
 import OSLog
 import SettingsKit
+import PDFEngine
 
 
 fileprivate extension NSToolbarItem.Identifier {
@@ -143,7 +143,7 @@ final class PDFDocumentWindowController: NSWindowController {
         tableViewController.update(fonts: pdfDocument.fonts)
     }
 
-    private func previewFont(_ font: any PDFFont) {
+    private func previewFont(_ font: PDFFont) {
         fontPreviewWindowController.configure(font: font)
         fontPreviewWindowController.showWindow(self)
     }

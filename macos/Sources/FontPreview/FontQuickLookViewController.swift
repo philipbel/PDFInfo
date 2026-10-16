@@ -1,13 +1,13 @@
 import Cocoa
-import PDFKitExt
+import PDFEngine
 import SettingsKit
 
 
 class FontQuickLookViewController: NSViewController {
-    private let pdfFont: any PDFFont
+    private let pdfFont: PDFFont
     private let previewView = NSTextField(labelWithString: "")
 
-    init(font pdfFont: any PDFFont) {
+    init(font pdfFont: PDFFont) {
         self.pdfFont = pdfFont
         super.init(nibName: nil, bundle: nil)
     }
@@ -46,7 +46,8 @@ class FontQuickLookViewController: NSViewController {
 
 #Preview(traits: .sizeThatFitsLayout) {
     let url = Bundle.main.url(forResource: "multi_font_mixed", withExtension: "pdf")!
-    let document = PDFDocument(url: url)!
+    let data = try! Data(contentsOf: url)
+    let document = PDFDocument(data: data)!
 
     FontQuickLookViewController(font: document.fonts.first!)
 }
