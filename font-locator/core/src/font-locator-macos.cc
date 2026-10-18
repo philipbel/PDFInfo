@@ -102,6 +102,9 @@ void enumerateSystemFonts() {
             continue;
         }
 
+        const auto font = font_locator_font{.postscript_name = psName, .path = path};
+        psNamedFonts.emplace_back(psName, font);
+
         CFPtr<CFStringRef> displayNameAttrib{
             (CFStringRef)CTFontDescriptorCopyAttribute(descriptor, kCTFontDisplayNameAttribute)};
         if (displayNameAttrib && CFGetTypeID(displayNameAttrib.get()) != CFStringGetTypeID()) {
@@ -119,9 +122,6 @@ void enumerateSystemFonts() {
         if (styleNameAttrib && CFGetTypeID(styleNameAttrib.get()) != CFStringGetTypeID()) {
             continue;
         }
-
-        const auto font = font_locator_font{.postscript_name = psName, .path = path};
-        psNamedFonts.emplace_back(psName, font);
 
         auto displayName = CFStringToString(displayNameAttrib.get());
         if (!displayName.empty()) {

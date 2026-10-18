@@ -1,3 +1,9 @@
-  [env]
-  CMAKE = { value = ".venv/bin/cmake", relative = true }
-  MACOSX_DEPLOYMENT_TARGET = "14.0"
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+[env]
+MACOSX_DEPLOYMENT_TARGET = "14.0"
+PREFIX_DIR = "build/prefix"
+COMPILE_COMMANDS_DIRNAME = "compile_commands"

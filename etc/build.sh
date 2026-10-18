@@ -17,7 +17,7 @@ esac
 
 
 for d in "${libs[@]}"; do 
-    uv run cmake \
+    cmake \
         -S "${d}/core" \
         -B "build/macos/universal/${d}-core" \
         -G Ninja \
@@ -27,10 +27,10 @@ for d in "${libs[@]}"; do
         -DDEPS_UNIVERSAL_LIB_DIR="${PWD}/build/prefix/${SYSTEM}/universal/lib" \
         || exit 1
 
-    uv run cmake \
+    cmake \
         --build "build/macos/universal/${d}-core" || exit 1
 
-    uv run cmake \
+    cmake \
         --install "build/macos/universal/${d}-core" \
         --prefix "${PWD}/build/prefix/macos/universal" || exit 1
 done

@@ -147,6 +147,10 @@ name = "common"
 version = "0.1.0"
 
 [[package]]
+name = "common-build"
+version = "0.1.0"
+
+[[package]]
 name = "const_format"
 version = "0.2.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -206,6 +210,8 @@ dependencies = [
  "bindgen",
  "cmake",
  "common",
+ "common-build",
+ "pkg-config",
 ]
 
 [[package]]
@@ -835,6 +841,7 @@ dependencies = [
  "bitflags",
  "cmake",
  "common",
+ "common-build",
 ]
 
 [[package]]

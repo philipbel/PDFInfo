@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 #include "font.hh"
+#include <algorithm>
 #include <assert.h>
 #include <qpdf/ObjectHandle.hh>
 #include <qpdf/QPDFPageDocumentHelper.hh>

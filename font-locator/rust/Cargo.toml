@@ -10,3 +10,5 @@ common = { version = "0.1.0", path = "../../common" }
 [build-dependencies]
 bindgen = "0.73.2"
 cmake = "0.1.58"
+common-build = { version = "0.1.0", path = "../../common-build" }
+pkg-config = "0.3.34"

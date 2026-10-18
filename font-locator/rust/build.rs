@@ -6,16 +6,22 @@
 use std::env;
 use std::path::PathBuf;
 
+use common_build::{
+    extract_compile_commands,
+    is_debug_build,
+    project_root_dir,
+    target_os,
+};
+
 fn main() {
-    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-
-    let root_dir = manifest_dir.join("../..");
-
+    let root_dir = project_root_dir();
     let core_dir = root_dir.join("font-locator/core");
+    let dst = cmake::Config::new(&core_dir)
+        .very_verbose(is_debug_build())
+        .profile(build_type())
+        .build();
 
-    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap();
-
-    let dst = cmake::Config::new(&core_dir).profile(build_type()).build();
+    extract_compile_commands(env!("CARGO_PKG_NAME"), &dst.join("build"));
 
     println!("cargo::rerun-if-changed={}", core_dir.display());
 
@@ -23,16 +29,18 @@ fn main() {
         "cargo::rustc-link-search=native={}",
         dst.join("lib").display()
     );
-
     println!("cargo::rustc-link-lib=static=font-locator-core");
 
-    match target_os.as_str() {
+    match target_os().as_str() {
         "macos" => {
             println!("cargo::rustc-link-lib=c++");
             println!("cargo::rustc-link-lib=framework=CoreFoundation");
             println!("cargo::rustc-link-lib=framework=CoreText");
         }
-        "linux" => println!("cargo::rustc-link-lib=stdc++"),
+        "linux" => {
+            _ = pkg_config::probe_library("fontconfig").unwrap();
+            println!("cargo::rustc-link-lib=stdc++");
+        }
         _ => {}
     }
 

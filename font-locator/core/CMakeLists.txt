@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0 CACHE STRING "")
 
-project (font-locator-core VERSION 1.0.0 LANGUAGES CXX)
+project (font-locator VERSION 1.0.0 LANGUAGES CXX)
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_EXTENSIONS OFF)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -38,7 +38,10 @@ endif()
 set(SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator.cc)
 if(APPLE)
     list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator-macos.cc)
-endif(APPLE)
+elseif(LINUX)
+    list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator-linux.cc)
+endif()
+
 set(HDRS ${CMAKE_CURRENT_SOURCE_DIR}/include/font-locator/font-locator.h)
 set(MODULEMAP ${CMAKE_CURRENT_SOURCE_DIR}/module.modulemap)
 
@@ -52,6 +55,9 @@ if(APPLE)
     find_library(CORE_TEXT CoreText REQUIRED)
     find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
     target_link_libraries(font-locator-core PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
+elseif(LINUX)
+    find_package(Fontconfig REQUIRED)
+    target_link_libraries(font-locator-objs PRIVATE Fontconfig::Fontconfig)
 endif()
 
 install(TARGETS font-locator-core ARCHIVE DESTINATION lib)
@@ -60,6 +66,7 @@ install(
     DESTINATION include)
 
 
+# macOS Framework
 if (APPLE)
     add_library(FontLocatorCore STATIC
         $<TARGET_OBJECTS:font-locator-objs>

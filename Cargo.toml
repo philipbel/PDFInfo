@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["gtk", "pdf-engine/rust", "font-locator/rust", "common"]
+members = ["gtk", "pdf-engine/rust", "font-locator/rust", "common", "common-build"]
 
 
 [profile.dev.package."*"]

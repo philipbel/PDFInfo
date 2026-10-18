@@ -55,8 +55,8 @@ pub fn measurement_system() -> MeasurementSystem {
 
     // From glibc's langinfo.h _NL_ITEM(category, index)	(((category) << 16) | (index))
     const NL_MEASUREMENT: libc::nl_item = (libc::LC_MEASUREMENT << 16) as libc::nl_item;
-    match unsafe { libc::nl_langinfo(NL_MEASUREMENT) } {
-        &2 => MeasurementSystem::Us,
+    match unsafe { libc::nl_langinfo(NL_MEASUREMENT).read() } {
+        2 => MeasurementSystem::Us,
         _ => MeasurementSystem::Metric,
     }
 }

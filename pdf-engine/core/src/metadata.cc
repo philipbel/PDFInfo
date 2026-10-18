@@ -5,6 +5,7 @@
 
 #include "metadata.hh"
 #include "util.hh"
+#include <algorithm>
 #include <assert.h>
 #include <chrono>
 #include <qpdf/QUtil.hh>

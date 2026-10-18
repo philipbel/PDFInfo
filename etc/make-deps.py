@@ -98,7 +98,7 @@ def run_cmake(
 ):
     # fmt: off
     shell(
-        "uv", "run", "cmake",
+        "cmake",
         *args,
         name=name,
         log_prefix=log_prefix,
@@ -161,6 +161,8 @@ def cmake_build(name: str, build_dir: Path, dry: bool, verbose: bool):
 def cmake_install(
     name: str,
     build_dir: Path,
+    target_platform: Platform,
+    target_architecture: Architecture,
     dry: bool,
     verbose: bool,
 ):
@@ -174,6 +176,14 @@ def cmake_install(
         verbose=verbose,
     )
     # fmt: on
+
+    # On Linux, make lib point to lib64
+    if target_platform == Platform.LINUX:
+        arch_dir = PREFIX_DIR / PLATFORM / target_architecture
+        lib64_dir = arch_dir / "lib64"
+        lib_dir = arch_dir / "lib"
+        if lib64_dir.exists() and not lib_dir.exists():
+            os.symlink(lib64_dir, lib_dir)
 
 
 def build_cmake_package(
@@ -223,6 +233,8 @@ def build_cmake_package(
         cmake_install(
             name=name,
             build_dir=lib_build_dir,
+            target_platform=target_platform,
+            target_architecture=architecture,
             dry=dry,
             verbose=verbose,
         )

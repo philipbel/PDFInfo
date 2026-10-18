@@ -18,5 +18,5 @@ build-backend = "uv_build"
 extend-select = ["I"]
 
 [tool.uv]
-# We only use it uv for cmake and some scripts
+# We only use it uv for some scripts
 package = false

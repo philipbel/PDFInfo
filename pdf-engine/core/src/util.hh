@@ -12,8 +12,8 @@
 #include <string_view>
 
 
-std::optional<std::string> getUTF8String(const QPDFObjectHandle &dictionary,
-                                         const std::string_view key) {
+static inline std::optional<std::string> getUTF8String(const QPDFObjectHandle &dictionary,
+                                                       const std::string_view key) {
     const auto value = dictionary.getKey(std::string(key));
     if (value.isString()) {
         std::string s;
