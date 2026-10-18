@@ -51,12 +51,14 @@
     // Spelling
     "cSpell.words": [
         "accels",
+        "adwaita",
         "bindtextdomain",
         "cmap",
         "codeset",
         "concatcp",
         "Crossfade",
         "fitz",
+        "Fontconfig",
         "fontfile",
         "fontname",
         "fontsize",
@@ -68,13 +70,16 @@
         "GTRUE",
         "halign",
         "langinfo",
+        "libadwaita",
+        "libclang",
         "pdfinfo",
         "pdfs",
         "philipbel",
+        "rustup",
         "setlocale",
         "strdup",
         "vexpand",
         "vhomogeneous",
-        "xalign",
+        "xalign"
     ],
 }

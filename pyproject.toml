@@ -13,13 +13,6 @@ gen-fonts = "gen_fonts:main"
 requires = ["uv_build>=0.12.16,<0.13.0"]
 build-backend = "uv_build"
 
-[dependency-groups]
-dev = [
-    "cmake>=4.4.4",
-    "ninja>=1.13.2",
-]
-
-
 
 [tool.ruff]
 extend-select = ["I"]

@@ -7,7 +7,6 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
 
     let root_dir = manifest_dir.join("../..");
@@ -20,18 +19,17 @@ fn main() {
 
     println!("cargo::rerun-if-changed={}", core_dir.display());
 
-    println!("cargo::rustc-link-search=native={}",
-             dst.join("lib").display());
+    println!(
+        "cargo::rustc-link-search=native={}",
+        dst.join("lib").display()
+    );
 
     println!("cargo::rustc-link-lib=static=font-locator-core");
 
     match target_os.as_str() {
         "macos" => {
-
             println!("cargo::rustc-link-lib=c++");
-
             println!("cargo::rustc-link-lib=framework=CoreFoundation");
-
             println!("cargo::rustc-link-lib=framework=CoreText");
         }
         "linux" => println!("cargo::rustc-link-lib=stdc++"),
@@ -57,7 +55,6 @@ fn main() {
 }
 
 fn build_type() -> &'static str {
-
     match std::env::var("PROFILE").as_deref() {
         Ok("release") => "Release",
         _ => "Debug",
