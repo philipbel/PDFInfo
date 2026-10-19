@@ -1,3 +1,8 @@
+// Copyright (c) 2026 Philip B. (philipbel)
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 nonisolated public struct RangeValidator<Value: SettingValue>: SettingValidator<Value> where Value: Comparable {
     public let range: ClosedRange<Value>
 

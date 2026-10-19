@@ -1,3 +1,8 @@
+// Copyright (c) 2026 Philip B. (philipbel)
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 public import Foundation
 private import FontLocatorCore
 
@@ -24,4 +29,3 @@ public enum FontLocatorManager {
         font_locator_init()
     }
 }
-

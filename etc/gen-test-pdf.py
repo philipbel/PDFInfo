@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
+# Copyright (c) 2026 Philip B. (philipbel)
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
 import datetime
 import os
-from random import randint, random
 import sys
 from pathlib import Path
+from random import randint, random
 from typing import Literal
 
 import pymupdf as mu

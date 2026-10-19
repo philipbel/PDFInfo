@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
 if [ ! -d "gtk" -o ! -d po ]; then
     echo "Run from teh top-level directory"
     exit 1

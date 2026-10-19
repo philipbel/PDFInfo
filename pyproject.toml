@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
 [project]
 name = "pdfinfo"
 version = "0.1.0"
@@ -18,5 +23,5 @@ build-backend = "uv_build"
 extend-select = ["I"]
 
 [tool.uv]
-# We only use it uv for some scripts
+# We only use uv for some scripts
 package = false

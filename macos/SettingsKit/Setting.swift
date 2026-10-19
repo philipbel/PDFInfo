@@ -1,3 +1,8 @@
+// Copyright (c) 2026 Philip B. (philipbel)
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 private import Foundation
 
 
@@ -29,5 +34,3 @@ nonisolated extension Setting where Validator == RangeValidator<Value> {
         self.init(key: key, default: `default`, validator: RangeValidator(range: range))
     }
 }
-
-

@@ -4,7 +4,7 @@
             "name": "PDFInfo",
             "compileCommands": [
                 "${workspaceFolder}/build/prefix/compile_commands/pdf-engine-compile_commands.json",
-                "${workspaceFolder}/build/prefix/compile_commands/font-locator-compile_commands.json",
+                "${workspaceFolder}/build/prefix/compile_commands/font-locator-compile_commands.json"
             ],
             "configurationProvider": "ms-vscode.cmake-tools"
         }

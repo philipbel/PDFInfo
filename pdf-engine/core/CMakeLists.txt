@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0 CACHE STRING "")
