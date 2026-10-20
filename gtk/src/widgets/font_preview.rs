@@ -174,24 +174,34 @@ impl FontPreview {
         system_font_preview_area.set_font_face(None::<cairo::FontFace>);
         embedded_font_preview_area.set_font_face(None::<cairo::FontFace>);
 
-
         // now set the the state
         if let Some(preview_faces) = PreviewFontFaces::load(font.font()) {
             system_font_preview_area.set_font_face(preview_faces.system_font_face.clone());
             embedded_font_preview_area.set_font_face(preview_faces.embedded_font_face.clone());
 
-            if preview_faces.system_font_face.is_some()
-                || preview_faces.embedded_font_face.is_some()
-            {
+            let has_system_font = preview_faces.system_font_face.is_some();
+            let has_embedded_font = preview_faces.embedded_font_face.is_some();
+
+            // show the preview
+            if has_system_font || has_embedded_font {
                 imp.container_stack.set_visible_child(&imp.font_preview_box);
             }
 
             imp.font_preview_stack
                 .page(imp.system_font_preview_area.get().unwrap())
-                .set_visible(preview_faces.system_font_face.is_some());
+                .set_visible(has_system_font);
+            if has_system_font {
+                imp.font_preview_stack
+                    .set_visible_child(system_font_preview_area);
+            }
+
             imp.font_preview_stack
                 .page(imp.embedded_font_preview_area.get().unwrap())
-                .set_visible(preview_faces.embedded_font_face.is_some());
+                .set_visible(has_embedded_font);
+            if has_embedded_font {
+                imp.font_preview_stack
+                    .set_visible_child(embedded_font_preview_area);
+            }
         };
     }
 }
