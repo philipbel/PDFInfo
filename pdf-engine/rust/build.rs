@@ -12,6 +12,7 @@ use common_build::{
     is_debug_build,
     project_root_dir,
     target_os,
+    target_os_prefix_dir,
     target_prefix_dir,
 };
 
@@ -20,11 +21,16 @@ fn main() {
     let core_dir = root_dir.join("pdf-engine/core");
     let target_prefix_dir = target_prefix_dir();
     let target_lib_dir = target_prefix_dir.join("lib");
-    let dst = cmake::Config::new(&core_dir)
+    let mut cmake_config = cmake::Config::new(&core_dir);
+    cmake_config
         .profile(cmake_build_type())
         .very_verbose(is_debug_build())
-        .define("CMAKE_PREFIX_PATH", &target_prefix_dir)
-        .build();
+        .define("CMAKE_PREFIX_PATH", &target_prefix_dir);
+    if target_os() == "macos" {
+        let universal_lib_dir = target_os_prefix_dir().join("universal/lib");
+        cmake_config.define("DEPS_UNIVERSAL_LIB_DIR", universal_lib_dir);
+    }
+    let dst = cmake_config.build();
 
     extract_compile_commands(env!("CARGO_PKG_NAME"), &dst.join("build"));
 

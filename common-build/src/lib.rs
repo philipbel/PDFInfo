@@ -76,8 +76,12 @@ pub fn project_prefix_dir() -> PathBuf {
 }
 
 
+pub fn target_os_prefix_dir() -> PathBuf {
+    project_prefix_dir().join(target_os())
+}
+
 pub fn target_prefix_dir() -> PathBuf {
-    project_prefix_dir().join(target_os()).join(target_arch())
+    target_os_prefix_dir().join(target_arch())
 }
 
 

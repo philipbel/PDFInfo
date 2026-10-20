@@ -1,6 +1,20 @@
 # Contributing
 
+
+## Clone the repo
+
+```
+git clone git@github.com:philipbel/PDFInfo.git
+```
+
+Update the submodules:
+```
+git submodule update --init --recursive
+```
+
+
 ## Requirements
+
 
 ### macOS (AppKit) Requirements
 
@@ -72,10 +86,20 @@ On Linux, the following packages are needed:
    - NixOS package: `pkg-config`
 4. libclang
    - NixOS package: `libclang`
-5. GTK4 and libadwaita
-   - NixOS packages: `gtk4`, `libadwaita`
+5. GTK4 and libadwaita.
+   - NixOS packages:
+     - `glib.dev`
+     - `cairo.dev`
+     - `harfbuzz.dev`
+     - `gdk-pixbuf.dev`
+     - `graphene.dev`
+     - `pango.dev`
+     - `vulkan-loader.dev`
+     - `freetype.dev`
+     - `gtk4.dev`
+     - `libadwaita.dev`
 6. Fontconfig
-   - NixOS package: `fontconfig`
+   - NixOS package: `fontconfig.dev`
 7. Ninja and CMake
    - NixOS packages: `ninja`, `cmake`
 8. GitHub CLI (optional, for making GitHub releases)
@@ -84,6 +108,22 @@ On Linux, the following packages are needed:
    - NixOS package: `uv`
 10. gettext
    - NixOS package: `gettext`
+11. GNU Make
+   - NixOS package: `gnumake`
+
+On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
+
+```nix
+  environment.variables = {
+    LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
+  };
+  environment.profileRelativeSessionVariables = {
+    PKG_CONFIG_PATH = [
+      "/lib/pkgconfig"
+      "/share/pkgconfig"
+    ];
+  };
+```
 
 ### Windows Requirements
 
@@ -106,6 +146,25 @@ TODO:
 
 
 ## Building
+
+### Building on macOS (AppKit)
+
+1. Make sure you have the [prerequisites](#macos-appkit-requirements).
+2. Run `etc/build.sh` to build the C/C++ components that the Swift app uses.
+3. Open Xcode and build the `PDF Info—Debug` or `PDF Info—Release` scheme.
+   
+   Alternatively, from the command line:
+   ```
+   xcodebuild \
+    -project PDFInfo.xcodeproj \
+    -scheme "PDF Info—Release" \
+    -configuration "Release" \
+    -destination "generic/platform=macOS" \
+    clean build
+    ```
+
+### Building on Linux/macOS (GTK)
+
 1. If not building the AppKit version, set up your Rust toolchain:
 
    ```

@@ -17,12 +17,6 @@ set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Not currently used
 set(DEPS_UNIVERSAL_LIB_DIR "" CACHE PATH "(macOS) Directory containing dependencies' static universal libs")
 
-if(APPLE)
-    if(NOT DEPS_UNIVERSAL_LIB_DIR)
-        message(FATAL_ERROR "DEPS_UNIVERSAL_LIB_DIR is required")
-    endif()
-endif()
-
 
 if(NOT MSVC)
     add_compile_options(
