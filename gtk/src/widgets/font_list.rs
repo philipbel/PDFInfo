@@ -20,6 +20,7 @@ use crate::model::{
 mod imp {
     use std::cell::RefCell;
 
+    use font_locator::FontInfo;
     use gtk::glib::Properties;
     use pdf_engine::FontDisplayType;
 
@@ -104,6 +105,15 @@ mod imp {
                     .append_column(&Self::make_check_column(&gettext("Embedded"), |f| {
                         f.font().is_embedded()
                     }));
+                self.column_view.append_column(&Self::make_check_column(
+                    &gettext("Installed"),
+                    |f| {
+                        f.font()
+                            .display_name()
+                            .map(|n| FontInfo::find(n).is_some())
+                            .unwrap_or(false)
+                    },
+                ));
 
                 let scrolled_window = gtk::ScrolledWindow::builder()
                     .hscrollbar_policy(gtk::PolicyType::Never)
