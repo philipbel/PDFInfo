@@ -127,7 +127,6 @@ On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
 
 ### Windows Requirements
 
-TODO:
 1. Rust, for example using rustup via winget:
    ```
    winget install Rustlang.Rustup
@@ -136,13 +135,59 @@ TODO:
    ```
    winget install Microsoft.VisualStudio.BuildTools
    ```
-   Once installed, launch the Visual Studio Installer, go to Modify, and install "Desktop development with C++". You
-   can skip "C++ CMake tools for Windows".
+   Once installed, launch the Visual Studio Installer, go to Modify, and install "Desktop development with C++". You can skip the CMake component.
 
-3. LLVM (for bindgen)
+3. Install CMake (adding `cmake` to `PATH`):
+   ```
+   winget install Kitware.CMake --override "/passive ADD_CMAKE_TO_PATH=User"
+   ```
+
+4. LLVM (for bindgen)
    ```
    winget install LLVM.LLVM
    ```
+
+5. Set up your Rust toolchain:
+   ```
+   rustup default stable
+   ```
+
+6. Install uv:
+   ```
+   winget install --id=astral-sh.uv -e
+   ```
+
+7. Install Ninja
+   ```
+   winget install Ninja-build.Ninja
+   ```
+
+8. Create a Python virtual environment:
+   ```
+   uv venv --python 3.14
+   ```
+
+9. Enable running scripts:
+   ```
+   Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+   ```
+
+10. Activate the environment
+   ```
+   .venv\Scripts\activate
+   ```
+
+11. Install Python dependencies
+   ```
+   uv sync
+   ```
+
+12. Open a Visual Studio Devtools shell.
+
+13. Build the dependencies
+    ```
+    python etc\make-deps.py
+    ```
 
 
 ## Building

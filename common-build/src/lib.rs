@@ -3,12 +3,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-use std::env;
+use std::{env, io};
 use std::fs::{
     create_dir_all,
     remove_file,
 };
-use std::os::unix;
 use std::path::{
     Path,
     PathBuf,
@@ -54,12 +53,25 @@ pub fn extract_compile_commands(package_name: &str, src_dir: &Path) {
         remove_file(&dst_file).expect("failed to remove file");
     }
 
-    if cfg!(windows) {
-    } else {
-        unix::fs::symlink(&src_file, &dst_file).expect("failed to create symlink");
-    }
+    symlink_file(&src_file, &dst_file).expect("failed to create file symlink");
     println!("Symlinked {} -> {}", src_file.display(), dst_file.display());
 }
+
+
+#[cfg(windows)]
+fn symlink_file<S, D>(src_file: S, dst_file: D) -> io::Result<()> where S: AsRef<Path>, D: AsRef<Path> {
+use std::os::windows;
+        windows::fs::symlink_file(&src_file, &dst_file)
+}
+
+#[cfg(not(windows))]
+fn symlink_file<S, D>(src_file: S, dst_file: D) -> io::Result<()> where S: AsRef<Path>, D: AsRef<Path> {
+    use std::os::unix;
+    unix::fs::symlink(&src_file, &dst_file)
+}
+
+
+
 
 
 pub fn cmake_build_type() -> &'static str {

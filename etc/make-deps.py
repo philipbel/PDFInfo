@@ -14,9 +14,8 @@ import sys
 from argparse import ArgumentParser
 from enum import StrEnum
 from pathlib import Path
-from subprocess import CalledProcessError, run
+from subprocess import CalledProcessError, list2cmdline, run
 
-SHELL = "bash"
 PROG = os.path.basename(__file__)
 ROOT_DIR = Path(os.path.realpath(__file__)).parent.parent
 BUILD_DIR = ROOT_DIR / "build"
@@ -77,13 +76,13 @@ def _save_output(log_prefix: str, stdout: str, stderr: str):
 
 
 def shell(*args: str, name: str, log_prefix: str, verbose: bool, dry: bool):
-    cmd = shlex.join(args)
+    cmd = list2cmdline(args) if os.name == "nt" else shlex.join(args)
     print(f"[{name}] {cmd}")
     if dry:
         return
     try:
         result = run(
-            [SHELL, "-c", cmd], capture_output=True, text=True, check=True, cwd=ROOT_DIR
+            list(args), capture_output=True, text=True, check=True, cwd=ROOT_DIR
         )
         _save_output(log_prefix=log_prefix, stdout=result.stdout, stderr=result.stderr)
         if verbose:
@@ -140,7 +139,7 @@ def cmake_configure(
         f"-DCMAKE_INSTALL_PREFIX={prefix_dir}",
         "-DCMAKE_BUILD_TYPE=Release",
         f"-DCMAKE_PREFIX_PATH={prefix_dir}",
-        "-DPKG_CONFIG_EXECUTABLE=/usr/bin/false", # Force no pkg-config in CMake
+        "-DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON", # Force no pkg-config in CMake
         *args,
         *platform_args,
         name=name,
@@ -311,6 +310,7 @@ def main(args: list[str]):
             "-DREQUIRE_CRYPTO_NATIVE=ON",
             "-DSTATIC_JPEG=ON",
             "-DINSTALL_EXAMPLES=OFF",
+            "-DEXTERNAL_LIBS=ON",
         ],
         dry=opts.dry,
         verbose=opts.verbose,
