@@ -61,7 +61,7 @@ install(
 
 
 if (APPLE)
-    add_library(PDFEngine STATIC    
+    add_library(PDFEngineCore STATIC    
         $<TARGET_OBJECTS:pdf-engine-objs>
         ${HDRS}
         ${MODULEMAP}
@@ -69,35 +69,35 @@ if (APPLE)
     set_source_files_properties(${MODULEMAP} PROPERTIES
         MACOSX_PACKAGE_LOCATION Modules
     )
-    set_target_properties(PDFEngine PROPERTIES
+    set_target_properties(PDFEngineCore PROPERTIES
         FRAMEWORK TRUE
         FRAMEWORK_VERSION A
-        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.PDFEngine
+        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.PDFEngineCore
         VERSION 1.0.0
         SOVERSION 1.0.0
         PUBLIC_HEADER "${HDRS}"
     )
-    target_include_directories(PDFEngine PUBLIC include)
-    target_link_libraries(PDFEngine PRIVATE qpdf::libqpdf)
+    target_include_directories(PDFEngineCore PUBLIC include)
+    target_link_libraries(PDFEngineCore PRIVATE qpdf::libqpdf)
 
-    add_custom_command(TARGET PDFEngine POST_BUILD
+    add_custom_command(TARGET PDFEngineCore POST_BUILD
         # Merge the dependencies into a single library
-        COMMAND libtool -static -o $<TARGET_FILE:PDFEngine>.merged
-            $<TARGET_FILE:PDFEngine>
+        COMMAND libtool -static -o $<TARGET_FILE:PDFEngineCore>.merged
+            $<TARGET_FILE:PDFEngineCore>
             ${z-lib} ${jpeg-lib} ${qpdf-lib}
         COMMAND ${CMAKE_COMMAND} -E rename
-            $<TARGET_FILE:PDFEngine>.merged $<TARGET_FILE:PDFEngine>
+            $<TARGET_FILE:PDFEngineCore>.merged $<TARGET_FILE:PDFEngineCore>
         COMMAND ${CMAKE_COMMAND} -E create_symlink
-            Versions/Current/Modules $<TARGET_BUNDLE_DIR:PDFEngine>/Modules
+            Versions/Current/Modules $<TARGET_BUNDLE_DIR:PDFEngineCore>/Modules
         # Copy headers
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDRS}
-            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngine>/Headers
+            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngineCore>/Headers
         # Copy module map
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MODULEMAP}
-            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngine>/Modules
+            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngineCore>/Modules
     )
     
-    install(TARGETS PDFEngine FRAMEWORK DESTINATION lib)
+    install(TARGETS PDFEngineCore FRAMEWORK DESTINATION lib)
 endif ()
 
 # pkg-config

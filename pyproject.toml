@@ -23,5 +23,4 @@ build-backend = "uv_build"
 extend-select = ["I"]
 
 [tool.uv]
-# We only use uv for some scripts
 package = false

@@ -66,7 +66,7 @@ install(
 
 # macOS Framework
 if (APPLE)
-    add_library(FontLocator STATIC
+    add_library(FontLocatorCore STATIC
         $<TARGET_OBJECTS:font-locator-objs>
         ${HDRS}
         ${MODULEMAP}
@@ -74,30 +74,30 @@ if (APPLE)
     set_source_files_properties(${MODULEMAP} PROPERTIES
         MACOSX_PACKAGE_LOCATION Modules
     )
-    set_target_properties(FontLocator PROPERTIES
+    set_target_properties(FontLocatorCore PROPERTIES
         FRAMEWORK TRUE
         FRAMEWORK_VERSION A
-        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.FontLocator
+        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.FontLocatorCore
         VERSION 1.0.0
         SOVERSION 1.0.0
         PUBLIC_HEADER "${HDRS}"
     )
-    target_include_directories(FontLocator
+    target_include_directories(FontLocatorCore
         PUBLIC include)
-    target_link_libraries(FontLocator PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
+    target_link_libraries(FontLocatorCore PRIVATE ${CORE_TEXT} ${CORE_FOUNDATION})
 
-    add_custom_command(TARGET FontLocator POST_BUILD
+    add_custom_command(TARGET FontLocatorCore POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E create_symlink
-            Versions/Current/Modules $<TARGET_BUNDLE_DIR:FontLocator>/Modules
+            Versions/Current/Modules $<TARGET_BUNDLE_DIR:FontLocatorCore>/Modules
         # Copy headers
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDRS}
-            $<TARGET_BUNDLE_CONTENT_DIR:FontLocator>/Headers
+            $<TARGET_BUNDLE_CONTENT_DIR:FontLocatorCore>/Headers
         # Copy module map
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MODULEMAP}
-            $<TARGET_BUNDLE_CONTENT_DIR:FontLocator>/Modules
+            $<TARGET_BUNDLE_CONTENT_DIR:FontLocatorCore>/Modules
     )
     
-    install(TARGETS FontLocator FRAMEWORK DESTINATION lib)
+    install(TARGETS FontLocatorCore FRAMEWORK DESTINATION lib)
 endif ()
 
 # pkg-config
