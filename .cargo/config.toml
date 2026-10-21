@@ -4,6 +4,6 @@
 # https://opensource.org/licenses/MIT
 
 [env]
+CMAKE_OSX_DEPLOYMENT_TARGET = "14.0"
 MACOSX_DEPLOYMENT_TARGET = "14.0"
-PREFIX_DIR = "build/prefix"
-COMPILE_COMMANDS_DIRNAME = "compile_commands"
+CMAKE_GENERATOR = "Ninja"

@@ -842,6 +842,7 @@ dependencies = [
  "cmake",
  "common",
  "common-build",
+ "pkg-config",
 ]
 
 [[package]]

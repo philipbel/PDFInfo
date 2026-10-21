@@ -3,69 +3,49 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// cSpell: words statik
+
 use std::env;
 use std::path::PathBuf;
 
 use common_build::{
     cmake_build_type,
-    extract_compile_commands,
+    cmake_osx_architecture,
     is_debug_build,
     project_root_dir,
-    target_os,
-    target_os_prefix_dir,
-    target_prefix_dir,
 };
+
+
+const HEADER: &str = "include/pdf-engine/pdf-engine.h";
 
 fn main() {
     let root_dir = project_root_dir();
-    let core_dir = root_dir.join("pdf-engine/core");
-    let target_prefix_dir = target_prefix_dir();
-    let target_lib_dir = target_prefix_dir.join("lib");
-    let mut cmake_config = cmake::Config::new(&core_dir);
-    cmake_config
+    let src_dir = root_dir.join("pdf-engine/core");
+    let mut cmake_config = cmake::Config::new(&src_dir);
+    if let Some(osx_architectures) = cmake_osx_architecture() {
+        cmake_config.define("CMAKE_OSX_ARCHITECTURES", osx_architectures);
+    }
+    if let Ok(osx_deployment_target) = env::var("CMAKE_OSX_DEPLOYMENT_TARGET") {
+        cmake_config.define("CMAKE_OSX_DEPLOYMENT_TARGET", osx_deployment_target);
+    }
+    let dst = cmake_config
         .profile(cmake_build_type())
         .very_verbose(is_debug_build())
-        .define("CMAKE_PREFIX_PATH", &target_prefix_dir);
-    if target_os() == "macos" {
-        let universal_lib_dir = target_os_prefix_dir().join("universal/lib");
-        cmake_config.define("DEPS_UNIVERSAL_LIB_DIR", universal_lib_dir);
+        .build();
+
+    unsafe {
+        env::set_var("PKG_CONFIG_PATH", dst.join("lib/pkgconfig"));
     }
-    let dst = cmake_config.build();
+    pkg_config::Config::new()
+        .statik(true)
+        .probe("pdf-engine-core")
+        .expect("could not find pkg-config for pdf-engine-core");
 
-    extract_compile_commands(env!("CARGO_PKG_NAME"), &dst.join("build"));
-
-    println!("cargo::rerun-if-changed={}", core_dir.display());
-    println!("cargo::rerun-if-changed={}", target_lib_dir.display());
-
-    println!(
-        "cargo::rustc-link-search=native={}",
-        dst.join("lib").display()
-    );
-    println!(
-        "cargo::rustc-link-search=native={}",
-        target_lib_dir.display()
-    );
-
-    // Order matters
-    println!("cargo::rustc-link-lib=static=pdf-engine-core");
-    println!("cargo::rustc-link-lib=static=qpdf");
-    println!("cargo::rustc-link-lib=static=jpeg");
-    println!("cargo::rustc-link-lib=static=z");
-
-    match target_os().as_str() {
-        "macos" => println!("cargo::rustc-link-lib=c++"),
-        "linux" => println!("cargo::rustc-link-lib=stdc++"),
-        _ => {}
-    }
+    println!("cargo::rerun-if-changed={}", src_dir.display());
 
     bindgen::Builder::default()
         .formatter(bindgen::Formatter::None)
-        .header(
-            core_dir
-                .join("include/pdf-engine/pdf-engine.h")
-                .to_str()
-                .unwrap(),
-        )
+        .header(src_dir.join(HEADER).into_string().unwrap())
         .allowlist_function("pdf_.*")
         .allowlist_type("pdf_.*")
         .prepend_enum_name(false)

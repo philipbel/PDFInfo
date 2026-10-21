@@ -1,18 +1,5 @@
 # Contributing
 
-
-## Clone the repo
-
-```
-git clone git@github.com:philipbel/PDFInfo.git
-```
-
-Update the submodules:
-```
-git submodule update --init --recursive
-```
-
-
 ## Requirements
 
 
@@ -20,7 +7,7 @@ git submodule update --init --recursive
 
 1. macOS 14 Sonoma or later, Intel or Apple Silicon.
 2. Xcode
-3. uv (Python is used for installing third-party dependencies and for generating test PDF files):
+3. uv (optional, for generating test PDF files):
    ```
    brew install uv
    ```
@@ -43,6 +30,7 @@ git submodule update --init --recursive
 Tested on macOS 27 Golden Gate with Apple Silicon. Please file an
 [issue](https://github.com/philipbel/PDFInfo/issues/new/choose) if the app
 doesn't work for you.
+
 
 ### macOS (GTK) Requirements
 
@@ -104,12 +92,10 @@ On Linux, the following packages are needed:
    - NixOS packages: `ninja`, `cmake`
 8. GitHub CLI (optional, for making GitHub releases)
    - NixOS package: `github-cli`
-9. uv
+9. uv (optional, for generating test PDFs)
    - NixOS package: `uv`
 10. gettext
    - NixOS package: `gettext`
-11. GNU Make
-   - NixOS package: `gnumake`
 
 On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
 
@@ -131,63 +117,38 @@ On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
    ```
    winget install Rustlang.Rustup
    ```
-3. Microsoft's C++ compiler
+2. Microsoft's C++ compiler
    ```
    winget install Microsoft.VisualStudio.BuildTools
    ```
-   Once installed, launch the Visual Studio Installer, go to Modify, and install "Desktop development with C++". You can skip the CMake component.
+   Once installed, launch the Visual Studio Installer, go to Modify, and install "Desktop development with C++".
 
-3. Install CMake (adding `cmake` to `PATH`):
-   ```
-   winget install Kitware.CMake --override "/passive ADD_CMAKE_TO_PATH=User"
-   ```
-
-4. LLVM (for bindgen)
+3. LLVM (for bindgen)
    ```
    winget install LLVM.LLVM
    ```
 
-5. Set up your Rust toolchain:
-   ```
-   rustup default stable
-   ```
-
-6. Install uv:
-   ```
-   winget install --id=astral-sh.uv -e
-   ```
-
-7. Install Ninja
-   ```
-   winget install Ninja-build.Ninja
-   ```
-
-8. Create a Python virtual environment:
-   ```
-   uv venv --python 3.14
-   ```
-
-9. Enable running scripts:
+4. Enable running scripts:
    ```
    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
    ```
 
-10. Activate the environment
+5. Install uv (optional, for generating test PDFs):
+   ```
+   winget install --id=astral-sh.uv -e
+   ```
+   Create an environment:
+   ```
+   uv venv --python 3.14
+   ```
+   Activate the environment:
    ```
    .venv\Scripts\activate
    ```
-
-11. Install Python dependencies
+   Install Python dependencies
    ```
    uv sync
    ```
-
-12. Open a Visual Studio Devtools shell.
-
-13. Build the dependencies
-    ```
-    python etc\make-deps.py
-    ```
 
 
 ## Building
@@ -235,3 +196,9 @@ On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
    ```
    ./etc/make-deps.py
    ```
+
+
+### Building on Windows
+
+1. Open a Visual Studio Devtools shell.
+2. Run `build.ps1`

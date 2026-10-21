@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: pdf-engine-core
+Description: PDF engine core
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lpdf-engine-core
+Cflags: -I${includedir}
+Requires.private: @PC_REQUIRES_PRIVATE@
+Libs.private: @PC_LIBS_PRIVATE@

@@ -3,25 +3,25 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-cmake_minimum_required(VERSION 3.16)
+# cSpell: ignoreRegExp -W\w+
+# cSpell: ignoreRegExp -D\w+
+# cSpell: ignoreRegExp -l\w+
+# cSpell: words SRCS HDRS MODULEMAP modulemap objs
 
-set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0 CACHE STRING "")
+cmake_minimum_required(VERSION 3.28...4.2)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "macOS deployment target")
 
-project(pdf-engine-core VERSION 1.0.0 LANGUAGES CXX)
+project(pdf-engine-core VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(DEPS_UNIVERSAL_LIB_DIR "" CACHE PATH "(macOS) Directory containing dependencies' static universal libs")
+set(USE_SYSTEM_LIBS FALSE CACHE BOOL 
+    "Use system-provided libraries. If FALSE, build vendored dependencies.")
 
-if(APPLE)
-    if(NOT DEPS_UNIVERSAL_LIB_DIR)
-        message(FATAL_ERROR "DEPS_UNIVERSAL_LIB_DIR is required")
-    endif()
-endif()
-
+include(deps.cmake)
 
 if(NOT MSVC)
     add_compile_options(
@@ -34,7 +34,6 @@ if(NOT MSVC)
     )
 endif()
 
-find_package(qpdf CONFIG REQUIRED)
 
 file(GLOB SRCS
     CONFIGURE_DEPENDS
@@ -54,6 +53,7 @@ add_library(pdf-engine-core STATIC $<TARGET_OBJECTS:pdf-engine-objs>)
 target_include_directories(pdf-engine-core PUBLIC include)
 target_link_libraries(pdf-engine-core PRIVATE qpdf::libqpdf)
 
+
 install(TARGETS pdf-engine-core ARCHIVE DESTINATION lib)
 install(
     DIRECTORY include/pdf-engine
@@ -61,7 +61,7 @@ install(
 
 
 if (APPLE)
-    add_library(PDFEngineCore STATIC    
+    add_library(PDFEngine STATIC    
         $<TARGET_OBJECTS:pdf-engine-objs>
         ${HDRS}
         ${MODULEMAP}
@@ -69,30 +69,63 @@ if (APPLE)
     set_source_files_properties(${MODULEMAP} PROPERTIES
         MACOSX_PACKAGE_LOCATION Modules
     )
-    set_target_properties(PDFEngineCore PROPERTIES
+    set_target_properties(PDFEngine PROPERTIES
         FRAMEWORK TRUE
         FRAMEWORK_VERSION A
-        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.PDFEngineCore
+        MACOSX_FRAMEWORK_IDENTIFIER com.github.philipbel.PDFInfo.PDFEngine
         VERSION 1.0.0
         SOVERSION 1.0.0
         PUBLIC_HEADER "${HDRS}"
     )
-    target_include_directories(PDFEngineCore
-        PUBLIC include)
-    target_link_libraries(PDFEngineCore PRIVATE qpdf::libqpdf)
+    target_include_directories(PDFEngine PUBLIC include)
+    target_link_libraries(PDFEngine PRIVATE qpdf::libqpdf)
 
-    # Merge the dependencies into a single library
-    add_custom_command(TARGET PDFEngineCore POST_BUILD
-        COMMAND libtool -static -o $<TARGET_FILE:PDFEngineCore>.merged
-            $<TARGET_FILE:PDFEngineCore>
-            ${DEPS_UNIVERSAL_LIB_DIR}/libqpdf.a
-            ${DEPS_UNIVERSAL_LIB_DIR}/libjpeg.a
-            ${DEPS_UNIVERSAL_LIB_DIR}/libz.a
+    add_custom_command(TARGET PDFEngine POST_BUILD
+        # Merge the dependencies into a single library
+        COMMAND libtool -static -o $<TARGET_FILE:PDFEngine>.merged
+            $<TARGET_FILE:PDFEngine>
+            ${z-lib} ${jpeg-lib} ${qpdf-lib}
         COMMAND ${CMAKE_COMMAND} -E rename
-            $<TARGET_FILE:PDFEngineCore>.merged $<TARGET_FILE:PDFEngineCore>
+            $<TARGET_FILE:PDFEngine>.merged $<TARGET_FILE:PDFEngine>
         COMMAND ${CMAKE_COMMAND} -E create_symlink
-            Versions/Current/Modules $<TARGET_BUNDLE_DIR:PDFEngineCore>/Modules
+            Versions/Current/Modules $<TARGET_BUNDLE_DIR:PDFEngine>/Modules
+        # Copy headers
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${HDRS}
+            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngine>/Headers
+        # Copy module map
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${MODULEMAP}
+            $<TARGET_BUNDLE_CONTENT_DIR:PDFEngine>/Modules
     )
     
-    install(TARGETS PDFEngineCore FRAMEWORK DESTINATION lib)
+    install(TARGETS PDFEngine FRAMEWORK DESTINATION lib)
 endif ()
+
+# pkg-config
+if(USE_SYSTEM_LIBS)
+    set(PC_REQUIRES_PRIVATE "libqpdf")
+    set(PC_LIBS_PRIVATE "")
+else()
+    set(PC_REQUIRES_PRIVATE "")
+    set(PC_LIBS_PRIVATE "-lqpdf -ljpeg -lz")
+endif()
+if(APPLE)
+    string(APPEND PC_LIBS_PRIVATE " -lc++")
+elseif(UNIX)
+    string(APPEND PC_LIBS_PRIVATE " -lstdc++")
+endif()
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/pdf-engine-core.pc.in 
+    ${CMAKE_CURRENT_BINARY_DIR}/pdf-engine-core.pc
+    @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pdf-engine-core.pc
+    DESTINATION lib/pkgconfig)
+
+
+set(COMPILE_COMMANDS_DIR ${PROJECT_SOURCE_DIR}/../../build/compile_commands)
+add_custom_target(copy-compile-commands ALL
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${COMPILE_COMMANDS_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/compile_commands.json
+        ${COMPILE_COMMANDS_DIR}/pdf-engine-core.json
+)

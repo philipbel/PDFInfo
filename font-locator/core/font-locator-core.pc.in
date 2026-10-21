@@ -1,0 +1,16 @@
+# Copyright (c) 2026 Philip B. (philipbel)
+# 
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: font-locator-core
+Description: Font Locator core
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lfont-locator-core
+Cflags: -I${includedir}
+Requires.private: @PC_REQUIRES_PRIVATE@
+Libs.private: @PC_LIBS_PRIVATE@

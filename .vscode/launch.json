@@ -10,13 +10,6 @@
             "cwd": "${workspaceFolder}/etc"
         },
         {
-            "name": "make-deps.py",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/etc/make-deps.py",
-            "console": "integratedTerminal"
-        },
-        {
             "type": "lldb",
             "request": "launch",
             "name": "PDFInfo Gtk",

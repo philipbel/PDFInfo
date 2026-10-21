@@ -1,5 +1,5 @@
 {
-    "explorer.excludeGitIgnore": true,
+    "explorer.excludeGitIgnore": false,
     "search.exclude": {
         "extern": true
     },
@@ -36,8 +36,6 @@
         }
     },
     // C/C++
-    // TODO: Don't hardcode
-    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/macos/arm64/pdf-engine-core/compile_commands.json",
     "C_Cpp.default.cppStandard": "c++20",
     "C_Cpp.formatting": "clangFormat",
     "[cpp]": {
@@ -59,6 +57,8 @@
         "codeset",
         "concatcp",
         "Crossfade",
+        "endforeach",
+        "endfunction",
         "fitz",
         "fontconfig",
         "Fontconfig",
@@ -68,6 +68,7 @@
         "formatx",
         "freetype",
         "gettextrs",
+        "github",
         "gnumake",
         "graphene",
         "Graphene",
@@ -79,6 +80,12 @@
         "langinfo",
         "libadwaita",
         "libclang",
+        "libfile",
+        "libjpeg",
+        "libqpdf",
+        "libz",
+        "lipo",
+        "MSVC",
         "nullable",
         "pango",
         "pdfinfo",
@@ -86,8 +93,10 @@
         "philipbel",
         "pixbuf",
         "pkgs",
+        "qpdf",
         "rustup",
         "setlocale",
+        "SOVERSION",
         "strdup",
         "venv",
         "vexpand",

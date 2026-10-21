@@ -3,55 +3,51 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+// cSpell: words statik
+
 use std::env;
 use std::path::PathBuf;
 
 use common_build::{
-    extract_compile_commands,
+    cmake_build_type,
+    cmake_osx_architecture,
     is_debug_build,
     project_root_dir,
-    target_os,
 };
+
+
+const HEADER: &str = "include/font-locator/font-locator.h";
+
 
 fn main() {
     let root_dir = project_root_dir();
-    let core_dir = root_dir.join("font-locator/core");
-    let dst = cmake::Config::new(&core_dir)
+    let src_dir = root_dir.join("font-locator/core");
+
+    let mut cmake_config = cmake::Config::new(&src_dir);
+    if let Some(osx_architectures) = cmake_osx_architecture() {
+        cmake_config.define("CMAKE_OSX_ARCHITECTURES", osx_architectures);
+    }
+    if let Ok(osx_deployment_target) = env::var("CMAKE_OSX_DEPLOYMENT_TARGET") {
+        cmake_config.define("CMAKE_OSX_DEPLOYMENT_TARGET", osx_deployment_target);
+    }
+    let dst = cmake_config
         .very_verbose(is_debug_build())
-        .profile(build_type())
+        .profile(cmake_build_type())
         .build();
 
-    extract_compile_commands(env!("CARGO_PKG_NAME"), &dst.join("build"));
-
-    println!("cargo::rerun-if-changed={}", core_dir.display());
-
-    println!(
-        "cargo::rustc-link-search=native={}",
-        dst.join("lib").display()
-    );
-    println!("cargo::rustc-link-lib=static=font-locator-core");
-
-    match target_os().as_str() {
-        "macos" => {
-            println!("cargo::rustc-link-lib=c++");
-            println!("cargo::rustc-link-lib=framework=CoreFoundation");
-            println!("cargo::rustc-link-lib=framework=CoreText");
-        }
-        "linux" => {
-            _ = pkg_config::probe_library("fontconfig").unwrap();
-            println!("cargo::rustc-link-lib=stdc++");
-        }
-        _ => {}
+    unsafe {
+        env::set_var("PKG_CONFIG_PATH", dst.join("lib/pkgconfig"));
     }
+    pkg_config::Config::new()
+        .statik(true)
+        .probe("font-locator-core")
+        .expect("could not find pkg-config for font-locator-core");
+
+    println!("cargo::rerun-if-changed={}", src_dir.display());
 
     bindgen::Builder::default()
         .formatter(bindgen::Formatter::None)
-        .header(
-            core_dir
-                .join("include/font-locator/font-locator.h")
-                .to_str()
-                .unwrap(),
-        )
+        .header(src_dir.join(HEADER).into_string().unwrap())
         .allowlist_function("font_locator_.*")
         .allowlist_type("font_locator_.*")
         .prepend_enum_name(false)
@@ -60,11 +56,4 @@ fn main() {
         .expect("bindgen failed")
         .write_to_file(PathBuf::from(env::var("OUT_DIR").unwrap()).join("bindings.rs"))
         .unwrap();
-}
-
-fn build_type() -> &'static str {
-    match std::env::var("PROFILE").as_deref() {
-        Ok("release") => "Release",
-        _ => "Debug",
-    }
 }
