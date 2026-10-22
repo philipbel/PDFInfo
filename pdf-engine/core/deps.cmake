@@ -23,7 +23,7 @@ function(build_dependencies ARCH PREFIX)
         -DCMAKE_PREFIX_PATH=${PREFIX}
         -DCMAKE_INSTALL_LIBDIR=lib # no lib64 on Linux
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-        -DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON # disable pkg-config
+        # -DCMAKE_DISABLE_FIND_PACKAGE_PkgConfig=ON # disable pkg-config
         # Forward compilers and flags
         -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}        
         -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -67,6 +67,32 @@ function(build_dependencies ARCH PREFIX)
             -DWITH_TOOLS=OFF
         INSTALL_BYPRODUCTS ${jpeg-lib${suffix}}
     )
+    # libjpeg is named differently on Windows and qpdf fails to find it
+    # Ditto for zlib.
+    if(WIN32)
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(ZLIB_DEBUG_POSTFIX "d")
+        else()
+            set(ZLIB_DEBUG_POSTFIX "")
+        endif()
+
+        ExternalProject_Add_Step(z-build${suffix} rename-lib
+            COMMAND ${CMAKE_COMMAND} -E rename
+                ${PREFIX}/lib/zlibstatic${ZLIB_DEBUG_POSTFIX}.lib
+                ${PREFIX}/lib/z.lib
+            DEPENDEES install
+            DEPENDERS done
+            COMMENT "Rename zlib's static library"
+        )
+        ExternalProject_Add_Step(jpeg-build${suffix} rename-lib
+            COMMAND ${CMAKE_COMMAND} -E rename
+                ${PREFIX}/lib/jpeg-static.lib
+                ${PREFIX}/lib/jpeg.lib
+            DEPENDEES install
+            DEPENDERS done
+            COMMENT "Rename zlib's static library"
+        )
+    endif()
     set(qpdf-lib${suffix} ${PREFIX}/lib/${qpdf-libfile})
     ExternalProject_Add(qpdf-build${suffix}
         DEPENDS qpdf-src z-build${suffix} jpeg-build${suffix}

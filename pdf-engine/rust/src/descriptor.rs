@@ -18,15 +18,15 @@ use crate::{
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     pub struct DescriptorFlags: u32 {
-        const FIXED_PITCH = ffi::PDF_FONT_DESCRIPTOR_FLAG_FIXED_PITCH;
-        const SERIF = ffi::PDF_FONT_DESCRIPTOR_FLAG_SERIF;
-        const SYMBOLIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_SYMBOLIC;
-        const SCRIPT = ffi::PDF_FONT_DESCRIPTOR_FLAG_SCRIPT;
-        const NON_SYMBOLIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_NON_SYMBOLIC;
-        const ITALIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_ITALIC;
-        const ALL_CAP = ffi::PDF_FONT_DESCRIPTOR_FLAG_ALL_CAP;
-        const SMALL_CAP = ffi::PDF_FONT_DESCRIPTOR_FLAG_SMALL_CAP;
-        const FORCE_BOLD = ffi::PDF_FONT_DESCRIPTOR_FLAG_FORCE_BOLD;
+        const FIXED_PITCH = ffi::PDF_FONT_DESCRIPTOR_FLAG_FIXED_PITCH as u32;
+        const SERIF = ffi::PDF_FONT_DESCRIPTOR_FLAG_SERIF as u32;
+        const SYMBOLIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_SYMBOLIC as u32;
+        const SCRIPT = ffi::PDF_FONT_DESCRIPTOR_FLAG_SCRIPT as u32;
+        const NON_SYMBOLIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_NON_SYMBOLIC as u32;
+        const ITALIC = ffi::PDF_FONT_DESCRIPTOR_FLAG_ITALIC as u32;
+        const ALL_CAP = ffi::PDF_FONT_DESCRIPTOR_FLAG_ALL_CAP as u32;
+        const SMALL_CAP = ffi::PDF_FONT_DESCRIPTOR_FLAG_SMALL_CAP as u32;
+        const FORCE_BOLD = ffi::PDF_FONT_DESCRIPTOR_FLAG_FORCE_BOLD as u32;
     }
 }
 

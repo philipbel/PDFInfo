@@ -3,8 +3,8 @@
         {
             "name": "PDFInfo",
             "compileCommands": [
-                "${workspaceFolder}/build/release/compile_commands/pdf-engine-core.json",
-                "${workspaceFolder}/build/release/compile_commands/font-locator-core.json"
+                "${workspaceFolder}/build/compile_commands/pdf-engine-core.json",
+                "${workspaceFolder}/build/compile_commands/font-locator-core.json"
             ],
             "configurationProvider": "ms-vscode.cmake-tools"
         }

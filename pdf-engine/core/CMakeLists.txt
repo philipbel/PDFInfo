@@ -18,8 +18,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(USE_SYSTEM_LIBS FALSE CACHE BOOL 
+if(WIN32 OR APPLE)
+    set(USE_SYSTEM_LIBS_DEFAULT FALSE)
+else()
+    set(USE_SYSTEM_LIBS_DEFAULT TRUE)
+endif()
+set(USE_SYSTEM_LIBS ${USE_SYSTEM_LIBS_DEFAULT} CACHE BOOL 
     "Use system-provided libraries. If FALSE, build vendored dependencies.")
+
 
 include(deps.cmake)
 
