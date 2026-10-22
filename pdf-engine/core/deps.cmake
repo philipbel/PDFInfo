@@ -215,13 +215,17 @@ else()
     set_target_properties(zlib-ng PROPERTIES
         IMPORTED_LOCATION ${z-lib}
     )
+    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/zlib.pc
+        DESTINATION lib/pkgconfig)
 
     add_library(libjpeg-turbo STATIC IMPORTED)
     add_dependencies(libjpeg-turbo jpeg-build ${DEPS_TARGET})
     set_target_properties(libjpeg-turbo PROPERTIES
         IMPORTED_LOCATION ${jpeg-lib}
     )
-
+    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/libjpeg.pc
+        DESTINATION lib/pkgconfig)
+    
     add_library(qpdf::libqpdf STATIC IMPORTED)
     add_dependencies(qpdf::libqpdf qpdf-build ${DEPS_TARGET})
     set_target_properties(qpdf::libqpdf PROPERTIES
@@ -229,6 +233,8 @@ else()
         INTERFACE_INCLUDE_DIRECTORIES ${DEPS_PREFIX_DIR}/include
         INTERFACE_LINK_LIBRARIES "libjpeg-turbo;zlib-ng"
     )
+    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/libqpdf.pc
+        DESTINATION lib/pkgconfig)
 
     install(FILES ${all_libs}
         DESTINATION lib
