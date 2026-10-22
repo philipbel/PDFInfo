@@ -82,7 +82,8 @@ if (APPLE)
 
     add_custom_command(TARGET PDFEngineCore POST_BUILD
         # Merge the dependencies into a single library
-        COMMAND libtool -static -o $<TARGET_FILE:PDFEngineCore>.merged
+        COMMAND libtool -static -no_warning_for_no_symbols
+            -o $<TARGET_FILE:PDFEngineCore>.merged
             $<TARGET_FILE:PDFEngineCore>
             ${z-lib} ${jpeg-lib} ${qpdf-lib}
         COMMAND ${CMAKE_COMMAND} -E rename
