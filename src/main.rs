@@ -9,11 +9,13 @@
 // Linux and/or GTK
 #[cfg(any(target_os = "linux", feature = "gtk"))]
 fn main() {
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
     pdfinfo_gtk::run();
 }
 
 // Windows, native UI
 #[cfg(all(target_os = "windows", not(feature = "gtk")))]
 fn main() {
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
     pdfinfo_windows::run();
 }
