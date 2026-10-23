@@ -15,8 +15,8 @@ glib = { version = "0.22.10", features = ["log", "v2_72"] }
 gtk = { version = "0.11.5", package = "gtk4", features = ["v4_22"] }
 libc = "0.2.190"
 log = "0.4.34"
-pdf-engine = { version = "0.1.0", path = "../pdf-engine/rust" }
-font-locator = { version = "0.1.0", path = "../font-locator/rust" }
+pdf-engine = { version = "0.1.0", path = "../pdf-engine" }
+font-locator = { version = "0.1.0", path = "../font-locator" }
 common = { version = "0.1.0", path = "../common" }
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror = "2.0.21"

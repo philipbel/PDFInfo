@@ -35,3 +35,9 @@ impl FontInfo {
         })
     }
 }
+
+
+#[cfg(test)]
+fn test_init() {
+    unsafe { ffi::font_locator_init() };
+}

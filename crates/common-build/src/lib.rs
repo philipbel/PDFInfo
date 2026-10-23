@@ -6,14 +6,14 @@
 use std::env;
 use std::path::PathBuf;
 
-pub fn project_root_dir() -> PathBuf {
-    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    manifest_dir.join("../..")
-}
 
 pub fn cmake_build_type() -> &'static str {
     match env::var("PROFILE").as_deref() {
         Ok("release") => "Release",
+        // With MSCV, Rust always links to the release CRT. If we build CMake with Debug,
+        // the linker fails, e.g.,
+        // error LNK2001: unresolved external symbol __imp__CrtDbgReport
+        _ if env::var("CARGO_CFG_TARGET_ENV").as_deref() == Ok("msvc") => "RelWithDebInfo",
         _ => "Debug",
     }
 }

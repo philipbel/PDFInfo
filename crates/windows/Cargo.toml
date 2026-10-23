@@ -1,0 +1,12 @@
+[package]
+name = "pdfinfo-windows"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pdf-engine = { version = "0.1.0", path = "../pdf-engine" }
+font-locator = { version = "0.1.0", path = "../font-locator" }
+common = { version = "0.1.0", path = "../common" }
+windows-reactor = "0.100.0"
+
+[build-dependencies]

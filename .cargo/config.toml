@@ -4,6 +4,8 @@
 # https://opensource.org/licenses/MIT
 
 [env]
+PROJECT_ROOT_DIR = { value = ".", relative = true }
+
 CMAKE_OSX_DEPLOYMENT_TARGET = "14.0"
 MACOSX_DEPLOYMENT_TARGET = "14.0"
 CMAKE_GENERATOR = "Ninja"

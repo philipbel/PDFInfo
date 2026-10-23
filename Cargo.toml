@@ -5,9 +5,31 @@
 
 [workspace]
 resolver = "3"
-members = ["gtk", "pdf-engine/rust", "font-locator/rust", "common", "common-build"]
+members = ["crates/*"]
+default-members = [
+    ".",
+    "crates/pdf-engine",
+    "crates/font-locator",
+    "crates/common",
+    "crates/common-build"
+]
+exclude = ["crates/gtk", "crates/windows"]
 
 
-[profile.dev.package."*"]
-opt-level = 2
-debug = "line-tables-only"
+[package]
+name = "pdfinfo"
+version = "1.2.0"
+edition = "2024"
+
+
+[features]
+gtk = ["dep:pdfinfo-gtk"]
+
+[dependencies]
+pdfinfo-gtk = { path = "crates/gtk", optional = true }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+pdfinfo-gtk = { path = "crates/gtk" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+pdfinfo-windows = { path = "crates/windows" }

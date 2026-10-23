@@ -1,16 +1,19 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "build.sh",
-            "type": "shell",
-            "command": "build.sh",
+                {
+            "label": "rust: build",
+            "type": "cargo",
+            "command": "build",
             "args": [
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": []
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
         },
         {
             "label": "rust: pdf-engine",

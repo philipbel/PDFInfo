@@ -12,7 +12,6 @@ use common_build::{
     cmake_build_type,
     cmake_osx_architecture,
     is_debug_build,
-    project_root_dir,
 };
 
 
@@ -20,8 +19,8 @@ const HEADER: &str = "include/font-locator/font-locator.h";
 
 
 fn main() {
-    let root_dir = project_root_dir();
-    let src_dir = root_dir.join("font-locator/core");
+    let root_dir = PathBuf::from(env!("PROJECT_ROOT_DIR"));
+    let src_dir = root_dir.join("libs/font-locator-core");
 
     let mut cmake_config = cmake::Config::new(&src_dir);
     if let Some(osx_architectures) = cmake_osx_architecture() {

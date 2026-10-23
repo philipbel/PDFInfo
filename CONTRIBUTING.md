@@ -128,12 +128,17 @@ On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
    winget install LLVM.LLVM
    ```
 
-4. Enable running scripts:
+4. pkg-config
+   ```
+   winget install bloodrock.pkg-config-lite
+   ```
+
+5. Enable running scripts:
    ```
    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
    ```
 
-5. Install uv (optional, for generating test PDFs):
+6. Install uv (optional, for generating test PDFs):
    ```
    winget install --id=astral-sh.uv -e
    ```
@@ -200,5 +205,12 @@ On NixOS, you need `LIBCLANG_PATH` and `PKG_CONFIG_PATH`. For example:
 
 ### Building on Windows
 
-1. Open a Visual Studio Devtools shell.
-2. Run `build.ps1`
+
+1. Set up a Rust toolchain
+   ```
+   rustup default stable
+   ```
+
+   Optionally (if using `rustup`), set up `rustfmt` and `clippy`:
+   - ```rustup toolchain install nightly --component rustfmt```
+   - ```rustup component add clippy``` 

@@ -18,6 +18,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# TODO: Add flags for MSCV, too
 if(NOT MSVC)
     add_compile_options(
         -Wall
@@ -35,7 +36,7 @@ if(APPLE)
 elseif(LINUX)
     list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator-linux.cc)
 elseif(WIN32)
-    message(FATAL_ERROR "Not implemented on Windows")
+    list(APPEND SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/font-locator-windows.cc)
 else()
     message(FATAL_ERROR "System not supported")
 endif()
@@ -56,6 +57,8 @@ if(APPLE)
 elseif(LINUX)
     find_package(Fontconfig REQUIRED)
     target_link_libraries(font-locator-objs PRIVATE Fontconfig::Fontconfig)
+elseif(WIN32)
+    target_link_libraries(font-locator-core PRIVATE dwrite)
 endif()
 
 install(TARGETS font-locator-core ARCHIVE DESTINATION lib)
@@ -107,6 +110,8 @@ if(APPLE)
 elseif(UNIX)
     set(PC_REQUIRES_PRIVATE "fontconfig")
     set(PC_LIBS_PRIVATE "-lstdc++")
+elseif(WIN32)
+    set(PC_LIBS_PRIVATE "-ldwrite")
 endif()
 
 configure_file(

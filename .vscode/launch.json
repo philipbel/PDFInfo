@@ -12,6 +12,39 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "PDFInfo",
+            "cargo": {
+                "args": [
+                    "run",
+                ]
+            },
+            "cwd": "${workspaceFolder}",
+            // Prevent codelldb from taking ~50 GB of memory!
+            "initCommands": [
+                "settings set target.max-children-count 100",
+                "settings set target.max-string-summary-length 1024",
+                "settings set target.max-memory-read-size 65536"
+            ],
+            "sourceLanguages": [
+                "rust",
+                "cpp",
+            ],
+            "env": {
+                // Don't show AppKit messages about shortcuts, etc.
+                "OS_ACTIVITY_MODE": "disable"
+            }
+        },
+        {
+            "type": "cppvsdbg",
+            "request": "launch",
+            "name": "PDFInfo (Windows)",
+            "program": "${workspaceFolder}/target/debug/pdfinfo.exe",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "rust: build"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "PDFInfo Gtk",
             "cargo": {
                 "args": [

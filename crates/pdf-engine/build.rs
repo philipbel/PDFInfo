@@ -12,15 +12,14 @@ use common_build::{
     cmake_build_type,
     cmake_osx_architecture,
     is_debug_build,
-    project_root_dir,
 };
 
 
 const HEADER: &str = "include/pdf-engine/pdf-engine.h";
 
 fn main() {
-    let root_dir = project_root_dir();
-    let src_dir = root_dir.join("pdf-engine/core");
+    let root_dir = PathBuf::from(env!("PROJECT_ROOT_DIR"));
+    let src_dir = root_dir.join("libs/pdf-engine-core");
     let mut cmake_config = cmake::Config::new(&src_dir);
     if let Some(osx_architectures) = cmake_osx_architecture() {
         cmake_config.define("CMAKE_OSX_ARCHITECTURES", osx_architectures);

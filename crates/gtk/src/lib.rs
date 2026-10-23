@@ -20,7 +20,7 @@ mod prelude;
 mod settings;
 mod widgets;
 
-fn main() -> glib::ExitCode {
+pub fn run() -> u8 {
     #[cfg(debug_assertions)]
     unsafe {
         glib::ffi::g_log_set_debug_enabled(glib::ffi::GTRUE)
@@ -40,7 +40,7 @@ fn main() -> glib::ExitCode {
     gio::resources_register_include!("pdfinfo.gresource").expect("Failed to register resources");
 
     let app = App::new();
-    app.run()
+    app.run().get()
 }
 
 static GLIB_LOGGER: glib::GlibLogger = glib::GlibLogger::new(
