@@ -106,6 +106,7 @@
         "vexpand",
         "vhomogeneous",
         "winget",
+        "wxdragon",
         "xalign"
     ],
     "rust-analyzer.checkOnSave": true,

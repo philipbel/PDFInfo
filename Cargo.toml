@@ -27,9 +27,13 @@ gtk = ["dep:pdfinfo-gtk"]
 
 [dependencies]
 pdfinfo-gtk = { path = "crates/gtk", optional = true }
+env_logger = "0.11.11"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 pdfinfo-gtk = { path = "crates/gtk" }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 pdfinfo-windows = { path = "crates/windows" }
+
+[target.'cfg(windows)'.build-dependencies]
+embed-manifest = "1.4"
