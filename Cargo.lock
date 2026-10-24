@@ -1544,7 +1544,7 @@ dependencies = [
  "embed-manifest",
  "env_logger",
  "pdfinfo-gtk",
- "pdfinfo-windows",
+ "pdfinfo-wx",
 ]
 
 [[package]]
@@ -1572,12 +1572,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "pdfinfo-windows"
+name = "pdfinfo-wx"
 version = "0.1.0"
 dependencies = [
  "common",
  "font-locator",
+ "log",
  "pdf-engine",
+ "thiserror",
  "wxdragon",
 ]
 

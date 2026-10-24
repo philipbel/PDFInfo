@@ -5,16 +5,7 @@
 
 [workspace]
 resolver = "3"
-members = ["crates/*"]
-default-members = [
-    ".",
-    "crates/pdf-engine",
-    "crates/font-locator",
-    "crates/common",
-    "crates/common-build"
-]
-exclude = ["crates/gtk", "crates/windows"]
-
+members = [".", "crates/*"]
 
 [package]
 name = "pdfinfo"
@@ -22,18 +13,30 @@ version = "1.2.0"
 edition = "2024"
 
 
+[workspace.dependencies]
+thiserror = "2.0.21"
+env_logger = "0.11.11"
+log = "0.4.34"
+
 [features]
 gtk = ["dep:pdfinfo-gtk"]
+wx = ["dep:pdfinfo-wx"]
 
 [dependencies]
 pdfinfo-gtk = { path = "crates/gtk", optional = true }
-env_logger = "0.11.11"
+pdfinfo-wx = { path = "crates/wx", optional = true }
+env_logger = { workspace = true }
+
 
 [target.'cfg(target_os = "linux")'.dependencies]
-pdfinfo-gtk = { path = "crates/gtk" }
+pdfinfo-gtk = { path = "crates/gtk"}
 
 [target.'cfg(target_os = "windows")'.dependencies]
-pdfinfo-windows = { path = "crates/windows" }
+pdfinfo-wx = { path = "crates/wx" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+pdfinfo-wx = { path = "crates/wx" }
+pdfinfo-gtk = { path = "crates/gtk"}
 
 [target.'cfg(windows)'.build-dependencies]
 embed-manifest = "1.4"

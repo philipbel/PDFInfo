@@ -12,10 +12,39 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "PDFInfo",
+            "name": "PDFInfo (wx)",
             "cargo": {
                 "args": [
                     "run",
+                    "-F",
+                    "wx"
+                ]
+            },
+            "cwd": "${workspaceFolder}",
+            // Prevent codelldb from taking ~50 GB of memory!
+            "initCommands": [
+                "settings set target.max-children-count 100",
+                "settings set target.max-string-summary-length 1024",
+                "settings set target.max-memory-read-size 65536"
+            ],
+            "sourceLanguages": [
+                "rust",
+                "cpp",
+            ],
+            "env": {
+                // Don't show AppKit messages about shortcuts, etc.
+                "OS_ACTIVITY_MODE": "disable"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "PDFInfo (gtk)",
+            "cargo": {
+                "args": [
+                    "run",
+                    "-F",
+                    "gtk"
                 ]
             },
             "cwd": "${workspaceFolder}",
@@ -41,33 +70,6 @@
             "program": "${workspaceFolder}/target/debug/pdfinfo.exe",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "rust: build"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "PDFInfo Gtk",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--package=pdfinfo-gtk",
-                    "--bin=pdfinfo-gtk"
-                ]
-            },
-            "cwd": "${workspaceFolder}",
-            // Prevent codelldb from taking ~50 GB of memory!
-            "initCommands": [
-                "settings set target.max-children-count 100",
-                "settings set target.max-string-summary-length 1024",
-                "settings set target.max-memory-read-size 65536"
-            ],
-            "sourceLanguages": [
-                "rust",
-                "cpp",
-            ],
-            "env": {
-                // Don't show AppKit messages about shortcuts, etc.
-                "OS_ACTIVITY_MODE": "disable"
-            }
         }
     ]
 }

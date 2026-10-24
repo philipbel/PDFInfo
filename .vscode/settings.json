@@ -28,7 +28,7 @@
         "+nightly"
     ],
     "rust-analyzer.check.command": "clippy",
-    "rust-analyzer.check.workspace": false,
+    "rust-analyzer.check.workspace": true,
     // Python
     "python.analysis.typeCheckingMode": "standard",
     "[python]": {
@@ -60,6 +60,8 @@
         "codeset",
         "concatcp",
         "Crossfade",
+        "DEPENDEES",
+        "DEPENDERS",
         "endforeach",
         "endfunction",
         "fitz",
@@ -102,6 +104,8 @@
         "setlocale",
         "SOVERSION",
         "strdup",
+        "STREQUAL",
+        "thiserror",
         "venv",
         "vexpand",
         "vhomogeneous",
@@ -109,5 +113,4 @@
         "wxdragon",
         "xalign"
     ],
-    "rust-analyzer.checkOnSave": true,
 }
