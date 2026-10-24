@@ -4,6 +4,9 @@
 # https://opensource.org/licenses/MIT
 
 
+edition = "2024"
+style_edition = "2024"
+max_width = 100
 blank_lines_lower_bound = 0
 blank_lines_upper_bound = 2
 empty_item_single_line = false
@@ -13,8 +16,9 @@ hex_literal_case = "Lower"
 imports_granularity = "Module"
 imports_layout = "Vertical"
 indent_style = "Block"
-max_width = 100
 newline_style = "Unix"
 reorder_impl_items = true
 tab_spaces = 4
 use_field_init_shorthand = true
+wrap_comments = true
+error_on_line_overflow = true
