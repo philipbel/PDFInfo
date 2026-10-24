@@ -43,6 +43,8 @@ function(build_dependencies ARCH PREFIX)
     endif()
 
     set(z-lib${suffix} ${PREFIX}/lib/${z-libfile})
+    # NOTE: Not per architecture assuming pkg-config are always the same
+    set(z-pc ${PREFIX}/lib/pkgconfig/zlib.pc)
     ExternalProject_Add(z-build${suffix}
         DEPENDS z-src
         DOWNLOAD_COMMAND ""
@@ -55,6 +57,8 @@ function(build_dependencies ARCH PREFIX)
         INSTALL_BYPRODUCTS ${z-lib${suffix}}
     )
     set(jpeg-lib${suffix} ${PREFIX}/lib/${jpeg-libfile})
+    # NOTE: Not per architecture assuming pkg-config are always the same
+    set(jpeg-pc ${PREFIX}/lib/pkgconfig/libjpeg.pc)
     ExternalProject_Add(jpeg-build${suffix}
         DEPENDS jpeg-src
         DOWNLOAD_COMMAND ""
@@ -93,7 +97,10 @@ function(build_dependencies ARCH PREFIX)
             COMMENT "Rename zlib's static library"
         )
     endif()
+
     set(qpdf-lib${suffix} ${PREFIX}/lib/${qpdf-libfile})
+    # NOTE: Not per architecture assuming pkg-config are always the same
+    set(qpdf-pc ${PREFIX}/lib/pkgconfig/libqpdf.pc)
     ExternalProject_Add(qpdf-build${suffix}
         DEPENDS qpdf-src z-build${suffix} jpeg-build${suffix}
         DOWNLOAD_COMMAND ""
@@ -111,8 +118,11 @@ function(build_dependencies ARCH PREFIX)
 
     return(PROPAGATE
         z-lib${suffix}
+        z-pc
         jpeg-lib${suffix}
+        jpeg-pc
         qpdf-lib${suffix}
+        qpdf-pc
     )
 endfunction()
 
@@ -200,7 +210,7 @@ else()
                     ${DEPS_PREFIX_DIR}/${first_arch}/include
                     ${DEPS_PREFIX_DIR}/include
         )
-        set(DEPS_TARGET deps-headers)
+        set(DEPS_TARGET deps-headers)        
     else()
         set(DEPS_TARGET "")
         build_dependencies("" ${DEPS_PREFIX_DIR})
@@ -215,16 +225,12 @@ else()
     set_target_properties(zlib-ng PROPERTIES
         IMPORTED_LOCATION ${z-lib}
     )
-    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/zlib.pc
-        DESTINATION lib/pkgconfig)
 
     add_library(libjpeg-turbo STATIC IMPORTED)
     add_dependencies(libjpeg-turbo jpeg-build ${DEPS_TARGET})
     set_target_properties(libjpeg-turbo PROPERTIES
         IMPORTED_LOCATION ${jpeg-lib}
     )
-    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/libjpeg.pc
-        DESTINATION lib/pkgconfig)
     
     add_library(qpdf::libqpdf STATIC IMPORTED)
     add_dependencies(qpdf::libqpdf qpdf-build ${DEPS_TARGET})
@@ -233,8 +239,12 @@ else()
         INTERFACE_INCLUDE_DIRECTORIES ${DEPS_PREFIX_DIR}/include
         INTERFACE_LINK_LIBRARIES "libjpeg-turbo;zlib-ng"
     )
-    install(FILES ${DEPS_PREFIX_DIR}/lib/pkgconfig/libqpdf.pc
-        DESTINATION lib/pkgconfig)
+
+    foreach(lib IN LISTS LIBS)
+        install(FILES ${${lib}-pc}
+            DESTINATION lib/pkgconfig)        
+    endforeach()
+    
 
     install(FILES ${all_libs}
         DESTINATION lib
