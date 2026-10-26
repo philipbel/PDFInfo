@@ -66,6 +66,7 @@ function(build_dependencies ARCH PREFIX)
         CMAKE_ARGS ${args}
             -DENABLE_SHARED=OFF
             -DENABLE_STATIC=ON
+            -DWITH_CRT_DLL=ON # Rust uses the the dynamic C++ runtime on Windows
             -DWITH_SIMD=OFF
             -DWITH_TURBOJPEG=OFF
             -DWITH_TOOLS=OFF

@@ -114,6 +114,8 @@ if(APPLE)
     string(APPEND PC_LIBS_PRIVATE " -lc++")
 elseif(UNIX)
     string(APPEND PC_LIBS_PRIVATE " -lstdc++")
+elseif(WIN32)
+    string(APPEND PC_LIBS_PRIVATE " -ladvapi32")
 endif()
 
 configure_file(
