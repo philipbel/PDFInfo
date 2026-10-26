@@ -29,6 +29,9 @@
     ],
     "rust-analyzer.check.command": "clippy",
     "rust-analyzer.check.workspace": true,
+    "rust-analyzer.check.extraArgs": [
+        "--no-deps"
+    ],
     // Python
     "python.analysis.typeCheckingMode": "standard",
     "[python]": {
