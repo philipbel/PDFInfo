@@ -20,6 +20,7 @@ pub use document::Document;
 pub use font::{
     Font,
     FontDisplayType,
+    FontId,
     FontSubtype,
 };
 pub use metadata::Metadata;

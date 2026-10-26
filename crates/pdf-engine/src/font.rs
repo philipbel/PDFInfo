@@ -54,6 +54,8 @@ impl Display for FontSubtype {
     }
 }
 
+pub type FontId = u64;
+
 pub struct Font {
     ptr: *const ffi::pdf_font,
 }
@@ -66,7 +68,7 @@ impl Font {
         Some(Font { ptr: f })
     }
 
-    pub fn id(&self) -> u64 {
+    pub fn id(&self) -> FontId {
         unsafe { ffi::pdf_font_get_id(self.ptr) }
     }
 
@@ -142,5 +144,11 @@ impl Debug for Font {
             .field("is_embedded", &self.is_embedded())
             .field("cmap_name", &self.cmap_name())
             .finish()
+    }
+}
+
+impl PartialEq for Font {
+    fn eq(&self, other: &Self) -> bool {
+        self.ptr == other.ptr
     }
 }
