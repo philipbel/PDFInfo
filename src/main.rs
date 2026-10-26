@@ -7,9 +7,19 @@
 #![cfg_attr(target_os = "windows", windows_subsystem = "windows")]
 
 
+fn main() {
+    log::set_max_level(if cfg!(debug_assertions) {
+        log::LevelFilter::Debug
+    } else {
+        log::LevelFilter::Warn
+    });
+
+    platform_main();
+}
+
 // GTK is the default on Linux
 #[cfg(all(any(feature = "gtk", target_os = "linux"), not(feature = "wx")))]
-fn main() {
+fn platform_main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
     pdfinfo_gtk::run();
 }
@@ -20,7 +30,7 @@ fn main() {
     not(feature = "gtk"),
     any(feature = "wx", target_os = "windows", target_os = "macos")
 ))]
-fn main() {
+fn platform_main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
     pdfinfo_wx::run();
 }

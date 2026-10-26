@@ -20,17 +20,13 @@ mod prelude;
 mod settings;
 mod widgets;
 
+
 pub fn run() -> u8 {
     #[cfg(debug_assertions)]
     unsafe {
         glib::ffi::g_log_set_debug_enabled(glib::ffi::GTRUE)
     };
     log::set_logger(&GLIB_LOGGER).expect("logger already set");
-    log::set_max_level(if cfg!(debug_assertions) {
-        log::LevelFilter::Debug
-    } else {
-        log::LevelFilter::Warn
-    });
 
     if let Err(err) = intl::init(config::GETTEXT_PACKAGE, config::LOCALEDIR) {
         error!("Error initializing the internationalization system: {err}");

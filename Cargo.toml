@@ -26,7 +26,7 @@ wx = ["dep:pdfinfo-wx"]
 pdfinfo-gtk = { path = "crates/gtk", optional = true }
 pdfinfo-wx = { path = "crates/wx", optional = true }
 env_logger = { workspace = true }
-
+log = { workspace = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 pdfinfo-gtk = { path = "crates/gtk"}
