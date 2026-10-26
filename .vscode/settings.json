@@ -85,6 +85,7 @@
         "GTRUE",
         "halign",
         "harfbuzz",
+        "HSTRING",
         "langinfo",
         "libadwaita",
         "libclang",

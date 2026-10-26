@@ -26,11 +26,17 @@ fn platform_main() {
 
 // WxWidgets is the default on Windows
 // We also make it the default here on macOS for testing purposes
-#[cfg(all(
-    not(feature = "gtk"),
-    any(feature = "wx", target_os = "windows", target_os = "macos")
-))]
+// #[cfg(all(
+//     not(feature = "gtk"),
+//     any(feature = "wx", target_os = "windows", target_os = "macos")
+// ))]
+// fn platform_main() {
+//     env_logger::Builder::from_env(env_logger::Env::default().
+// default_filter_or("trace")).init();     pdfinfo_wx::run();
+// }
+
+
+#[cfg(all(all(not(feature = "gtk"), not(feature = "wx")), target_os = "windows"))]
 fn platform_main() {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
-    pdfinfo_wx::run();
+    pdfinfo_windows::run();
 }

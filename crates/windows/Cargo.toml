@@ -1,0 +1,21 @@
+# Copyright (c) 2026 Philip B. (philipbel)
+# This software is released under the MIT License.
+# 
+# https://opensource.org/licenses/MIT
+
+[package]
+name = "pdfinfo-windows"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pdf-engine = { version = "0.1.0", path = "../pdf-engine" }
+font-locator = { version = "0.1.0", path = "../font-locator" }
+common = { version = "0.1.0", path = "../common" }
+thiserror = { workspace = true }
+log = { workspace = true }
+windows-reactor = { git = "https://github.com/philipbel/windows-rs", branch = "master" }
+windows-pickers = { git = "https://github.com/philipbel/windows-rs", branch = "master", default-features = false, features = ["reactor"] }
+windows-result = { git = "https://github.com/philipbel/windows-rs", branch = "master" }
+# TODO: Temp
+rand = "0.10.3"

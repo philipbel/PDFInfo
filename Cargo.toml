@@ -6,6 +6,7 @@
 [workspace]
 resolver = "3"
 members = [".", "crates/*"]
+exclude = [ "crates/wx" ]
 
 [package]
 name = "pdfinfo"
@@ -20,11 +21,11 @@ log = "0.4.34"
 
 [features]
 gtk = ["dep:pdfinfo-gtk"]
-wx = ["dep:pdfinfo-wx"]
+# wx = ["dep:pdfinfo-wx"]
 
 [dependencies]
 pdfinfo-gtk = { path = "crates/gtk", optional = true }
-pdfinfo-wx = { path = "crates/wx", optional = true }
+# pdfinfo-wx = { path = "crates/wx", optional = true }
 env_logger = { workspace = true }
 log = { workspace = true }
 
@@ -32,10 +33,12 @@ log = { workspace = true }
 pdfinfo-gtk = { path = "crates/gtk"}
 
 [target.'cfg(target_os = "windows")'.dependencies]
-pdfinfo-wx = { path = "crates/wx" }
+# pdfinfo-wx = { path = "crates/wx" }
+pdfinfo-windows = { path = "crates/windows" }
+
 
 [target.'cfg(target_os = "macos")'.dependencies]
-pdfinfo-wx = { path = "crates/wx" }
+# pdfinfo-wx = { path = "crates/wx" }
 pdfinfo-gtk = { path = "crates/gtk"}
 
 [target.'cfg(windows)'.build-dependencies]
