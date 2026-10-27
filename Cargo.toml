@@ -17,6 +17,11 @@ edition = "2024"
 thiserror = "2.0.21"
 env_logger = "0.11.11"
 log = "0.4.34"
+anyhow = "1.0.104"
+strum = { version = "0.28.0", features = ["derive"] }
+const_format = "0.2.37"
+formatx = "0.4.2"
+
 
 [features]
 gtk = ["dep:pdfinfo-gtk"]

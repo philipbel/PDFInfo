@@ -9,9 +9,11 @@ use std::rc::Rc;
 
 use wxdragon::prelude::*;
 
+use crate::Icon;
+use crate::models::DocumentModel;
 use crate::views::{
     DocumentView,
-    NoContentView,
+    PlaceholderView,
     View,
 };
 
@@ -20,7 +22,7 @@ pub(crate) struct MainView {
     container: Panel,
     notebook: Notebook,
     document_views: RefCell<Vec<Rc<DocumentView>>>,
-    no_content_view: NoContentView,
+    no_content_view: PlaceholderView,
 }
 
 impl MainView {
@@ -29,10 +31,10 @@ impl MainView {
         let container_sizer = BoxSizer::builder(Orientation::Vertical).build();
         container.set_sizer(container_sizer, true);
 
-
-        let no_content_view = NoContentView::new(
+        let placeholder_view = PlaceholderView::new(
             "No file loaded",
             "Open a file or drag files here.",
+            Icon::DocumentPdfFilled,
             &container,
         );
 
@@ -40,7 +42,7 @@ impl MainView {
             .with_style(NotebookStyle::Top | NotebookStyle::Default)
             .build();
         container_sizer.add(&notebook, 1, SizerFlag::Expand, 0);
-        container_sizer.add(&no_content_view.root_view(), 1, SizerFlag::Expand, 0);
+        container_sizer.add(&placeholder_view.root_view(), 1, SizerFlag::Expand, 0);
 
         notebook.show(false);
 
@@ -48,26 +50,24 @@ impl MainView {
             container,
             notebook,
             document_views: RefCell::new(Vec::default()),
-            no_content_view,
+            no_content_view: placeholder_view,
         }
     }
 
     pub(crate) fn open_document(&self, path: impl AsRef<Path>) {
-        match DocumentView::new(&path, &self.notebook) {
-            Ok(document_view) => {
-                let title = &path
-                    .as_ref()
-                    .file_name()
-                    .unwrap_or_default()
-                    .to_string_lossy();
+        match DocumentModel::new(&path).map(Rc::new) {
+            Ok(document) => {
+                let document_view = DocumentView::new(document.clone(), &self.notebook);
                 self.notebook
-                    .add_page(&document_view.root_view(), title, true, None);
+                    .add_page(&document_view.root_view(), &document.title, true, None);
                 self.document_views
                     .borrow_mut()
                     .push(Rc::new(document_view));
 
                 self.no_content_view.root_view().show(false);
                 self.notebook.show(true);
+
+                self.container.layout();
             }
             Err(err) => {
                 // TODO: Show error

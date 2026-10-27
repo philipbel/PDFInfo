@@ -17,6 +17,7 @@ use wxdragon::ffi::{
 };
 use wxdragon::prelude::*;
 
+use crate::Icon;
 use crate::views::MainView;
 
 const FILE_OPEN_ID: i32 = WXD_ID_OPEN as i32;
@@ -60,9 +61,32 @@ impl App {
             }
         });
 
+        self.init_tool_bar();
+
         self.frame.set_menu_bar(self.create_menu_bar());
         self.frame.center_on_screen();
         self.frame.show(true);
+    }
+
+    fn init_tool_bar(&self) {
+        let Some(tool_bar) = self
+            .frame
+            .create_tool_bar(Some(ToolBarStyle::Default | ToolBarStyle::Flat), -1)
+        else {
+            warn!("Failed to create tool bar");
+            return;
+        };
+
+
+        // TODO: Translate
+        _ = tool_bar.add_tool_bundle(
+            FILE_OPEN_ID,
+            "Open",
+            &Icon::DocumentAddRegular.bundle(crate::icon::IconSize::Toolbar, None),
+            "Open a PDF document",
+        );
+
+        _ = tool_bar.realize();
     }
 
     fn create_menu_bar(&self) -> MenuBar {

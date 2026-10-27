@@ -7,7 +7,11 @@ use crate::app::App;
 
 mod app;
 mod font;
+mod icon;
+mod models;
 mod views;
+
+pub(crate) use icon::Icon;
 
 pub fn run() {
     // TODO: Translations

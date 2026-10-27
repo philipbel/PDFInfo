@@ -1,5 +1,4 @@
 {
-    "explorer.excludeGitIgnore": false,
     "search.exclude": {
         "extern": true
     },
@@ -114,6 +113,7 @@
         "vhomogeneous",
         "winget",
         "wxdragon",
-        "xalign"
+        "xalign",
+        "xmltree"
     ],
 }

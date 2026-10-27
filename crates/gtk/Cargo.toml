@@ -5,21 +5,21 @@ edition = "2024"
 
 [dependencies]
 adw = { version = "0.9.2", package = "libadwaita", features = ["v1_9"] }
-anyhow = "1.0.104"
+anyhow = { workspace = true }
 cairo-rs = { version = "0.22.9", features = ["freetype"] }
-const_format = "0.2.36"
-formatx = "0.4.2"
+const_format = { workspace = true }
+formatx = { workspace =  true }
 freetype-rs = "0.38.0"
 gettext-rs = "0.8.0"
 glib = { version = "0.22.10", features = ["log", "v2_72"] }
 gtk = { version = "0.11.5", package = "gtk4", features = ["v4_22"] }
 libc = "0.2.190"
-log = "0.4.34"
+log = { workspace = true }
 pdf-engine = { version = "0.1.0", path = "../pdf-engine" }
 font-locator = { version = "0.1.0", path = "../font-locator" }
 common = { version = "0.1.0", path = "../common" }
-strum = { version = "0.28.0", features = ["derive"] }
-thiserror = "2.0.21"
+strum = { workspace = true }
+thiserror = { workspace = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2-foundation = "0.3.2"
