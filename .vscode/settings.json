@@ -20,8 +20,11 @@
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
         "editor.formatOnSave": true,
-        "editor.wordWrapColumn": 100,
-        "rewrap.wrappingColumn": 100,
+        "editor.wordWrapColumn": 99,
+        "rewrap.wrappingColumn": 99,
+        "editor.rulers": [
+            99
+        ]
     },
     "rust-analyzer.rustfmt.extraArgs": [
         "+nightly"

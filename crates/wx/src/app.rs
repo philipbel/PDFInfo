@@ -3,10 +3,15 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+use std::cell::RefCell;
 use std::path::Path;
 use std::rc::Rc;
+use std::sync::Arc;
 
-use log::warn;
+use log::{
+    debug,
+    warn,
+};
 use wxdragon as wx;
 use wxdragon::ffi::{
     WXD_ID_ABOUT,
@@ -31,6 +36,8 @@ const VIEW_SIDEBAR_ID: i32 = 1_000;
 pub(crate) struct App {
     frame: Frame,
     main_view: Rc<MainView>,
+    tool_bar: Rc<RefCell<Option<ToolBar>>>,
+    tool_bar_rebuild_timer: Rc<Timer<Frame>>,
 }
 
 impl App {
@@ -40,15 +47,35 @@ impl App {
             .with_size(Size::new(800, 600))
             .build();
         let main_view = MainView::new(&frame);
+        let tool_bar = Rc::new(RefCell::new(Self::create_tool_bar(&frame)));
+
+        let tool_bar_rebuild_timer = Rc::new(Timer::new(&frame));
+        {
+            let tool_bar = tool_bar.clone();
+            tool_bar_rebuild_timer.on_tick(move |e| {
+                // XXX: Restore the frame size. Otherwise, the frame keeps growing by the toolbar's
+                // height
+                let frame_size = frame.get_size();
+                _ = tool_bar.replace(Self::create_tool_bar(&frame));
+                frame.set_size(frame_size);
+                e.skip(true);
+            });
+        }
+
         Self {
             frame,
             main_view: Rc::new(main_view),
+            tool_bar,
+            tool_bar_rebuild_timer,
         }
     }
 
     pub(crate) fn run(&self) {
         // TODO: Add to settings
-        wxdragon::app::set_appearance(Appearance::System);
+        if !cfg!(target_os = "macos") {
+            // XXX: On macOS, this pins the UI to the system appearance at the time of the call
+            set_appearance(Appearance::System);
+        }
 
         let frame = self.frame;
         let main_view = self.main_view.clone();
@@ -60,23 +87,34 @@ impl App {
                 warn!("Action for menu item {event:?} not implemented");
             }
         });
-
-        self.init_tool_bar();
-
+        // XXX: Recreate the toolbar every time the system appearance changes. wxDragon doesn't
+        // provide wxToolbar's `SetToolNormalBitmap` method.
+        {
+            let tool_bar = self.tool_bar.clone();
+            let timer = self.tool_bar_rebuild_timer.clone();
+            _ = self
+                .frame
+                .bind_internal(EventType::SYS_COLOUR_CHANGED, move |e| {
+                    tool_bar.borrow().as_ref().map(ToolBar::destroy);
+                    // The toolbar is not destroyed immediately, so replacing it on the frame
+                    // triggers an assert in wxWidgets/src/common/framecmn. cpp(657): assert
+                    // "!m_frameToolBar" failed in CreateToolBar(): recreating toolbar in wxFrame
+                    _ = timer.start(100, true);
+                    e.skip(true);
+                });
+        }
         self.frame.set_menu_bar(self.create_menu_bar());
         self.frame.center_on_screen();
         self.frame.show(true);
     }
 
-    fn init_tool_bar(&self) {
-        let Some(tool_bar) = self
-            .frame
-            .create_tool_bar(Some(ToolBarStyle::Default | ToolBarStyle::Flat), -1)
+    fn create_tool_bar(frame: &Frame) -> Option<ToolBar> {
+        let Some(tool_bar) =
+            frame.create_tool_bar(Some(ToolBarStyle::Default | ToolBarStyle::Flat), -1)
         else {
             warn!("Failed to create tool bar");
-            return;
+            return None;
         };
-
 
         // TODO: Translate
         _ = tool_bar.add_tool_bundle(
@@ -85,8 +123,8 @@ impl App {
             &Icon::DocumentAddRegular.bundle(crate::icon::IconSize::Toolbar, None),
             "Open a PDF document",
         );
-
         _ = tool_bar.realize();
+        Some(tool_bar)
     }
 
     fn create_menu_bar(&self) -> MenuBar {

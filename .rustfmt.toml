@@ -6,7 +6,7 @@
 
 edition = "2024"
 style_edition = "2024"
-max_width = 100
+max_width = 99
 blank_lines_lower_bound = 0
 blank_lines_upper_bound = 2
 empty_item_single_line = false
@@ -22,3 +22,4 @@ tab_spaces = 4
 use_field_init_shorthand = true
 wrap_comments = true
 error_on_line_overflow = true
+comment_width = 99

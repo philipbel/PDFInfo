@@ -21,7 +21,7 @@ impl IconView {
         panel.set_min_size(panel.from_dip(size));
         panel.set_background_style(BackgroundStyle::Paint);
         panel.on_paint(move |_| Self::paint(&panel, icon, size));
-        panel.bind_internal(EventType::SYS_COLOUR_CHANGED, move |event| {
+        _ = panel.bind_internal(EventType::SYS_COLOUR_CHANGED, move |event| {
             panel.refresh(true, None);
             event.skip(true);
         });
