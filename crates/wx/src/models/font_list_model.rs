@@ -9,6 +9,5 @@ use crate::models::FontModel;
 
 
 pub(crate) trait FontListModel {
-    fn font_count(&self) -> usize;
-    fn font(&self, index: usize) -> Option<Rc<FontModel>>;
+    fn fonts(&self) -> &[Rc<FontModel>];
 }

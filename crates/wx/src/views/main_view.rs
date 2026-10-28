@@ -73,6 +73,8 @@ impl MainView {
                     | WX_AUI_NB_MIDDLE_CLICK_CLOSE) as i64,
             ))
             .build();
+        // XXX: wxDragon doesn't expose SetPageToolTip :/
+
         container_sizer.add(&notebook, 1, SizerFlag::Expand, 0);
         container_sizer.add(&placeholder_view.root_view(), 1, SizerFlag::Expand, 0);
 

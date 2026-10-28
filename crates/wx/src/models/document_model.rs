@@ -75,15 +75,7 @@ impl DocumentModel {
 
 
 impl FontListModel for DocumentModel {
-    fn font_count(&self) -> usize {
-        self.fonts.len()
-    }
-
-    fn font(&self, index: usize) -> Option<Rc<FontModel>> {
-        if index >= self.fonts.len() {
-            warn!("Invalid font index {index}");
-            return None;
-        }
-        Some(self.fonts[index].clone())
+    fn fonts(&self) -> &[Rc<FontModel>] {
+        &self.fonts
     }
 }
