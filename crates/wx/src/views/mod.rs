@@ -4,10 +4,12 @@
 // https://opensource.org/licenses/MIT
 
 mod document_view;
+mod font_list_view;
 mod icon_view;
 mod main_view;
 mod placeholder_view;
 mod view;
+
 
 pub(crate) use document_view::DocumentView;
 pub(crate) use main_view::MainView;

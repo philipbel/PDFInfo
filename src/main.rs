@@ -8,19 +8,25 @@
 
 
 fn main() {
-    log::set_max_level(if cfg!(debug_assertions) {
-        log::LevelFilter::Debug
-    } else {
-        log::LevelFilter::Warn
-    });
-
     platform_main();
+}
+
+fn init_logging(extra_filters: &[&str]) {
+    let default_filter = if cfg!(debug_assertions) {
+        "trace"
+    } else {
+        "warn"
+    };
+    let mut filters = vec![default_filter];
+    filters.extend_from_slice(extra_filters);
+    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(filters.join(",")))
+        .init();
 }
 
 // GTK is the default on Linux
 #[cfg(all(any(feature = "gtk", target_os = "linux"), not(feature = "wx")))]
 fn platform_main() {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
+    init_logging(&[]);
     pdfinfo_gtk::run();
 }
 
@@ -31,6 +37,11 @@ fn platform_main() {
     any(feature = "wx", target_os = "windows", target_os = "macos")
 ))]
 fn platform_main() {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("trace")).init();
+    let filter = if cfg!(debug_assertions) {
+        "debug"
+    } else {
+        "warn"
+    };
+    init_logging(&[filter]);
     pdfinfo_wx::run();
 }

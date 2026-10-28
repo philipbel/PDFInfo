@@ -7,7 +7,7 @@ edition = "2024"
 pdf-engine = { version = "0.1.0", path = "../pdf-engine" }
 font-locator = { version = "0.1.0", path = "../font-locator" }
 common = { version = "0.1.0", path = "../common" }
-wxdragon = { version = "0.9.23", default-features = false, features = [ "wx-asserts"] }
+wxdragon = { version = "0.9.23", default-features = false, features = [ "wx-asserts", "aui"] }
 thiserror = { workspace = true }
 log = { workspace = true }
 anyhow = { workspace = true }

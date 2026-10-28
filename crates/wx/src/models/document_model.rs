@@ -20,6 +20,7 @@ use log::{
 use thiserror::Error;
 
 use crate::models::FontModel;
+use crate::models::font_list_model::FontListModel;
 
 
 #[derive(Error, Debug)]
@@ -32,14 +33,14 @@ pub(crate) enum DocumentError {
 
 
 pub(crate) struct DocumentModel {
-    pub path: PathBuf,
-    pub title: String,
-    pub fonts: Vec<Rc<FontModel>>,
+    pub(crate) path: PathBuf,
+    pub(crate) title: String,
+    pub(crate) fonts: Vec<Rc<FontModel>>,
 }
 
 
 impl DocumentModel {
-    pub fn new(path: impl AsRef<Path>) -> Result<Self, DocumentError> {
+    pub(crate) fn new(path: impl AsRef<Path>) -> Result<Self, DocumentError> {
         let content = fs::read(&path)?;
         let document = pdf_engine::Document::open(&content)
             .ok_or_else(|| DocumentError::Load(path.as_ref().to_path_buf()))
@@ -69,5 +70,20 @@ impl DocumentModel {
             title: title.to_string(),
             fonts,
         })
+    }
+}
+
+
+impl FontListModel for DocumentModel {
+    fn font_count(&self) -> usize {
+        self.fonts.len()
+    }
+
+    fn font(&self, index: usize) -> Option<Rc<FontModel>> {
+        if index >= self.fonts.len() {
+            warn!("Invalid font index {index}");
+            return None;
+        }
+        Some(self.fonts[index].clone())
     }
 }

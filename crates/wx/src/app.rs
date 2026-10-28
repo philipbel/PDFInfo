@@ -55,6 +55,7 @@ impl App {
             tool_bar_rebuild_timer.on_tick(move |e| {
                 // XXX: Restore the frame size. Otherwise, the frame keeps growing by the toolbar's
                 // height
+                // TODO: wxDragon doesn't expose SetToolNormalBitmap. Consider making a PR.
                 let frame_size = frame.get_size();
                 _ = tool_bar.replace(Self::create_tool_bar(&frame));
                 frame.set_size(frame_size);

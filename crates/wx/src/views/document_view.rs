@@ -16,6 +16,7 @@ use std::{
 use wxdragon::prelude::*;
 
 use crate::models::DocumentModel;
+use crate::views::font_list_view::FontListView;
 use crate::views::{
     View,
     random_color,
@@ -24,24 +25,30 @@ use crate::views::{
 pub(crate) struct DocumentView {
     document: Rc<DocumentModel>,
     splitter: SplitterWindow,
+    font_list_view: FontListView,
 }
+
 
 impl DocumentView {
     pub fn new<P: WxWidget>(document: Rc<DocumentModel>, parent: &P) -> Self {
         let splitter = SplitterWindow::builder(parent)
             .with_style(SplitterWindowStyle::LiveUpdate | SplitterWindowStyle::Default)
             .build();
-        let main_panel = Panel::builder(&splitter).build();
-        main_panel.set_background_color(random_color());
+        let font_list_view = FontListView::new(document.clone(), &splitter);
         let sidebar_panel = Panel::builder(&splitter)
             .with_style(PanelStyle::BorderTheme)
             .build();
-        splitter.set_minimum_pane_size(100);
-        splitter.split_vertically(&main_panel, &sidebar_panel, -250);
+        splitter.set_minimum_pane_size(100); // TODO: Adjust
+        splitter.split_vertically(&font_list_view.root_view(), &sidebar_panel, -250);
 
-        Self { document, splitter }
+        Self {
+            document,
+            splitter,
+            font_list_view,
+        }
     }
 }
+
 
 impl View for DocumentView {
     type Root = SplitterWindow;
